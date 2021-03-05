@@ -1,123 +1,176 @@
-#include <fcntl.h>
-#include <termios.h>
-#define STDIN_FILENO 0
-
-#include <stdio.h>
-#include <chrono>
-#include <functional>
-#include <memory>
 #include <string>
+#include <vector>
+#include <iostream>
 
 #include "dynamixel_sdk/dynamixel_sdk.h"
 #include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
 
-#define PROTOCOL_VERSION                2.0
-
-#define DXL_ID                          1
-#define BAUDRATE                        57600
-#define DEVICENAME                      "/dev/ttyUSB0"
-
-#define NODE_NAME                       "dynamixel_ping"
-#define TOPIC_NAME                      "dynamixel_topic"
-
-using namespace std;
-
-int getch()
+namespace Dynamixel
 {
-  struct termios oldt, newt;
-  int ch;
-  tcgetattr(STDIN_FILENO, &oldt);
-  newt = oldt;
-  newt.c_lflag &= ~(ICANON | ECHO);
-  tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-  ch = getchar();
-  tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-  return ch;
+    class Serial 
+    {
+    private:
+        dynamixel::PortHandler *_port_handler;
+        dynamixel::PacketHandler *_packet_handler;
+
+        std::string _port_name = "/dev/ttyUSB0";
+        int _baudrate = 57600;
+        bool _init_state = false;
+    public:
+        Serial();
+        Serial(std::string port_name);
+        Serial(std::string port_name, int baudrate);
+        ~Serial();
+
+        void initHandler();
+        void open();
+        void close();
+        bool broadcastPing(std::vector<uint8_t> ids);
+        bool ping(uint8_t id);
+
+        bool _is_open = false;
+    };
 }
 
-int ping() 
+Dynamixel::Serial::Serial()
 {
-    dynamixel::PortHandler *portHandler = dynamixel::PortHandler::getPortHandler(DEVICENAME);
-    dynamixel::PacketHandler *packetHandler = dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
+}
+
+Dynamixel::Serial::Serial(std::string port_name)
+: _port_name(port_name)
+{
+}
+
+Dynamixel::Serial::Serial(std::string port_name, int baudrate)
+: _port_name(port_name), _baudrate(baudrate)
+{
+}
+
+Dynamixel::Serial::~Serial()
+{
+    close();
+}
+
+void Dynamixel::Serial::initHandler()
+{
+    std::cout << "init the port name and protocol version\n";
+    _port_handler = dynamixel::PortHandler::getPortHandler(_port_name.c_str());
+    _packet_handler = dynamixel::PacketHandler::getPacketHandler(2.0F);
+}
+
+void Dynamixel::Serial::open()
+{
+    if (!_init_state)
+        initHandler();
     
+    if (_port_handler->is_using_)
+        std::cout << "the port is currently using!\n";
+    
+    if (_port_handler->openPort()) 
+    {
+        std::cout << "succeeded to open the port!\n";
+        if (_port_handler->setBaudRate(_baudrate))
+        {
+            std::cout << "succeeded to set the baudrate!\n";
+            _is_open = true;
+        }
+        else
+            std::cout << "failed to set the baudrate!\n";
+    }
+    else
+        std::cout << "failed to open the port!\n";
+}
+
+void Dynamixel::Serial::close()
+{
+    std::cout << "close the port\n";
+    _port_handler->closePort();
+}
+
+bool Dynamixel::Serial::broadcastPing(std::vector<uint8_t> ids)
+{
+    int dxl_comm_result = COMM_TX_FAIL;
+
+    std::cout << "broadcast ping!\n";
+    dxl_comm_result = _packet_handler->broadcastPing(_port_handler, ids);
+    if (dxl_comm_result != COMM_SUCCESS)
+        _packet_handler->getTxRxResult(dxl_comm_result);
+
+    std::cout << "Detected Dynamixel : \n";
+    for (int i = 0; i < (int)ids.size(); i++)
+        std::cout << "[ID:" << ids.at(i) << "]\n";
+
+    return true;
+}
+
+bool Dynamixel::Serial::ping(uint8_t id)
+{
     int dxl_comm_result = COMM_TX_FAIL;
 
     uint8_t dxl_error = 0;
     uint16_t dxl_model_number;
 
-    if (portHandler->openPort())
-    {
-        printf("Succeeded to open the port!\n");
-    }
-    else
-    {
-        printf("Failed to open the port!\n");
-        printf("Press any key to terminate...\n");
-        getch();
-        return 0;
-    }
-
-    if (portHandler->setBaudRate(BAUDRATE))
-    {
-        printf("Succeeded to change the baudrate!\n");
-    }
-    else
-    {
-        printf("Failed to change the baudrate!\n");
-        printf("Press any key to terminate...\n");
-        getch();
-        return 0;
-    }
-
-    dxl_comm_result = packetHandler->ping(portHandler, DXL_ID, &dxl_model_number, &dxl_error);
+    dxl_comm_result = _packet_handler->ping(_port_handler, id, &dxl_model_number, &dxl_error);
     if (dxl_comm_result != COMM_SUCCESS)
-    {
-        printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
-    }
+        std::cout << _packet_handler->getTxRxResult(dxl_comm_result) << "\n";
     else if (dxl_error != 0)
-    {
-        printf("%s\n", packetHandler->getRxPacketError(dxl_error));
-    }
-    else
-    {
-        printf("[ID:%03d] ping Succeeded. Dynamixel model number : %d\n", DXL_ID, dxl_model_number);
-    }
+        std::cout << _packet_handler->getRxPacketError(dxl_error) << "\n";
 
-    portHandler->closePort();
-    return 0;
+    std::cout << "[ID:" << id << "] ping Succeeded. Dynamixel model number : " << dxl_model_number << "\n";
+
+    return true;
 }
 
-void getMessage(const std_msgs::msg::String::SharedPtr message)
+std::vector<uint8_t> getIds()
 {
-    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Get message: %s", message->data.c_str());
-    ping();
-}
+    std::vector<uint8_t> ids;
+    for (int i = 0; i < 20; i++) 
+       ids.push_back((uint8_t)i);
 
-void publishMessage(rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher)
-{
-    auto message = std_msgs::msg::String();
-    message.data = "Ping Instruction";
-    publisher->publish(message);
-    RCLCPP_INFO(rclcpp::get_logger("rcl_cpp"), "Publish a message: %s", message.data.c_str());
+    return ids;
 }
 
 int main(int argc, char* argv[])
 {
+    std::cout << "init rclcpp\n";
     rclcpp::init(argc, argv);
 
-    shared_ptr<rclcpp::Node> node = rclcpp::Node::make_shared(NODE_NAME);
-    rclcpp::Rate rclcpp_rate(1000ms);
+    std::cout << "define serial\n";
+    Dynamixel::Serial *serial;
 
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher = node->create_publisher<std_msgs::msg::String>(TOPIC_NAME, 10);
-    rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscriber = node->create_subscription<std_msgs::msg::String>(TOPIC_NAME, 10, bind(&getMessage, placeholders::_1));
+    if (argc > 1) 
+    {
+        std::string port = argv[1];
+
+        if (port.find("tty") != std::string::npos)
+        {
+            std::cout << "set the port name from argument as " << port << "\n";
+            serial = new Dynamixel::Serial("/dev/" + port);
+        }
+        else
+        {
+            std::cout << "to set the port name : ttyUSB<num>\n";
+        }
+    }
+    else
+        serial = new Dynamixel::Serial();
+
+    std::cout << "define node\n";
+    std::shared_ptr<rclcpp::Node> node = rclcpp::Node::make_shared("ping");
+    rclcpp::Rate rclcpp_rate(1000);
+
+    std::cout << "open the port\n";
+    serial->open();
 
     while (rclcpp::ok())
     {
         rclcpp_rate.sleep();
         rclcpp::spin_some(node);
-        publishMessage(publisher);
+        if (serial->_is_open)
+            serial->broadcastPing(getIds());
     }
+
+    serial->close();
 
     return 0;
 }
