@@ -32,7 +32,7 @@ Serial::Serial(std::string node_name, std::string port_name)
 : rclcpp::Node(node_name)
 {
     port_handler = dynamixel::PortHandler::getPortHandler(port_name.c_str());
-    packet_handler = dynamixel::PacketHandler::getPacketHandler(2.0F);
+    packet_handler = dynamixel::PacketHandler::getPacketHandler(1.0F);
 }
 
 Serial::~Serial()

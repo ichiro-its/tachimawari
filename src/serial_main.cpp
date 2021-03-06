@@ -31,13 +31,15 @@ int main(int argc, char * argv[])
     rclcpp::init(argc, argv);
 
     std::cout << "define node\n";
-    auto serial = std::make_shared<motion::Serial>("serial_ping");
+    std::shared_ptr<motion::Serial> serial;
 
     if (argc > 1) {
         std::string port = argv[1];
 
 		std::cout << "set the port name from argument as " << port << "\n";
 		serial = std::make_shared<motion::Serial>("serial_ping", port);
+    } else {
+        serial = std::make_shared<motion::Serial>("serial_ping");
     }
 
     std::cout << "open the port\n";
