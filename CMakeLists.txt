@@ -21,7 +21,7 @@ find_package(rclcpp REQUIRED)
 find_package(dynamixel_sdk REQUIRED)
 
 add_executable(node src/dynamixel_main.cpp)
-ament_target_dependencies(node rclcpp std_msgs dynamixel_sdk)
+ament_target_dependencies(broadcast_ping rclcpp std_msgs dynamixel_sdk)
 
 install(TARGETS
   node
