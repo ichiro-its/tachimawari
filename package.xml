@@ -5,7 +5,7 @@
   <version>0.1.0</version>
   <description>Motion tools using OpenCR for ROS 2</description>
   <maintainer email="alfi.maulana.f@gmail.com">Alfi Maulana</maintainer>
-  <license>TODO: License declaration</license>
+  <license>MIT License</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <depend>rclcpp</depend>
