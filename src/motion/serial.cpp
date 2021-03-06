@@ -32,7 +32,7 @@ Serial::Serial(std::string node_name, std::string port_name)
 : rclcpp::Node(node_name)
 {
     port_handler = dynamixel::PortHandler::getPortHandler(port_name.c_str());
-    packet_handler = dynamixel::PacketHandler::getPacketHandler(1.0F);
+    packet_handler = dynamixel::PacketHandler::getPacketHandler(2.0F);
 }
 
 Serial::~Serial()
@@ -70,7 +70,7 @@ void Serial::close()
 bool Serial::broadcastPing()
 {
     std::vector<uint8_t> ids(20);
-    std::iota(ids.begin(), ids.end(), 0);
+    std::iota(ids.begin(), ids.end(), 1);
     return broadcastPing(ids);
 }
 
@@ -78,21 +78,20 @@ bool Serial::broadcastPing(std::vector<uint8_t> ids)
 {
     int dxl_comm_result = COMM_TX_FAIL;
 
-    RCLCPP_DEBUG(get_logger(), "broadcast ping!");
+    RCLCPP_INFO(get_logger(), "broadcast ping!");
     dxl_comm_result = packet_handler->broadcastPing(port_handler, ids);
 
     if (dxl_comm_result != COMM_SUCCESS) {
-        RCLCPP_DEBUG(get_logger(), packet_handler->getTxRxResult(dxl_comm_result));
-
-        RCLCPP_DEBUG(get_logger(), "Detected Dynamixel : ");
-        for (int i = 0; i < static_cast<int>(ids.size()); i++) {
-            RCLCPP_DEBUG(get_logger(), "[ID:%03d]", ids.at(i));
-        }
-
-        return true;
+        RCLCPP_INFO(get_logger(), packet_handler->getTxRxResult(dxl_comm_result));
+        return false;
     }
 
-    return false;
+    RCLCPP_INFO(get_logger(), "Detected Dynamixel : ");
+    for (int i = 0; i < static_cast<int>(ids.size()); i++) {
+        RCLCPP_INFO(get_logger(), "[ID:%03d]", ids.at(i));
+    }
+
+    return true;
 }
 
 bool Serial::ping(uint8_t id)
@@ -101,21 +100,21 @@ bool Serial::ping(uint8_t id)
     uint8_t dxl_error = 0;
     uint16_t dxl_model_number;
 
-    RCLCPP_DEBUG(get_logger(), "ping!");
+    RCLCPP_INFO(get_logger(), "ping!");
     dxl_comm_result = packet_handler->ping(port_handler, id, &dxl_model_number, &dxl_error);
 
     if (dxl_comm_result != COMM_SUCCESS) {
-        RCLCPP_DEBUG(get_logger(), packet_handler->getTxRxResult(dxl_comm_result));
-
-        RCLCPP_DEBUG(get_logger(), "[ID:%03d] ping Succeeded. Dynamixel model number : %d",
-            id, dxl_model_number);
-
-        return true;
+        RCLCPP_INFO(get_logger(), packet_handler->getTxRxResult(dxl_comm_result));
+        return false;
     } else if (dxl_error != 0) {
-        RCLCPP_DEBUG(get_logger(), packet_handler->getRxPacketError(dxl_error));
+        RCLCPP_INFO(get_logger(), packet_handler->getRxPacketError(dxl_error));
+        return false;
     }
 
-    return false;
+    RCLCPP_INFO(get_logger(), "[ID:%03d] ping Succeeded. Dynamixel model number : %d",
+        id, dxl_model_number);
+
+    return true;
 }
 
 }   // namespace motion

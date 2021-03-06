@@ -44,7 +44,7 @@ int main(int argc, char * argv[])
 
     std::cout << "open the port\n";
     if (serial->open()){
-		rclcpp::spin(serial);
+		// rclcpp::spin(serial);
 		serial->broadcastPing();
 	}
 
