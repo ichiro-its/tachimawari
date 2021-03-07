@@ -27,28 +27,30 @@
 
 int main(int argc, char * argv[])
 {
-    std::cout << "init rclcpp\n";
-    rclcpp::init(argc, argv);
+  std::cout << "init rclcpp\n";
+  rclcpp::init(argc, argv);
 
-    std::cout << "define node\n";
-    std::shared_ptr<motion::Serial> serial;
+  std::cout << "define node\n";
+  std::shared_ptr<motion::Serial> serial;
 
-    if (argc > 1) {
-        std::string port = argv[1];
+  if (argc > 1) {
+    std::string port = argv[1];
 
-		std::cout << "set the port name from argument as " << port << "\n";
-		serial = std::make_shared<motion::Serial>("serial_ping", port);
-    } else {
-        serial = std::make_shared<motion::Serial>("serial_ping");
+    std::cout << "set the port name from argument as " << port << "\n";
+    serial = std::make_shared<motion::Serial>("serial_ping", port);
+  } else {
+    serial = std::make_shared<motion::Serial>("serial_ping");
+  }
+
+  std::cout << "open the port\n";
+  if (serial->open()) {
+    // rclcpp::spin(serial);
+    if (!serial->broadcastPing()) {
+      std::cout << "failed to broadcast ping\n";
     }
+  }
 
-    std::cout << "open the port\n";
-    if (serial->open()){
-		// rclcpp::spin(serial);
-		serial->broadcastPing();
-	}
+  rclcpp::shutdown();
 
-    rclcpp::shutdown();
-
-    return 0;
+  return 0;
 }

@@ -32,21 +32,21 @@ namespace motion
 class Serial : public rclcpp::Node
 {
 public:
-    explicit Serial(std::string node_name, std::string port_name = "/dev/ttyUSB0");
-    ~Serial();
+  explicit Serial(std::string node_name, std::string port_name = "/dev/ttyUSB0");
+  ~Serial();
 
-    bool open();
-    void close();
-    bool broadcastPing();
-    bool broadcastPing(std::vector<uint8_t> ids);
-    bool ping(uint8_t id);
+  bool open();
+  void close();
+  bool broadcastPing();
+  bool broadcastPing(std::vector<uint8_t> ids);
+  bool ping(uint8_t id);
 
 private:
-    dynamixel::PortHandler * port_handler;
-    dynamixel::PacketHandler * packet_handler;
+  dynamixel::PortHandler * port_handler;
+  dynamixel::PacketHandler * packet_handler;
 
-    int baudrate = 57600;
+  int baudrate = 1000000;  // 57600
 };
-}   // namespace motion
+}  // namespace motion
 
 #endif  // MOTION__SERIAL_HPP_
