@@ -21,17 +21,13 @@ find_package(rclcpp REQUIRED)
 find_package(dynamixel_sdk REQUIRED)
 
 add_library(${PROJECT_NAME}
-  "src/${PROJECT_NAME}/serial.cpp"
-)
+  "src/${PROJECT_NAME}/serial.cpp")
 
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
-ament_target_dependencies(${PROJECT_NAME}
-  rclcpp
-  dynamixel_sdk
-)
+ament_target_dependencies(${PROJECT_NAME} rclcpp dynamixel_sdk)
 
 install(DIRECTORY "include" DESTINATION ".")
 
@@ -41,7 +37,7 @@ install(TARGETS ${PROJECT_NAME}
   LIBRARY DESTINATION "lib"
   RUNTIME DESTINATION "bin")
 
-add_executable(broadcast_ping "src/serial_main.cpp")
+add_executable(broadcast_ping "src/broadcast_ping_main.cpp")
 target_include_directories(broadcast_ping PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)

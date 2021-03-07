@@ -1,4 +1,4 @@
-// Copyright 2020-2021 Ichiro ITS
+// Copyright (c) 2021 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -37,6 +37,7 @@ public:
 
   bool open();
   void close();
+
   bool broadcastPing();
   bool broadcastPing(std::vector<uint8_t> ids);
   bool ping(uint8_t id);

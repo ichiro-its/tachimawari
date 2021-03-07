@@ -1,4 +1,4 @@
-// Copyright 2020-2021 Ichiro ITS
+// Copyright (c) 2021 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,10 +27,8 @@
 
 int main(int argc, char * argv[])
 {
-  std::cout << "init rclcpp\n";
   rclcpp::init(argc, argv);
 
-  std::cout << "define node\n";
   std::shared_ptr<motion::Serial> serial;
 
   if (argc > 1) {
@@ -44,7 +42,6 @@ int main(int argc, char * argv[])
 
   std::cout << "open the port\n";
   if (serial->open()) {
-    // rclcpp::spin(serial);
     if (!serial->broadcastPing()) {
       std::cout << "failed to broadcast ping\n";
     }
