@@ -1,9 +1,11 @@
 name: ROS 2 CI
 on:
   pull_request:
-    branches: [ $default-branch ]
+    branches:
+      - master
   push:
-    branches: [ $default-branch ]
+    branches:
+      - master
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
