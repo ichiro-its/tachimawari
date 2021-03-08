@@ -25,13 +25,6 @@
 #include <numeric>
 #include <string>
 
-std::vector<uint8_t> getJointsId()
-{
-  std::vector<uint8_t> ids(20);
-  std::iota(ids.begin(), ids.end(), 1);
-  return ids;
-}
-
 int main(int argc, char * argv[])
 {
   std::string port_name = "/dev/ttyACM0";
@@ -39,6 +32,9 @@ int main(int argc, char * argv[])
 
   int dxl_comm_result = COMM_TX_FAIL;
   uint8_t dxl_error = 0;
+
+  std::vector<uint8_t> ids(20);
+  std::iota(ids.begin(), ids.end(), 1);
 
   if (argc > 1) {
     port_name = argv[1];
@@ -66,8 +62,8 @@ int main(int argc, char * argv[])
 
   std::cout << "\033c";
 
-  std::cout << "ping the joints\n";
-  for (auto id : getJointsId()) {
+  std::cout << "ping the joints\n\n";
+  for (auto id : ids) {
     dxl_comm_result = packet_handler->ping(port_handler, id, NULL, &dxl_error);
 
     if (dxl_comm_result != COMM_SUCCESS) {
@@ -81,6 +77,8 @@ int main(int argc, char * argv[])
     std::cout << "[ID:" << id << "] ping succeeded.\n";
   }
 
+  std::cout << "\nping done\n" <<
+    "close the port\n";
   port_handler->closePort();
 
   return 0;
