@@ -26,7 +26,7 @@
 namespace motion
 {
 
-const std::map<std::string, uint8_t> ids = {
+const std::map<std::string, uint8_t> Joint::ids = {
   // head motors
   {"neck_yaw", 19},
   {"neck_pitch", 20},
@@ -36,7 +36,7 @@ const std::map<std::string, uint8_t> ids = {
   {"left_shoulder_roll", 4},
   {"left_elbow", 6},
 
-  // rigth arm motors
+  // right arm motors
   {"right_shoulder_pitch", 1},
   {"right_shoulder_roll", 3},
   {"right_elbow", 5},
@@ -49,7 +49,7 @@ const std::map<std::string, uint8_t> ids = {
   {"left_ankle_roll", 16},
   {"left_ankle_pitch", 18},
 
-  // rigth leg motors
+  // right leg motors
   {"right_hip_yaw", 7},
   {"right_hip_roll", 9},
   {"right_hip_pitch", 11},
@@ -59,7 +59,7 @@ const std::map<std::string, uint8_t> ids = {
 };
 
 Joint::Joint(std::string joint_name, float present_position)
-: id(this->ids.at(joint_name)), position(present_position)
+: id(Joint::ids.at(joint_name)), position(present_position)
 {
 }
 

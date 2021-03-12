@@ -46,7 +46,7 @@ private:
   float d_gain = 0.0;
   float position;
 
-  const std::map<std::string, uint8_t> ids;
+  static const std::map<std::string, uint8_t> ids;
 };
 
 }  // namespace motion
