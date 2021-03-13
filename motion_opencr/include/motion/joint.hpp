@@ -23,6 +23,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 namespace motion
 {
@@ -32,19 +33,21 @@ class Joint
 public:
   explicit Joint(std::string joint_name, float present_position = 30.0);
 
-  void setGoalPosition(float goal_position);
-  void setPIDGain(float p, float i, float d);
+  void set_goal_position(float goal_position);
+  void set_pid_gain(float p, float i, float d);
 
-  uint8_t getId();
-  float getPosition();
+  uint8_t get_id();
+  uint16_t get_position();
+  // temporary
+  std::vector<uint8_t> get_pid_gain();
 
 private:
   uint8_t id;
 
-  float p_gain = 0.5;
-  float i_gain = 0.0;
-  float d_gain = 0.0;
-  float position;
+  uint8_t p_gain = 0.5;
+  uint8_t i_gain = 0.0;
+  uint8_t d_gain = 0.0;
+  uint16_t position;
 
   static const std::map<std::string, uint8_t> ids;
 };
