@@ -58,6 +58,7 @@ int main(int argc, char * argv[])
   } else {
     std::cout << "failed to set the baudrate!\n" <<
       "try again!\n";
+    return 0;
   }
 
   std::cout << "\033c";

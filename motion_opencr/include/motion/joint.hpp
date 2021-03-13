@@ -23,6 +23,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 namespace motion
 {
@@ -36,15 +37,17 @@ public:
   void setPIDGain(float p, float i, float d);
 
   uint8_t getId();
-  float getPosition();
+  uint16_t getPosition();
+  // temporary
+  std::vector<uint8_t> getPIDGain();
 
 private:
   uint8_t id;
 
-  float p_gain = 0.5;
-  float i_gain = 0.0;
-  float d_gain = 0.0;
-  float position;
+  uint8_t p_gain = 0.5;
+  uint8_t i_gain = 0.0;
+  uint8_t d_gain = 0.0;
+  uint16_t position;
 
   static const std::map<std::string, uint8_t> ids;
 };
