@@ -21,6 +21,7 @@
 #include <dynamixel_sdk/dynamixel_sdk.h>
 
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include <numeric>
 #include <string>
@@ -58,7 +59,6 @@ int main(int argc, char * argv[])
   } else {
     std::cout << "failed to set the baudrate!\n" <<
       "try again!\n";
-    return 0;
   }
 
   std::cout << "\033c";
@@ -68,14 +68,14 @@ int main(int argc, char * argv[])
     dxl_comm_result = packet_handler->ping(port_handler, id, NULL, &dxl_error);
 
     if (dxl_comm_result != COMM_SUCCESS) {
-      std::cout << "[ID:" << id << "] ping failed. " <<
+      std::cout << "[ID: " << std::setfill('0') << std::setw(2) << int(id) << "] ping failed. " <<
         packet_handler->getTxRxResult(dxl_comm_result) << "\n";
     } else if (dxl_error != 0) {
-      std::cout << "[ID:" << id << "] ping failed. " <<
+      std::cout << "[ID: " << std::setfill('0') << std::setw(2) << int(id) << "] ping failed. " <<
         packet_handler->getRxPacketError(dxl_comm_result) << "\n";
+    } else {
+      std::cout << "[ID: " << std::setfill('0') << std::setw(2) << int(id) << "] ping succeeded.\n";
     }
-
-    std::cout << "[ID:" << id << "] ping succeeded.\n";
   }
 
   std::cout << "\nping done\n" <<
