@@ -84,7 +84,7 @@ int main(int argc, char * argv[])
 
   // Enable Torque
   dxl_comm_result = packet_handler->write1ByteTxRx(
-    port_handler, joint.getId(), addr_mx_torque_enable, torque_enable, &dxl_error);
+    port_handler, joint.get_id(), addr_mx_torque_enable, torque_enable, &dxl_error);
   if (dxl_comm_result != COMM_SUCCESS) {
     std::cout << "failed to enable torque. " <<
       packet_handler->getTxRxResult(dxl_comm_result) << "\n";
@@ -98,10 +98,10 @@ int main(int argc, char * argv[])
   }
 
   // Set PID
-  std::vector<uint8_t> joint_pid = joint.getPIDGain();
+  std::vector<uint8_t> joint_pid = joint.get_pid_gain();
   for (int index = 0; index < static_cast<int>(addr_mx_pid_gain.size()); index++) {
     dxl_comm_result = packet_handler->write1ByteTxRx(
-      port_handler, joint.getId(), addr_mx_pid_gain[index], joint_pid.at(index), &dxl_error);
+      port_handler, joint.get_id(), addr_mx_pid_gain[index], joint_pid.at(index), &dxl_error);
     if (dxl_comm_result != COMM_SUCCESS) {
       std::cout << "failed to set PID. " <<
         packet_handler->getTxRxResult(dxl_comm_result) << "\n";
@@ -114,9 +114,9 @@ int main(int argc, char * argv[])
   }
 
   // Write Goal Position
-  joint.setGoalPosition(90.0);
+  joint.set_goal_position(90.0);
   dxl_comm_result = packet_handler->write2ByteTxRx(
-    port_handler, joint.getId(), addr_mx_goal_position, joint.getPosition(), &dxl_error);
+    port_handler, joint.get_id(), addr_mx_goal_position, joint.get_position(), &dxl_error);
   if (dxl_comm_result != COMM_SUCCESS) {
     std::cout << "failed to write the goal position. " <<
       packet_handler->getTxRxResult(dxl_comm_result) << "\n";
@@ -133,7 +133,7 @@ int main(int argc, char * argv[])
   std::cout << "read the present position\n";
   do {
     dxl_comm_result = packet_handler->read2ByteTxRx(
-      port_handler, joint.getId(), addr_mx_present_position,
+      port_handler, joint.get_id(), addr_mx_present_position,
       static_cast<uint16_t *>(&dxl_present_position), &dxl_error);
     if (dxl_comm_result != COMM_SUCCESS) {
       std::cout << "error. " << packet_handler->getTxRxResult(dxl_comm_result) << "\n";
@@ -142,11 +142,11 @@ int main(int argc, char * argv[])
     } else {
       std::cout << "success, present position: " << dxl_present_position << "\n";
     }
-  } while ((abs(joint.getPosition() - dxl_present_position) > dxl_moving_treshold));
+  } while ((abs(joint.get_position() - dxl_present_position) > dxl_moving_treshold));
 
   // Disable Torque
   dxl_comm_result = packet_handler->write1ByteTxRx(
-    port_handler, joint.getId(), addr_mx_torque_enable, torque_disable, &dxl_error);
+    port_handler, joint.get_id(), addr_mx_torque_enable, torque_disable, &dxl_error);
   if (dxl_comm_result != COMM_SUCCESS) {
     std::cout << "failed to disable torque. " <<
       packet_handler->getTxRxResult(dxl_comm_result) << "\n";

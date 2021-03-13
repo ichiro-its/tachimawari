@@ -33,13 +33,13 @@ class Joint
 public:
   explicit Joint(std::string joint_name, float present_position = 30.0);
 
-  void setGoalPosition(float goal_position);
-  void setPIDGain(float p, float i, float d);
+  void set_goal_position(float goal_position);
+  void set_pid_gain(float p, float i, float d);
 
-  uint8_t getId();
-  uint16_t getPosition();
+  uint8_t get_id();
+  uint16_t get_position();
   // temporary
-  std::vector<uint8_t> getPIDGain();
+  std::vector<uint8_t> get_pid_gain();
 
 private:
   uint8_t id;
