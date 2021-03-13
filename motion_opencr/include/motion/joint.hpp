@@ -37,17 +37,17 @@ public:
   void set_pid_gain(float p, float i, float d);
 
   uint8_t get_id();
-  uint16_t get_position();
+  int32_t get_position();
   // temporary
-  std::vector<uint8_t> get_pid_gain();
+  std::vector<uint16_t> get_pid_gain();
 
 private:
   uint8_t id;
 
-  uint8_t p_gain = 0.5;
-  uint8_t i_gain = 0.0;
-  uint8_t d_gain = 0.0;
-  uint16_t position;
+  uint16_t p_gain = 850.0;
+  uint16_t i_gain = 0.0;
+  uint16_t d_gain = 0.0;
+  int32_t position;
 
   static const std::map<std::string, uint8_t> ids;
 };

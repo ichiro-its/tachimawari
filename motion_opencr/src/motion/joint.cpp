@@ -24,7 +24,8 @@
 #include <string>
 #include <vector>
 #include <cmath>
-
+#include <iostream>
+#include <cstdlib>
 namespace motion
 {
 
@@ -67,7 +68,7 @@ Joint::Joint(std::string joint_name, float present_position)
 
 void Joint::set_goal_position(float goal_position)
 {
-  position = std::round(goal_position * 4096.0 / (2 * M_PI) ) + 0x800;  // will be placed in utility
+  position = (goal_position / 360 * 4096) - 1;  // will be placed in utility
 }
 
 void Joint::set_pid_gain(float p, float i, float d)
@@ -82,14 +83,14 @@ uint8_t Joint::get_id()
   return id;
 }
 
-uint16_t Joint::get_position()
+int32_t Joint::get_position()
 {
   return position;
 }
 
-std::vector<uint8_t> Joint::get_pid_gain()
+std::vector<uint16_t> Joint::get_pid_gain()
 {
-  std::vector<uint8_t> pid_gain;
+  std::vector<uint16_t> pid_gain;
 
   pid_gain.push_back(p_gain);
   pid_gain.push_back(i_gain);
