@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(motion)
+project(motion_opencr)
 
 if(NOT CMAKE_C_STANDARD)
   set(CMAKE_C_STANDARD 99)
@@ -40,15 +40,15 @@ target_include_directories(check_joints PUBLIC
   $<INSTALL_INTERFACE:include>)
 target_link_libraries(check_joints ${PROJECT_NAME})
 
-add_executable(drive_joint "src/drive_joint_main.cpp")
-target_include_directories(drive_joint PUBLIC
+add_executable(move_joint "src/move_joint_main.cpp")
+target_include_directories(move_joint PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
-target_link_libraries(drive_joint ${PROJECT_NAME})
+target_link_libraries(move_joint ${PROJECT_NAME})
 
 install(TARGETS
   check_joints
-  drive_joint
+  move_joint
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)

@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <motion/joint.hpp>
+#include <motion_opencr/joint.hpp>
 #include <dynamixel_sdk/dynamixel_sdk.h>
 
 #include <iostream>
@@ -38,15 +38,14 @@ int main(int argc, char * argv[])
 
   std::string joint_name = "right_shoulder_pitch";
 
-  uint8_t addr_mx_torque_enable = 24;
-  uint8_t addr_mx_goal_position = 30;
-  uint8_t addr_mx_present_position = 36;
-  std::array<uint8_t, 3> addr_mx_pid_gain = {28, 27, 26};
+  uint8_t addr_mx_torque_enable = 64;
+  uint8_t addr_mx_goal_position = 116;
+  uint8_t addr_mx_present_position = 132;
 
   uint8_t torque_enable = 1;
   uint8_t torque_disable = 0;
-  uint16_t dxl_present_position = 0;
-  uint16_t dxl_moving_treshold = 20;
+  uint32_t dxl_present_position = 0;
+  int32_t dxl_moving_treshold = 0;
 
   if (argc > 1) {
     port_name = argv[1];
@@ -80,7 +79,7 @@ int main(int argc, char * argv[])
     return 0;
   }
 
-  std::cout << "\003c";
+  std::cout << "\033[H\033[J";
 
   // Enable Torque
   dxl_comm_result = packet_handler->write1ByteTxRx(
@@ -97,25 +96,9 @@ int main(int argc, char * argv[])
     std::cout << "dynamixel has been successfully connected\n";
   }
 
-  // Set PID
-  std::vector<uint8_t> joint_pid = joint.get_pid_gain();
-  for (int index = 0; index < static_cast<int>(addr_mx_pid_gain.size()); index++) {
-    dxl_comm_result = packet_handler->write1ByteTxRx(
-      port_handler, joint.get_id(), addr_mx_pid_gain[index], joint_pid.at(index), &dxl_error);
-    if (dxl_comm_result != COMM_SUCCESS) {
-      std::cout << "failed to set PID. " <<
-        packet_handler->getTxRxResult(dxl_comm_result) << "\n";
-    } else if (dxl_error != 0) {
-      std::cout << "failed to set PID. " <<
-        packet_handler->getRxPacketError(dxl_error) << "\n";
-    } else {
-      std::cout << "PID has been successfully set\n";
-    }
-  }
-
   // Write Goal Position
   joint.set_goal_position(90.0);
-  dxl_comm_result = packet_handler->write2ByteTxRx(
+  dxl_comm_result = packet_handler->write4ByteTxRx(
     port_handler, joint.get_id(), addr_mx_goal_position, joint.get_position(), &dxl_error);
   if (dxl_comm_result != COMM_SUCCESS) {
     std::cout << "failed to write the goal position. " <<
@@ -130,11 +113,10 @@ int main(int argc, char * argv[])
   }
 
   // Read present position
-  std::cout << "read the present position\n";
   do {
-    dxl_comm_result = packet_handler->read2ByteTxRx(
+    dxl_comm_result = packet_handler->read4ByteTxRx(
       port_handler, joint.get_id(), addr_mx_present_position,
-      static_cast<uint16_t *>(&dxl_present_position), &dxl_error);
+      static_cast<uint32_t *>(&dxl_present_position), &dxl_error);
     if (dxl_comm_result != COMM_SUCCESS) {
       std::cout << "error. " << packet_handler->getTxRxResult(dxl_comm_result) << "\n";
     } else if (dxl_error != 0) {
