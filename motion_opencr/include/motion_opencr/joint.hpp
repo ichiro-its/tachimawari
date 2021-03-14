@@ -18,8 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef MOTION__JOINT_HPP_
-#define MOTION__JOINT_HPP_
+#ifndef MOTION_OPENCR__JOINT_HPP_
+#define MOTION_OPENCR__JOINT_HPP_
 
 #include <map>
 #include <string>
@@ -38,8 +38,7 @@ public:
 
   uint8_t get_id();
   int32_t get_position();
-  // temporary
-  std::vector<uint16_t> get_pid_gain();
+  std::vector<uint16_t> get_pid_gain();  // temporary
 
 private:
   uint8_t id;
@@ -54,4 +53,4 @@ private:
 
 }  // namespace motion
 
-#endif  // MOTION__JOINT_HPP_
+#endif  // MOTION_OPENCR__JOINT_HPP_
