@@ -24,8 +24,8 @@
 #include <string>
 #include <vector>
 #include <cmath>
-#include <iostream>
 #include <cstdlib>
+
 namespace motion
 {
 
@@ -88,7 +88,7 @@ int32_t Joint::get_position()
   return position;
 }
 
-std::vector<uint16_t> Joint::get_pid_gain()
+std::vector<uint16_t> Joint::get_pid_gain()  // temporary
 {
   std::vector<uint16_t> pid_gain;
 
