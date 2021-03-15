@@ -18,58 +18,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <motion_opencr/motion.hpp>
+#ifndef MOTION_OPENCR__MOTION_MANAGER_HPP_
+#define MOTION_OPENCR__MOTION_MANAGER_HPP_
 
-#include <iostream>
+#include <dynamixel_sdk/dynamixel_sdk.h>
 
 namespace motion
 {
 
-Motion::Motion(std::string pose_name)
-: name(pose_name)
+class MotionManager
 {
-}
+public:
+  explicit MotionManager();
 
-void Motion::run_motion()
-{
-  run_motion(0);
-}
+  void start();
+  void stop();
 
-void Motion::run_motion(uint8_t id)
-{
-  for (auto i = id; i < poses.size(); i++) {
-    start_pose(i);
-  }
-}
+private:
+  dynamixel::PortHandler * port_handler;
+  dynamixel::PacketHandler * packet_handler;
 
-void Motion::start_pose(uint8_t id)
-{
-  
-}
-
-void Motion::insert_pose(Pose pose)
-{
-  poses.push_back(pose);
-}
-
-void Motion::insert_pose(uint8_t id, Pose pose)
-{
-  poses.insert(poses.begin() + id, pose);
-}
-
-void Motion::delete_pose(uint8_t id)
-{
-  poses.erase(poses.begin() + id);
-}
-
-void Motion::set_name(std::string new_name)
-{
-  name = new_name;
-}
-
-std::string Motion::get_name()
-{
-  return name;
-}
+};
 
 }  // namespace motion
+
+#endif  // MOTION_OPENCR__MOTION_MANAGER_HPP_

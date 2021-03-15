@@ -36,9 +36,6 @@ class Motion
 public:
   explicit Motion(std::string pose_name);
 
-  void start();
-  void stop();
-
   void run_motion();
   void run_motion(uint8_t id);
   void start_pose(uint8_t id);
@@ -51,9 +48,6 @@ public:
   std::string get_name();
 
 private:
-  dynamixel::PortHandler * port_handler;
-  dynamixel::PacketHandler * packet_handler;
-
   uint8_t id;
   std::string name;
 
