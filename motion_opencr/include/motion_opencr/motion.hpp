@@ -39,7 +39,10 @@ public:
   void start();
   void stop();
 
+  void run_motion();
+  void run_motion(uint8_t id);
   void start_pose(uint8_t id);
+
   void insert_pose(Pose pose);
   void insert_pose(uint8_t id, Pose pose);
   void delete_pose(uint8_t id);

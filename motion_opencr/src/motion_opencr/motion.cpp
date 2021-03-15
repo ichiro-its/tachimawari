@@ -20,6 +20,8 @@
 
 #include <motion_opencr/motion.hpp>
 
+#include <iostream>
+
 namespace motion
 {
 
@@ -34,19 +36,6 @@ void Motion::start()
 {
   int baudrate = 57600;
 
-  int dxl_comm_result = COMM_TX_FAIL;
-  uint8_t dxl_error = 0;
-
-  std::string joint_name = "right_shoulder_pitch";
-
-  uint8_t addr_mx_torque_enable = 64;
-  uint8_t addr_mx_goal_position = 116;
-  uint8_t addr_mx_present_position = 132;
-
-  uint8_t torque_enable = 1;
-  uint32_t dxl_present_position = 0;
-  int32_t dxl_moving_treshold = 0;
-
   // Open port
   std::cout << "open the port\n";
   if (port_handler->openPort()) {
@@ -54,7 +43,7 @@ void Motion::start()
   } else {
     std::cout << "failed to open the port!\n" <<
       "try again!\n";
-    return 0;
+    stop();
   }
 
   // Set baudrate
@@ -63,46 +52,28 @@ void Motion::start()
   } else {
     std::cout << "failed to set the baudrate!\n" <<
       "try again!\n";
-    return 0;
+    stop();
   }
 
   std::cout << "\033[H\033[J";
-
-  // Enable Torque
-  dxl_comm_result = packet_handler->write1ByteTxRx(
-    port_handler, joint.get_id(), addr_mx_torque_enable, torque_enable, &dxl_error);
-  if (dxl_comm_result != COMM_SUCCESS) {
-    std::cout << "failed to enable torque. " <<
-      packet_handler->getTxRxResult(dxl_comm_result) << "\n";
-    return 0;
-  } else if (dxl_error != 0) {
-    std::cout << "failed to enable torque. " <<
-      packet_handler->getRxPacketError(dxl_error) << "\n";
-    return 0;
-  } else {
-    std::cout << "dynamixel has been successfully connected\n";
-  }
 }
 
 void Motion::stop()
 {
-  uint8_t addr_mx_torque_enable = 64;
-  uint8_t torque_disable = 0;
-  uint8_t dxl_error = 0;
-
-  // Disable Torque
-  dxl_comm_result = packet_handler->write1ByteTxRx(
-    port_handler, joint.get_id(), addr_mx_torque_enable, torque_disable, &dxl_error);
-  if (dxl_comm_result != COMM_SUCCESS) {
-    std::cout << "failed to disable torque. " <<
-      packet_handler->getTxRxResult(dxl_comm_result) << "\n";
-  } else if (dxl_error != 0) {
-    std::cout << "failed to disable torque. " <<
-      packet_handler->getRxPacketError(dxl_error) << "\n";
-  }
-
   // Close port
   port_handler->closePort();
+}
+
+void Motion::run_motion()
+{
+  run_motion(0);
+}
+
+void Motion::run_motion(uint8_t id)
+{
+  for (auto i = id; i < poses.size(); i++) {
+    start_pose(i);
+  }
 }
 
 void Motion::start_pose(uint8_t id)
@@ -112,17 +83,17 @@ void Motion::start_pose(uint8_t id)
 
 void Motion::insert_pose(Pose pose)
 {
-  insert_pose(poses.size(), pose);
+  poses.push_back(pose);
 }
 
 void Motion::insert_pose(uint8_t id, Pose pose)
 {
-  
+  poses.insert(poses.begin() + id, pose);
 }
 
 void Motion::delete_pose(uint8_t id)
 {
-  
+  poses.erase(poses.begin() + id);
 }
 
 void Motion::set_name(std::string new_name)
