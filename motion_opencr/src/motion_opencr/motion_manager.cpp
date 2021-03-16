@@ -88,17 +88,6 @@ void MotionManager::delete_motion(uint8_t id)
   motion_list.erase(id);
 }
 
-bool MotionManager::torque_enable(Pose pose)
-{
-  bool torque_enable_state = false;
-
-  for (auto joint : pose.get_joints()) {
-    torque_enable_state = torque_enable(joint);
-  }
-
-  return torque_enable_state;
-}
-
 bool MotionManager::torque_enable(std::vector<Joint> joints)
 {
   bool torque_enable_state = false;
@@ -133,6 +122,44 @@ bool MotionManager::torque_enable(Joint joint)
   } else {
     std::cout << "[ID:" << std::setfill('0') << std::setw(2) <<
       static_cast<int>(joint.get_id()) << "]. has been successfully connected\n";
+  }
+
+  std::cout << "\033[H\033[J";
+
+  return true;
+}
+
+bool MotionManager::torque_disable(std::vector<Joint> joints)
+{
+  bool torque_disable_state = false;
+
+  for (auto joint : joints) {
+    torque_disable_state = torque_disable(joint);
+  }
+
+  return torque_disable_state;
+}
+
+bool MotionManager::torque_disable(Joint joint)
+{
+  int dxl_comm_result = COMM_TX_FAIL;
+  uint8_t dxl_error = 0;
+  uint8_t torque_disable = 0;
+
+  // Disable Torque
+  dxl_comm_result = packet_handler->write1ByteTxRx(
+    port_handler, joint.get_id(), static_cast<uint8_t>(MXAddress::TORQUE_ENABLE),
+    torque_disable, &dxl_error);
+  if (dxl_comm_result != COMM_SUCCESS) {
+    std::cout << "failed to disable torque [ID:" << std::setfill('0') << std::setw(2) <<
+      static_cast<int>(joint.get_id()) << "]. " << packet_handler->getTxRxResult(dxl_comm_result) <<
+      "\n";
+    return false;
+  } else if (dxl_error != 0) {
+    std::cout << "failed to disable torque [ID:" << std::setfill('0') << std::setw(2) <<
+      static_cast<int>(joint.get_id()) << "]. " << packet_handler->getRxPacketError(dxl_error) <<
+      "\n";
+    return false;
   }
 
   std::cout << "\033[H\033[J";

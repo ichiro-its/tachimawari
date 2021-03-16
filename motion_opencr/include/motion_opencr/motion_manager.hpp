@@ -111,7 +111,9 @@ public:
 private:
   bool torque_enable(Joint joint);
   bool torque_enable(std::vector<Joint> joints);
-  bool torque_enable(Pose pose);
+
+  bool torque_disable(Joint joint);
+  bool torque_disable(std::vector<Joint> joints);
 
   dynamixel::PortHandler * port_handler;
   dynamixel::PacketHandler * packet_handler;
