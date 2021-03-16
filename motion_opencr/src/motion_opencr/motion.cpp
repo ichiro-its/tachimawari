@@ -20,31 +20,12 @@
 
 #include <motion_opencr/motion.hpp>
 
-#include <iostream>
-
 namespace motion
 {
 
 Motion::Motion(std::string pose_name)
 : name(pose_name)
 {
-}
-
-void Motion::run_motion()
-{
-  run_motion(0);
-}
-
-void Motion::run_motion(uint8_t id)
-{
-  for (auto i = id; i < poses.size(); i++) {
-    start_pose(i);
-  }
-}
-
-void Motion::start_pose(uint8_t id)
-{
-  
 }
 
 void Motion::insert_pose(Pose pose)

@@ -19,6 +19,7 @@
 // THE SOFTWARE.
 
 #include <motion_opencr/motion_manager.hpp>
+
 #include <dynamixel_sdk/dynamixel_sdk.h>
 
 #include <iostream>
@@ -28,8 +29,12 @@ namespace motion
 
 MotionManager::MotionManager()
 {
-  port_handler = dynamixel::PortHandler::getPortHandler("/dev/ttyACM0");
-  packet_handler = dynamixel::PacketHandler::getPacketHandler(2.0F);
+  MotionManager("/dev/ttyACM0", 2.0F);
+}
+
+MotionManager::MotionManager(std::string port, float protocol_version)
+: port_handler(dynamixel::PortHandler::getPortHandler(port.c_str())), packet_handler(dynamixel::PacketHandler::getPacketHandler(protocol_version))
+{
 }
 
 void MotionManager::start()
@@ -63,6 +68,16 @@ void MotionManager::stop()
 {
   // Close port
   port_handler->closePort();
+}
+
+void MotionManager::insert_motion(uint8_t id, std::shared_ptr<Motion> motion)
+{
+  motion_list.insert({ id, motion });
+}
+
+void MotionManager::delete_motion(uint8_t id)
+{
+  motion_list.erase(id);
 }
 
 }  // namespace motion
