@@ -17,7 +17,8 @@ find_package(ament_cmake REQUIRED)
 find_package(dynamixel_sdk REQUIRED)
 
 add_library(${PROJECT_NAME}
-  "src/${PROJECT_NAME}/joint.cpp")
+  "src/${PROJECT_NAME}/joint.cpp"
+  "src/${PROJECT_NAME}/motion_manager.cpp")
 
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
