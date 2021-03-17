@@ -37,7 +37,8 @@ MotionManager::MotionManager()
 }
 
 MotionManager::MotionManager(std::string port, float protocol_version)
-: port_handler(dynamixel::PortHandler::getPortHandler(port.c_str())), packet_handler(dynamixel::PacketHandler::getPacketHandler(protocol_version))
+: port_handler(dynamixel::PortHandler::getPortHandler(port.c_str())), packet_handler(
+    dynamixel::PacketHandler::getPacketHandler(protocol_version))
 {
 }
 

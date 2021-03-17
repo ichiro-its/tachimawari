@@ -94,7 +94,7 @@ enum class MXAddress : uint8_t
 class MotionManager
 {
 public:
-  explicit MotionManager();
+  MotionManager();
   explicit MotionManager(std::string port, float protocol_version);
 
   void start();
