@@ -21,14 +21,10 @@
 #include <motion_opencr/motion_manager.hpp>
 
 #include <dynamixel_sdk/dynamixel_sdk.h>
-#include <motion_opencr/motion.hpp>
-#include <motion_opencr/pose.hpp>
 #include <motion_opencr/joint.hpp>
 
 #include <iostream>
 #include <iomanip>
-#include <map>
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -76,16 +72,6 @@ void MotionManager::stop()
 {
   // Close port
   port_handler->closePort();
-}
-
-void MotionManager::insert_motion(uint8_t id, std::shared_ptr<Motion> motion)
-{
-  motion_list.insert({ id, motion });
-}
-
-void MotionManager::delete_motion(uint8_t id)
-{
-  motion_list.erase(id);
 }
 
 bool MotionManager::torque_enable(std::vector<Joint> joints)

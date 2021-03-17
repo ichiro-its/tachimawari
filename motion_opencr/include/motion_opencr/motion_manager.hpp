@@ -22,8 +22,6 @@
 #define MOTION_OPENCR__MOTION_MANAGER_HPP_
 
 #include <dynamixel_sdk/dynamixel_sdk.h>
-#include <motion_opencr/motion.hpp>
-#include <motion_opencr/pose.hpp>
 #include <motion_opencr/joint.hpp>
 
 #include <map>
@@ -102,12 +100,6 @@ public:
   void start();
   void stop();
 
-  void insert_motion(uint8_t id, std::shared_ptr<Motion> motion);
-  void delete_motion(uint8_t id);
-
-  void run_motion(uint8_t motion_id);
-  void run_pose(uint8_t motion_id, uint8_t pose_id);
-
 private:
   bool torque_enable(Joint joint);
   bool torque_enable(std::vector<Joint> joints);
@@ -117,8 +109,6 @@ private:
 
   dynamixel::PortHandler * port_handler;
   dynamixel::PacketHandler * packet_handler;
-
-  std::map<uint8_t, std::shared_ptr<Motion>> motion_list;
 };
 
 }  // namespace motion

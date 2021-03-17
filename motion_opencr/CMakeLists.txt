@@ -18,8 +18,6 @@ find_package(dynamixel_sdk REQUIRED)
 
 add_library(${PROJECT_NAME}
   "src/${PROJECT_NAME}/joint.cpp"
-  "src/${PROJECT_NAME}/pose.cpp"
-  "src/${PROJECT_NAME}/motion.cpp"
   "src/${PROJECT_NAME}/motion_manager.cpp")
 
 target_include_directories(${PROJECT_NAME} PUBLIC
