@@ -97,7 +97,7 @@ int main(int argc, char * argv[])
   }
 
   // Write Goal Position
-  joint.set_goal_position(90.0);
+  joint.set_target_position(90.0);
   dxl_comm_result = packet_handler->write4ByteTxRx(
     port_handler, joint.get_id(), addr_mx_goal_position, joint.get_position(), &dxl_error);
   if (dxl_comm_result != COMM_SUCCESS) {

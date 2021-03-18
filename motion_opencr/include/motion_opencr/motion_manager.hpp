@@ -107,8 +107,14 @@ private:
   bool torque_disable(Joint joint);
   bool torque_disable(std::vector<Joint> joints);
 
+  bool sync_write_joint(std::vector<Joint> joints);
+  std::vector<Joint> bulk_read_joint(std::vector<Joint> joints);
+
+  void move_joint(Joint joint, float speed);
+
   dynamixel::PortHandler * port_handler;
   dynamixel::PacketHandler * packet_handler;
+
 };
 
 }  // namespace motion

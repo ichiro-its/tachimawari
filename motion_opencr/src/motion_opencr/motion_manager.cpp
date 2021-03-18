@@ -154,4 +154,9 @@ bool MotionManager::torque_disable(Joint joint)
   return true;
 }
 
+bool MotionManager::sync_write_joint(std::vector<Joint> joints)
+{
+  
+}
+
 }  // namespace motion

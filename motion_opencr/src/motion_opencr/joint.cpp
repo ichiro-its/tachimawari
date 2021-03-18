@@ -66,9 +66,10 @@ Joint::Joint(std::string joint_name, float present_position)
 {
 }
 
-void Joint::set_goal_position(float goal_position)
+void Joint::set_target_position(float target_position, float speed)
 {
-  position = (goal_position / 360 * 4096) - 1;  // will be placed in utility
+  goal_position = (target_position / 360 * 4096) - 1;  // will be placed in utility
+  additional_position = (position - goal_position) * speed;
 }
 
 void Joint::set_pid_gain(float p, float i, float d)
@@ -76,6 +77,18 @@ void Joint::set_pid_gain(float p, float i, float d)
   p_gain = p;
   i_gain = i;
   d_gain = d;
+}
+
+void Joint::set_interpolation(float present_position, float target_position, float speed)
+{
+  position = (present_position / 360 * 4096) - 1;  // will be placed in utility
+  goal_position = (target_position / 360 * 4096) - 1;  // will be placed in utility
+  additional_position = (position - goal_position) * speed;
+}
+
+void Joint::interpolate()
+{
+  position = position + additional_position;
 }
 
 uint8_t Joint::get_id()
