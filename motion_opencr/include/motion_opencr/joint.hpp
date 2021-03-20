@@ -33,8 +33,11 @@ class Joint
 public:
   explicit Joint(std::string joint_name, float present_position = 30.0);
 
-  void set_goal_position(float goal_position);
+  void set_target_position(float target_position, float speed = 1.0);
+  void set_target_position(float present_position, float target_position, float speed);
   void set_pid_gain(float p, float i, float d);
+
+  void interpolate();
 
   uint8_t get_id();
   int32_t get_position();
@@ -46,7 +49,10 @@ private:
   uint16_t p_gain = 850.0;
   uint16_t i_gain = 0.0;
   uint16_t d_gain = 0.0;
+
+  int32_t goal_position;
   int32_t position;
+  int32_t additional_position;
 
   static const std::map<std::string, uint8_t> ids;
 };
