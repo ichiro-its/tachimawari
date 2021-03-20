@@ -115,7 +115,6 @@ private:
 
   dynamixel::PortHandler * port_handler;
   dynamixel::PacketHandler * packet_handler;
-
 };
 
 }  // namespace motion
