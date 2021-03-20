@@ -107,10 +107,11 @@ private:
   bool torque_disable(Joint joint);
   bool torque_disable(std::vector<Joint> joints);
 
-  bool sync_write_joint(std::vector<Joint> joints);
-  std::vector<Joint> bulk_read_joint(std::vector<Joint> joints);
+  bool sync_write_joints(std::vector<Joint> joints);
+  std::vector<Joint> bulk_read_joints(std::vector<Joint> joints);
 
-  void move_joint(Joint joint, float speed);
+  void move_joint(Joint joint, float speed = 1);
+  void move_joint(std::vector<Joint>, float speed = 1);
 
   dynamixel::PortHandler * port_handler;
   dynamixel::PacketHandler * packet_handler;

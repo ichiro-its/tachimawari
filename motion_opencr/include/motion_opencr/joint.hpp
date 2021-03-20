@@ -34,9 +34,9 @@ public:
   explicit Joint(std::string joint_name, float present_position = 30.0);
 
   void set_target_position(float target_position, float speed = 1.0);
+  void set_target_position(float present_position, float target_position, float speed);
   void set_pid_gain(float p, float i, float d);
 
-  void set_interpolation(float present_position, float target_position, float speed);
   void interpolate();
 
   uint8_t get_id();

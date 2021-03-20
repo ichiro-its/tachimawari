@@ -79,7 +79,7 @@ void Joint::set_pid_gain(float p, float i, float d)
   d_gain = d;
 }
 
-void Joint::set_interpolation(float present_position, float target_position, float speed)
+void Joint::set_target_position(float present_position, float target_position, float speed)
 {
   position = (present_position / 360 * 4096) - 1;  // will be placed in utility
   goal_position = (target_position / 360 * 4096) - 1;  // will be placed in utility
