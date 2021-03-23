@@ -72,6 +72,11 @@ void Joint::set_target_position(float target_position, float speed)
   additional_position = (position - goal_position) * speed;
 }
 
+void Joint::set_present_position(float present_position)
+{
+  position = present_position;
+}
+
 void Joint::set_pid_gain(float p, float i, float d)
 {
   p_gain = p;

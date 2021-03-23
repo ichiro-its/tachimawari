@@ -88,22 +88,22 @@ bool MotionManager::torque_enable(std::vector<Joint> joints)
 
 bool MotionManager::torque_enable(Joint joint)
 {
-  int dxl_comm_result = COMM_TX_FAIL;
-  uint8_t dxl_error = 0;
+  int comm_result = COMM_TX_FAIL;
+  uint8_t comm_error = 0;
   uint8_t torque_enable = 1;
 
   // Enable Torque
-  dxl_comm_result = packet_handler->write1ByteTxRx(
+  comm_result = packet_handler->write1ByteTxRx(
     port_handler, joint.get_id(), static_cast<uint8_t>(MXAddress::TORQUE_ENABLE),
-    torque_enable, &dxl_error);
-  if (dxl_comm_result != COMM_SUCCESS) {
+    torque_enable, &comm_error);
+  if (comm_result != COMM_SUCCESS) {
     std::cout << "failed to enable torque [ID:" << std::setfill('0') << std::setw(2) <<
-      static_cast<int>(joint.get_id()) << "]. " << packet_handler->getTxRxResult(dxl_comm_result) <<
+      static_cast<int>(joint.get_id()) << "]. " << packet_handler->getTxRxResult(comm_result) <<
       "\n";
     return false;
-  } else if (dxl_error != 0) {
+  } else if (comm_error != 0) {
     std::cout << "failed to enable torque [ID:" << std::setfill('0') << std::setw(2) <<
-      static_cast<int>(joint.get_id()) << "]. " << packet_handler->getRxPacketError(dxl_error) <<
+      static_cast<int>(joint.get_id()) << "]. " << packet_handler->getRxPacketError(comm_error) <<
       "\n";
     return false;
   } else {
@@ -129,22 +129,22 @@ bool MotionManager::torque_disable(std::vector<Joint> joints)
 
 bool MotionManager::torque_disable(Joint joint)
 {
-  int dxl_comm_result = COMM_TX_FAIL;
-  uint8_t dxl_error = 0;
+  int comm_result = COMM_TX_FAIL;
+  uint8_t comm_error = 0;
   uint8_t torque_disable = 0;
 
   // Disable Torque
-  dxl_comm_result = packet_handler->write1ByteTxRx(
+  comm_result = packet_handler->write1ByteTxRx(
     port_handler, joint.get_id(), static_cast<uint8_t>(MXAddress::TORQUE_ENABLE),
-    torque_disable, &dxl_error);
-  if (dxl_comm_result != COMM_SUCCESS) {
+    torque_disable, &comm_error);
+  if (comm_result != COMM_SUCCESS) {
     std::cout << "failed to disable torque [ID:" << std::setfill('0') << std::setw(2) <<
-      static_cast<int>(joint.get_id()) << "]. " << packet_handler->getTxRxResult(dxl_comm_result) <<
+      static_cast<int>(joint.get_id()) << "]. " << packet_handler->getTxRxResult(comm_result) <<
       "\n";
     return false;
-  } else if (dxl_error != 0) {
+  } else if (comm_error != 0) {
     std::cout << "failed to disable torque [ID:" << std::setfill('0') << std::setw(2) <<
-      static_cast<int>(joint.get_id()) << "]. " << packet_handler->getRxPacketError(dxl_error) <<
+      static_cast<int>(joint.get_id()) << "]. " << packet_handler->getRxPacketError(comm_error) <<
       "\n";
     return false;
   }
@@ -154,8 +154,146 @@ bool MotionManager::torque_disable(Joint joint)
   return true;
 }
 
-bool MotionManager::sync_write_joints(std::vector<Joint> joints)
+bool MotionManager::sync_write_joints(
+  std::vector<Joint> joints, MXAddress start_address,
+  int data_length)
 {
+  // Initialize GroupSyncWrite instance
+  dynamixel::GroupSyncWrite group_sync_write(port_handler, packet_handler,
+    static_cast<uint8_t>(start_address), data_length);
+
+  uint8_t param_data[4];
+  bool addparam_state = false;
+
+  // Add parameter storage for Dynamixel value
+  for (auto joint : joints) {
+    // Allocate value into byte array
+    param_data[0] = DXL_LOBYTE(DXL_LOWORD(joint.get_position()));
+    param_data[1] = DXL_HIBYTE(DXL_LOWORD(joint.get_position()));
+    param_data[2] = DXL_LOBYTE(DXL_HIWORD(joint.get_position()));
+    param_data[3] = DXL_HIBYTE(DXL_HIWORD(joint.get_position()));
+
+    // Add Dynamixel data value to the Syncwrite storage
+    addparam_state = group_sync_write.addParam(joint.get_id(), param_data);
+    if (addparam_state != true) {
+      std::cout << "[ID:" << std::setfill('0') << std::setw(2) <<
+        static_cast<int>(joint.get_id()) << "]. group_sync_write addparam failed\n";
+    }
+  }
+
+  // Syncwrite data
+  int comm_result = COMM_TX_FAIL;
+  comm_result = group_sync_write.txPacket();
+  if (comm_result != COMM_SUCCESS) {
+    std::cout << "failed to synwrite data. " << packet_handler->getTxRxResult(comm_result) <<
+      "\n";
+    return false;
+  }
+
+  // Clear syncwrite parameter storage
+  group_sync_write.clearParam();
+
+  return true;
+}
+
+bool MotionManager::sync_read_joints(
+  std::vector<Joint> & joints, MXAddress start_address,
+  int data_length)
+{
+  // Initialize Groupsyncread instance
+  dynamixel::GroupSyncRead group_sync_read(port_handler, packet_handler,
+    static_cast<uint8_t>(start_address), data_length);
+
+  // Add parameter storage for Dynamixel value
+  bool addparam_state = false;
+  for (auto joint : joints) {
+    addparam_state = group_sync_read.addParam(joint.get_id());
+    if (addparam_state != true) {
+      std::cout << "[ID:" << std::setfill('0') << std::setw(2) <<
+        static_cast<int>(joint.get_id()) << "]. group_sync_read addparam failed\n";
+    }
+  }
+
+  // Syncread data
+  int comm_result = COMM_TX_FAIL;
+  comm_result = group_sync_read.txRxPacket();
+  if (comm_result != COMM_SUCCESS) {
+    std::cout << "failed to syncread data " << packet_handler->getTxRxResult(comm_result) <<
+      "\n";
+    return false;
+  }
+
+  bool getdata_state = false;
+  int32_t data_result = 0;
+
+  for (int index = 0; index < static_cast<int>(joints.size()); index++) {
+    // Check if groupsyncread data of Dynamixel is available
+    getdata_state = group_sync_read.isAvailable(
+      joints.at(index).get_id(), static_cast<uint8_t>(start_address), data_length);
+    if (getdata_state != true) {
+      std::cout << "[ID:" << std::setfill('0') << std::setw(2) <<
+        static_cast<int>(joints.at(index).get_id()) << "]. group_sync_read getdata failed\n";
+    } else {
+      // Get Dynamixel#1 present position value
+      data_result = group_sync_read.getData(
+        joints.at(index).get_id(), static_cast<uint8_t>(start_address), data_length);
+      std::cout << "[ID:" << std::setfill('0') << std::setw(2) <<
+        static_cast<int>(joints.at(index).get_id()) << "]. data: " << std::setfill('0') <<
+        std::setw(4) << data_result << "\n";
+      joints.at(index).set_present_position(data_result);
+    }
+  }
+
+  // Clear syncread parameter storage
+  group_sync_read.clearParam();
+
+  return true;
+}
+
+bool MotionManager::bulk_read_joints(
+  std::vector<Joint> & joints, MXAddress start_address,
+  int data_length)
+{
+  // Initialize GroupBulkRead instance
+  dynamixel::GroupBulkRead group_bulk_read(port_handler, packet_handler);
+
+  // Add parameter storage for Dynamixel data
+  bool addparam_state = false;
+  for (auto joint : joints) {
+    addparam_state = group_bulk_read.addParam(
+      joint.get_id(), static_cast<uint16_t>(start_address), data_length);
+    if (addparam_state != true) {
+      std::cout << "[ID:" << std::setfill('0') << std::setw(2) <<
+        static_cast<int>(joint.get_id()) << "]. group_bulk_read addparam failed\n";
+      return false;
+    }
+  }
+
+  bool getdata_state = false;
+  int32_t data_result = 0;
+
+  for (int index = 0; index < static_cast<int>(joints.size()); index++) {
+    // Check if groupsyncread data of Dynamixel is available
+    getdata_state = group_bulk_read.isAvailable(
+      joints.at(index).get_id(), static_cast<uint8_t>(start_address), data_length);
+    if (getdata_state != true) {
+      std::cout << "[ID:" << std::setfill('0') << std::setw(2) <<
+        static_cast<int>(joints.at(index).get_id()) << "]. group_bulk_read getdata failed\n";
+    } else {
+      // Get Dynamixel#1 present position value
+      data_result = group_bulk_read.getData(
+        joints.at(index).get_id(), static_cast<uint8_t>(start_address), data_length);
+      std::cout << "[ID:" << std::setfill('0') << std::setw(2) <<
+        static_cast<int>(joints.at(index).get_id()) << "]. data: " << std::setfill('0') <<
+        std::setw(4) << data_result << "\n";
+      joints.at(index).set_present_position(data_result);
+    }
+  }
+
+  // Clear syncread parameter storage
+  group_bulk_read.clearParam();
+
+  return true;
 }
 
 void MotionManager::move_joint(Joint joint, float speed)
