@@ -35,6 +35,7 @@ public:
 
   void set_target_position(float target_position, float speed = 1.0);
   void set_target_position(float present_position, float target_position, float speed);
+  void set_present_position(float present_position);
   void set_pid_gain(float p, float i, float d);
 
   void interpolate();
