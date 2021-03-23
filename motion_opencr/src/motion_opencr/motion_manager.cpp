@@ -154,8 +154,95 @@ bool MotionManager::torque_disable(Joint joint)
   return true;
 }
 
-bool MotionManager::sync_write_joints(std::vector<Joint> joints)
+bool MotionManager::sync_write_joints(std::vector<Joint> joints, MXAddress address, int byte_length)
 {
+  // Initialize GroupSyncWrite instance
+  dynamixel::GroupSyncWrite group_sync_write(port_handler, packet_handler, static_cast<uint8_t>(address), byte_length);
+
+  int dxl_comm_result = COMM_TX_FAIL;
+  bool dxl_addparam_result = false;
+  bool dxl_getdata_result = false;
+
+  uint8_t dxl_error = 0;
+  uint8_t param_data[4];
+
+  // Add parameter storage for Dynamixel value
+  for (auto joint : joints) {
+    // Allocate value into byte array
+    param_data[0] = DXL_LOBYTE(DXL_LOWORD(joint.get_position()));
+    param_data[1] = DXL_HIBYTE(DXL_LOWORD(joint.get_position()));
+    param_data[2] = DXL_LOBYTE(DXL_HIWORD(joint.get_position()));
+    param_data[3] = DXL_HIBYTE(DXL_HIWORD(joint.get_position()));
+
+    // Add Dynamixel data value to the Syncwrite storage
+    dxl_addparam_result = group_sync_write.addParam(joint.get_id(), param_data);
+    if (dxl_addparam_result != true)
+    {
+      std::cout << "[ID:" << std::setfill('0') << std::setw(2) <<
+        static_cast<int>(joint.get_id()) << "]. group_sync_write addparam failed\n";
+    }
+  }
+
+  // Syncwrite data
+  dxl_comm_result = group_sync_write.txPacket();
+  if (dxl_comm_result != COMM_SUCCESS) {
+    std::cout << "failed to synwrite data. " << packet_handler->getTxRxResult(dxl_comm_result) << "\n";
+    return false;
+  }
+
+  // Clear syncwrite parameter storage
+  group_sync_write.clearParam();
+
+  return true;
+}
+
+bool MotionManager::sync_read_joints(std::vector<Joint> joints, MXAddress address, int byte_length)
+{
+  // Initialize Groupsyncread instance
+  dynamixel::GroupSyncRead group_sync_read(port_handler, packet_handler, static_cast<uint8_t>(address), byte_length);
+
+  int dxl_comm_result = COMM_TX_FAIL;
+  bool dxl_addparam_result = false;
+  bool dxl_getdata_result = false;
+
+  uint8_t dxl_error = 0;
+  int32_t dxl_data_result = 0;
+
+  // Add parameter storage for Dynamixel value
+  for (auto joint : joints) {
+    dxl_addparam_result = group_sync_read.addParam(joint.get_id());
+    if (dxl_addparam_result != true) {
+      std::cout << "[ID:" << std::setfill('0') << std::setw(2) <<
+        static_cast<int>(joint.get_id()) << "]. group_sync_read addparam failed\n";
+    }
+  }
+
+  // Syncread data
+  dxl_comm_result = group_sync_read.txRxPacket();
+  if (dxl_comm_result != COMM_SUCCESS) {
+    std::cout << "failed to syncread data " << packet_handler->getTxRxResult(dxl_comm_result) << "\n";
+    return false;
+  }
+
+  // Check if groupsyncread data of Dynamixel is available
+  for (auto joint : joints) {
+    dxl_getdata_result = group_sync_read.isAvailable(joint.get_id(), static_cast<uint8_t>(address), byte_length);
+    if (dxl_getdata_result != true) {
+      std::cout << "[ID:" << std::setfill('0') << std::setw(2) <<
+        static_cast<int>(joint.get_id()) << "]. group_sync_read getdata failed\n";
+    } else {
+      // Get Dynamixel#1 present position value
+      dxl_data_result = group_sync_read.getData(joint.get_id(), static_cast<uint8_t>(address), byte_length);
+      std::cout << "[ID:" << std::setfill('0') << std::setw(2) <<
+        static_cast<int>(joint.get_id()) << "]. data: " << std::setfill('0') <<
+        std::setw(4) << dxl_data_result << "\n";
+    }
+  }
+
+  // Clear syncread parameter storage
+  group_sync_read.clearParam();
+
+  return true;
 }
 
 void MotionManager::move_joint(Joint joint, float speed)

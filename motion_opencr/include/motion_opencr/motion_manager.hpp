@@ -107,7 +107,10 @@ private:
   bool torque_disable(Joint joint);
   bool torque_disable(std::vector<Joint> joints);
 
-  bool sync_write_joints(std::vector<Joint> joints);
+  bool sync_write_joints(std::vector<Joint> joints, MXAddress address = MXAddress::GOAL_POSITION,
+    int byte_length = 4);
+  bool sync_read_joints(std::vector<Joint> joints, MXAddress address = MXAddress::PRESENT_POSITION,
+    int byte_length = 4);
   std::vector<Joint> bulk_read_joints(std::vector<Joint> joints);
 
   void move_joint(Joint joint, float speed = 1);
