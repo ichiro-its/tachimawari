@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <motion_opencr/joint.hpp>
+#include <tachimawari/joint.hpp>
 
 #include <map>
 #include <string>
@@ -26,7 +26,7 @@
 #include <cmath>
 #include <cstdlib>
 
-namespace motion
+namespace tachimawari
 {
 
 const std::map<std::string, uint8_t> Joint::ids = {
@@ -117,4 +117,4 @@ std::vector<uint16_t> Joint::get_pid_gain()  // temporary
   return pid_gain;
 }
 
-}  // namespace motion
+}  // namespace tachimawari

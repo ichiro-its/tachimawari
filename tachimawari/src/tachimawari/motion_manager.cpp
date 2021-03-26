@@ -18,15 +18,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <motion_opencr/motion_manager.hpp>
+#include <tachimawari/motion_manager.hpp>
 
 #include <dynamixel_sdk/dynamixel_sdk.h>
 #include <rclcpp/rclcpp.hpp>
 
-#include <motion_opencr_interfaces/srv/set_joints.hpp>
-#include <motion_opencr_interfaces/msg/joint.hpp>
+#include <tachimawari_interfaces/srv/set_joints.hpp>
+#include <tachimawari_interfaces/msg/joint.hpp>
 
-#include <motion_opencr/joint.hpp>
+#include <tachimawari/joint.hpp>
 
 #include <iostream>
 #include <iomanip>
@@ -34,7 +34,7 @@
 #include <string>
 #include <vector>
 
-namespace motion
+namespace tachimawari
 {
 
 MotionManager::MotionManager(std::string node_name, std::string port, float protocol_version)
@@ -42,8 +42,8 @@ MotionManager::MotionManager(std::string node_name, std::string port, float prot
   packet_handler(dynamixel::PacketHandler::getPacketHandler(protocol_version))
 {
   {
-    using SetJoints = motion_opencr_interfaces::srv::SetJoints;
-    using Joint = motion::Joint;
+    using SetJoints = tachimawari_interfaces::srv::SetJoints;
+    using Joint = tachimawari::Joint;
 
     set_joints_service = this->create_service<SetJoints>(
       node_name + "joints_message",
@@ -51,7 +51,7 @@ MotionManager::MotionManager(std::string node_name, std::string port, float prot
       std::shared_ptr<SetJoints::Response> response) {
         (void)request;
         std::vector<Joint> joints;
-        std::vector<motion_opencr_interfaces::msg::Joint>
+        std::vector<tachimawari_interfaces::msg::Joint>
         joints_message = request->joints;
 
         for (int index = 0; index < static_cast<int>(joints_message.size()); index++) {
@@ -341,4 +341,4 @@ bool MotionManager::move_joints(std::vector<Joint> joints)
   return move_joints_state;
 }
 
-}  // namespace motion
+}  // namespace tachimawari
