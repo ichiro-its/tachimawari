@@ -21,25 +21,56 @@
 #include <motion_opencr/motion_manager.hpp>
 
 #include <dynamixel_sdk/dynamixel_sdk.h>
+#include <rclcpp/rclcpp.hpp>
+
+#include <motion_opencr_interfaces/srv/set_joints.hpp>
+#include <motion_opencr_interfaces/msg/joint.hpp>
+
 #include <motion_opencr/joint.hpp>
 
 #include <iostream>
 #include <iomanip>
+#include <memory>
 #include <string>
 #include <vector>
 
 namespace motion
 {
 
-MotionManager::MotionManager()
+MotionManager::MotionManager(std::string node_name, std::string port, float protocol_version)
+: rclcpp::Node(node_name), port_handler(dynamixel::PortHandler::getPortHandler(port.c_str())),
+  packet_handler(dynamixel::PacketHandler::getPacketHandler(protocol_version))
 {
-  MotionManager("/dev/ttyACM0", 2.0F);
+  {
+    using SetJoints = motion_opencr_interfaces::srv::SetJoints;
+    using Joint = motion::Joint;
+
+    set_joints_service = this->create_service<SetJoints>(
+      node_name + "joints_message",
+      [this](std::shared_ptr<SetJoints::Request> request,
+      std::shared_ptr<SetJoints::Response> response) {
+        (void)request;
+        std::vector<Joint> joints;
+        std::vector<motion_opencr_interfaces::msg::Joint>
+        joints_message = request->joints;
+
+        for (int index = 0; index < static_cast<int>(joints_message.size()); index++) {
+          Joint joint(joints_message.at(index).name.c_str());
+
+          joint.set_target_position(
+            joints_message.at(index).position, joints_message.at(index).speed);
+          joints.push_back(joint);
+        }
+
+        response->status = move_joints(joints);
+      }
+    );
+  }
 }
 
-MotionManager::MotionManager(std::string port, float protocol_version)
-: port_handler(dynamixel::PortHandler::getPortHandler(port.c_str())), packet_handler(
-    dynamixel::PacketHandler::getPacketHandler(protocol_version))
+MotionManager::~MotionManager()
 {
+  stop();
 }
 
 void MotionManager::start()
@@ -51,8 +82,7 @@ void MotionManager::start()
   if (port_handler->openPort()) {
     std::cout << "succeeded to open the port!\n";
   } else {
-    std::cout << "failed to open the port!\n" <<
-      "try again!\n";
+    std::cout << "failed to open the port!\n" << "try again!\n";
     return;
   }
 
@@ -60,8 +90,7 @@ void MotionManager::start()
   if (port_handler->setBaudRate(baudrate)) {
     std::cout << "succeeded to set the baudrate!\n";
   } else {
-    std::cout << "failed to set the baudrate!\n" <<
-      "try again!\n";
+    std::cout << "failed to set the baudrate!\n" << "try again!\n";
     stop();
     return;
   }
@@ -210,7 +239,7 @@ bool MotionManager::sync_read_joints(
     addparam_state = group_sync_read.addParam(joint.get_id());
     if (addparam_state != true) {
       std::cout << "[ID:" << std::setfill('0') << std::setw(2) <<
-        static_cast<int>(joint.get_id()) << "]. group_sync_read addparam failed\n";
+        static_cast<int>(joint.get_id()) << "]. syncread addparam failed\n";
     }
   }
 
@@ -232,9 +261,9 @@ bool MotionManager::sync_read_joints(
       joints.at(index).get_id(), static_cast<uint8_t>(start_address), data_length);
     if (getdata_state != true) {
       std::cout << "[ID:" << std::setfill('0') << std::setw(2) <<
-        static_cast<int>(joints.at(index).get_id()) << "]. group_sync_read getdata failed\n";
+        static_cast<int>(joints.at(index).get_id()) << "]. syncread getdata failed\n";
     } else {
-      // Get Dynamixel#1 present position value
+      // Get Dynamixel present position value
       data_result = group_sync_read.getData(
         joints.at(index).get_id(), static_cast<uint8_t>(start_address), data_length);
       std::cout << "[ID:" << std::setfill('0') << std::setw(2) <<
@@ -264,7 +293,7 @@ bool MotionManager::bulk_read_joints(
       joint.get_id(), static_cast<uint16_t>(start_address), data_length);
     if (addparam_state != true) {
       std::cout << "[ID:" << std::setfill('0') << std::setw(2) <<
-        static_cast<int>(joint.get_id()) << "]. group_bulk_read addparam failed\n";
+        static_cast<int>(joint.get_id()) << "]. bulkread addparam failed\n";
       return false;
     }
   }
@@ -278,7 +307,7 @@ bool MotionManager::bulk_read_joints(
       joints.at(index).get_id(), static_cast<uint8_t>(start_address), data_length);
     if (getdata_state != true) {
       std::cout << "[ID:" << std::setfill('0') << std::setw(2) <<
-        static_cast<int>(joints.at(index).get_id()) << "]. group_bulk_read getdata failed\n";
+        static_cast<int>(joints.at(index).get_id()) << "]. bulkread getdata failed\n";
     } else {
       // Get Dynamixel#1 present position value
       data_result = group_bulk_read.getData(
@@ -296,15 +325,20 @@ bool MotionManager::bulk_read_joints(
   return true;
 }
 
-void MotionManager::move_joint(Joint joint, float speed)
+bool MotionManager::move_joint(Joint /*joint*/)
 {
+  return true;
 }
 
-void MotionManager::move_joint(std::vector<Joint> joints, float speed)
+bool MotionManager::move_joints(std::vector<Joint> joints)
 {
+  bool move_joints_state = true;
+
   for (auto joint : joints) {
-    move_joint(joint, speed);
+    move_joints_state = move_joint(joint);
   }
+
+  return move_joints_state;
 }
 
 }  // namespace motion

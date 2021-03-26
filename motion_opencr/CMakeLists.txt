@@ -15,6 +15,8 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(dynamixel_sdk REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(motion_opencr_interfaces REQUIRED)
 
 add_library(${PROJECT_NAME}
   "src/${PROJECT_NAME}/joint.cpp"
@@ -25,7 +27,9 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   $<INSTALL_INTERFACE:include>)
 
 ament_target_dependencies(${PROJECT_NAME}
-  dynamixel_sdk)
+  dynamixel_sdk
+  rclcpp
+  motion_opencr_interfaces)
 
 install(DIRECTORY "include" DESTINATION ".")
 
@@ -57,7 +61,10 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-ament_export_dependencies(dynamixel_sdk)
+ament_export_dependencies(
+  dynamixel_sdk
+  rclcpp
+  motion_opencr_interfaces)
 ament_export_include_directories("include")
 ament_export_libraries(${PROJECT_NAME})
 ament_package()

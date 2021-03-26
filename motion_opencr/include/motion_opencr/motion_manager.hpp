@@ -22,6 +22,10 @@
 #define MOTION_OPENCR__MOTION_MANAGER_HPP_
 
 #include <dynamixel_sdk/dynamixel_sdk.h>
+#include <rclcpp/rclcpp.hpp>
+
+#include <motion_opencr_interfaces/srv/set_joints.hpp>
+
 #include <motion_opencr/joint.hpp>
 
 #include <map>
@@ -91,11 +95,12 @@ enum class MXAddress : uint8_t
   PRESENT_TEMPERATURE       = 146
 };
 
-class MotionManager
+class MotionManager : public rclcpp::Node
 {
 public:
-  MotionManager();
-  explicit MotionManager(std::string port, float protocol_version);
+  explicit MotionManager(
+    std::string node_name, std::string port = "tty/ACM0", float protocol_version = 0);
+  ~MotionManager();
 
   void start();
   void stop();
@@ -117,11 +122,14 @@ private:
     std::vector<Joint> & joints, MXAddress start_address = MXAddress::PRESENT_POSITION,
     int data_length = 4);
 
-  void move_joint(Joint joint, float speed = 1);
-  void move_joint(std::vector<Joint>, float speed = 1);
+  bool move_joint(Joint joint);
+  bool move_joints(std::vector<Joint>);
 
   dynamixel::PortHandler * port_handler;
   dynamixel::PacketHandler * packet_handler;
+
+  std::shared_ptr<rclcpp::Service<motion_opencr_interfaces::srv::SetJoints>>
+  set_joints_service;
 
   std::vector<Joint> joints;
 };
