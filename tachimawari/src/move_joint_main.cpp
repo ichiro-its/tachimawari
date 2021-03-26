@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <motion_opencr/joint.hpp>
+#include <tachimawari/joint.hpp>
 #include <dynamixel_sdk/dynamixel_sdk.h>
 
 #include <iostream>
@@ -26,7 +26,7 @@
 #include <vector>
 #include <array>
 
-using Joint = motion::Joint;
+using Joint = tachimawari::Joint;
 
 int main(int argc, char * argv[])
 {

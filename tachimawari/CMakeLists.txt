@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(motion_opencr)
+project(tachimawari)
 
 if(NOT CMAKE_C_STANDARD)
   set(CMAKE_C_STANDARD 99)
@@ -16,7 +16,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(dynamixel_sdk REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(motion_opencr_interfaces REQUIRED)
+find_package(tachimawari_interfaces REQUIRED)
 
 add_library(${PROJECT_NAME}
   "src/${PROJECT_NAME}/joint.cpp"
@@ -29,7 +29,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 ament_target_dependencies(${PROJECT_NAME}
   dynamixel_sdk
   rclcpp
-  motion_opencr_interfaces)
+  tachimawari_interfaces)
 
 install(DIRECTORY "include" DESTINATION ".")
 
@@ -64,7 +64,7 @@ endif()
 ament_export_dependencies(
   dynamixel_sdk
   rclcpp
-  motion_opencr_interfaces)
+  tachimawari_interfaces)
 ament_export_include_directories("include")
 ament_export_libraries(${PROJECT_NAME})
 ament_package()

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>motion_opencr</name>
+  <name>tachimawari</name>
   <version>0.1.0</version>
   <description>Motion tools using OpenCR for ROS 2</description>
   <maintainer email="alfi.maulana.f@gmail.com">Alfi Maulana</maintainer>
@@ -11,7 +11,7 @@
   
   <depend>dynamixel_sdk</depend>
   <depend>rclcpp</depend>
-  <depend>motion_opencr_interfaces</depend>
+  <depend>tachimawari_interfaces</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

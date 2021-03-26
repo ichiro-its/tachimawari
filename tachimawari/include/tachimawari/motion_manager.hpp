@@ -18,22 +18,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef MOTION_OPENCR__MOTION_MANAGER_HPP_
-#define MOTION_OPENCR__MOTION_MANAGER_HPP_
+#ifndef TACHIMAWARI__MOTION_MANAGER_HPP_
+#define TACHIMAWARI__MOTION_MANAGER_HPP_
 
 #include <dynamixel_sdk/dynamixel_sdk.h>
 #include <rclcpp/rclcpp.hpp>
 
-#include <motion_opencr_interfaces/srv/set_joints.hpp>
+#include <tachimawari_interfaces/srv/set_joints.hpp>
 
-#include <motion_opencr/joint.hpp>
+#include <tachimawari/joint.hpp>
 
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-namespace motion
+namespace tachimawari
 {
 
 enum class MXAddress : uint8_t
@@ -128,12 +128,12 @@ private:
   dynamixel::PortHandler * port_handler;
   dynamixel::PacketHandler * packet_handler;
 
-  std::shared_ptr<rclcpp::Service<motion_opencr_interfaces::srv::SetJoints>>
+  std::shared_ptr<rclcpp::Service<tachimawari_interfaces::srv::SetJoints>>
   set_joints_service;
 
   std::vector<Joint> joints;
 };
 
-}  // namespace motion
+}  // namespace tachimawari
 
-#endif  // MOTION_OPENCR__MOTION_MANAGER_HPP_
+#endif  // TACHIMAWARI__MOTION_MANAGER_HPP_

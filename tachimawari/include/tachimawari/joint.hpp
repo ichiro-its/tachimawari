@@ -18,14 +18,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef MOTION_OPENCR__JOINT_HPP_
-#define MOTION_OPENCR__JOINT_HPP_
+#ifndef TACHIMAWARI__JOINT_HPP_
+#define TACHIMAWARI__JOINT_HPP_
 
 #include <map>
 #include <string>
 #include <vector>
 
-namespace motion
+namespace tachimawari
 {
 
 class Joint
@@ -58,6 +58,6 @@ private:
   static const std::map<std::string, uint8_t> ids;
 };
 
-}  // namespace motion
+}  // namespace tachimawari
 
-#endif  // MOTION_OPENCR__JOINT_HPP_
+#endif  // TACHIMAWARI__JOINT_HPP_
