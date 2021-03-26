@@ -1,0 +1,5 @@
+uint8[] ids
+float32[] positions
+float32[] speeds
+---
+int8 status

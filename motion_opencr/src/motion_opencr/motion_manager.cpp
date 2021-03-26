@@ -21,25 +21,47 @@
 #include <motion_opencr/motion_manager.hpp>
 
 #include <dynamixel_sdk/dynamixel_sdk.h>
+#include <rclcpp/rclcpp.hpp>
+
 #include <motion_opencr/joint.hpp>
 
 #include <iostream>
 #include <iomanip>
+#include <memory>
 #include <string>
 #include <vector>
 
 namespace motion
 {
 
-MotionManager::MotionManager()
+MotionManager::MotionManager(std::string node_name, std::string port, float protocol_version)
+: rclcpp::Node(node_name), port_handler(dynamixel::PortHandler::getPortHandler(port.c_str())),
+    packet_handler(dynamixel::PacketHandler::getPacketHandler(protocol_version))
 {
-  MotionManager("/dev/ttyACM0", 2.0F);
+  {
+    using JointMessage = motion_opencr_interfaces::srv::JointMessage;
+    joint_message_service = this->create_service<JointMessage>(
+      node_name + "joint_message",
+      [this] (std::shared_ptr<JointMessage::Request> request,
+      std::shared_ptr<JointMessage::Response> response) {
+      }
+    );
+  }
+
+  {
+    using JointsMessage = motion_opencr_interfaces::srv::JointsMessage;
+    joints_message_service = this->create_service<JointsMessage>(
+      node_name + "joints_message",
+      [this] (std::shared_ptr<JointsMessage::Request> request,
+      std::shared_ptr<JointsMessage::Response> response) {
+      }
+    );
+  }
 }
 
-MotionManager::MotionManager(std::string port, float protocol_version)
-: port_handler(dynamixel::PortHandler::getPortHandler(port.c_str())), packet_handler(
-    dynamixel::PacketHandler::getPacketHandler(protocol_version))
+MotionManager::~MotionManager()
 {
+  stop();
 }
 
 void MotionManager::start()
