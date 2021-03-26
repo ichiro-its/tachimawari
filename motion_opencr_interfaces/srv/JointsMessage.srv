@@ -1,5 +1,0 @@
-string[] names
-float32[] positions
-float32[] speeds
----
-int8 status

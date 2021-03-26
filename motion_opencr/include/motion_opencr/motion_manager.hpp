@@ -24,8 +24,7 @@
 #include <dynamixel_sdk/dynamixel_sdk.h>
 #include <rclcpp/rclcpp.hpp>
 
-#include <motion_opencr_interfaces/srv/joint_message.hpp>
-#include <motion_opencr_interfaces/srv/joints_message.hpp>
+#include <motion_opencr_interfaces/srv/set_joints.hpp>
 
 #include <motion_opencr/joint.hpp>
 
@@ -123,17 +122,14 @@ private:
     std::vector<Joint> & joints, MXAddress start_address = MXAddress::PRESENT_POSITION,
     int data_length = 4);
 
-  bool move_joint(Joint joint, float speed = 1);
-  bool move_joint(std::vector<Joint>, float speed = 1);
+  bool move_joint(Joint joint);
+  bool move_joints(std::vector<Joint>);
 
   dynamixel::PortHandler * port_handler;
   dynamixel::PacketHandler * packet_handler;
 
-  std::shared_ptr<rclcpp::Service<motion_opencr_interfaces::srv::JointMessage>>
-  joint_message_service;
-
-  std::shared_ptr<rclcpp::Service<motion_opencr_interfaces::srv::JointsMessage>>
-  joints_message_service;
+  std::shared_ptr<rclcpp::Service<motion_opencr_interfaces::srv::SetJoints>>
+  set_joints_service;
 
   std::vector<Joint> joints;
 };
