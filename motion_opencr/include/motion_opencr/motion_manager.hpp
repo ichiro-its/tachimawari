@@ -123,8 +123,8 @@ private:
     std::vector<Joint> & joints, MXAddress start_address = MXAddress::PRESENT_POSITION,
     int data_length = 4);
 
-  void move_joint(Joint joint, float speed = 1);
-  void move_joint(std::vector<Joint>, float speed = 1);
+  bool move_joint(Joint joint, float speed = 1);
+  bool move_joint(std::vector<Joint>, float speed = 1);
 
   dynamixel::PortHandler * port_handler;
   dynamixel::PacketHandler * packet_handler;

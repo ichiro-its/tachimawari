@@ -36,24 +36,45 @@ namespace motion
 
 MotionManager::MotionManager(std::string node_name, std::string port, float protocol_version)
 : rclcpp::Node(node_name), port_handler(dynamixel::PortHandler::getPortHandler(port.c_str())),
-    packet_handler(dynamixel::PacketHandler::getPacketHandler(protocol_version))
+  packet_handler(dynamixel::PacketHandler::getPacketHandler(protocol_version))
 {
   {
     using JointMessage = motion_opencr_interfaces::srv::JointMessage;
+    using Joint = motion::Joint;
     joint_message_service = this->create_service<JointMessage>(
       node_name + "joint_message",
-      [this] (std::shared_ptr<JointMessage::Request> request,
+      [this](std::shared_ptr<JointMessage::Request> request,
       std::shared_ptr<JointMessage::Response> response) {
+        (void)request;
+        Joint joint(request->name);
+
+        joint.set_target_position(request->position, request->speed);
+        response->status = move_joint(joint);
       }
     );
   }
 
   {
     using JointsMessage = motion_opencr_interfaces::srv::JointsMessage;
+    using Joint = motion::Joint;
     joints_message_service = this->create_service<JointsMessage>(
       node_name + "joints_message",
-      [this] (std::shared_ptr<JointsMessage::Request> request,
+      [this](std::shared_ptr<JointsMessage::Request> request,
       std::shared_ptr<JointsMessage::Response> response) {
+        (void)request;
+        std::vector<Joint> joints;
+        std::vector<std::string> joints_name = request->names;
+        std::vector<float> joints_target_position = request->positions;
+        std::vector<float> joints_speed = request->speeds;
+
+        for (int index = 0; index < static_cast<int>(joints_name.size()); index++) {
+          Joint joint(joints_name.at(index));
+
+          joint.set_target_position(joints_target_position.at(index), joints_speed.at(index));
+          joints.push_back(joint);
+        }
+
+        response->status = move_joint(joints);
       }
     );
   }
@@ -318,11 +339,11 @@ bool MotionManager::bulk_read_joints(
   return true;
 }
 
-void MotionManager::move_joint(Joint joint, float speed)
+bool MotionManager::move_joint(Joint joint, float speed)
 {
 }
 
-void MotionManager::move_joint(std::vector<Joint> joints, float speed)
+bool MotionManager::move_joint(std::vector<Joint> joints, float speed)
 {
   for (auto joint : joints) {
     move_joint(joint, speed);

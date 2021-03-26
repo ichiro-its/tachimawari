@@ -30,8 +30,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 ament_target_dependencies(${PROJECT_NAME}
   dynamixel_sdk
   rclcpp
-  motion_opencr_interfaces  
-)
+  motion_opencr_interfaces)
 
 install(DIRECTORY "include" DESTINATION ".")
 
@@ -64,10 +63,9 @@ if(BUILD_TESTING)
 endif()
 
 ament_export_dependencies(
-  dynamixel_sdk 
-  rclcpp 
-  motion_opencr_interfaces
-)
+  dynamixel_sdk
+  rclcpp
+  motion_opencr_interfaces)
 ament_export_include_directories("include")
 ament_export_libraries(${PROJECT_NAME})
 ament_package()
