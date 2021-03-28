@@ -34,6 +34,8 @@
 #include <string>
 #include <vector>
 
+using namespace std::chrono_literals;
+
 namespace tachimawari
 {
 
@@ -326,7 +328,7 @@ bool MotionManager::bulk_read_joints(
   return true;
 }
 
-bool init_joints_present_position(std::vector<Joint> joints)
+bool MotionManager::init_joints_present_position(std::vector<Joint> joints)
 {
   bool init_state = true;
 
@@ -352,7 +354,7 @@ bool MotionManager::move_joint(Joint /*joint*/)
 bool MotionManager::move_joints(std::vector<Joint> joints)
 {
   bool move_joints_state = true;
-  rclcpp::Rate rcl_rate(std::chrono_literals::8ms);
+  rclcpp::Rate rcl_rate(8ms);
 
   if (torque_enable(joints)) {
     if (init_joints_present_position(joints)) {
