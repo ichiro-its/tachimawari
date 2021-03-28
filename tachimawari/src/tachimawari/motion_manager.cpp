@@ -103,18 +103,26 @@ bool MotionManager::start()
 
 void MotionManager::stop()
 {
+  // disable toruqe
+  torque_disable(joints);
+
   // Close port
   port_handler->closePort();
 }
 
 bool MotionManager::torque_enable(std::vector<Joint> joints)
 {
+  if (torque_enabled) {
+    return torque_enabled;
+  }
+
   bool torque_enable_state = false;
 
   for (auto joint : joints) {
     torque_enable_state = torque_enable(joint);
   }
 
+  torque_enabled = true;
   return torque_enable_state;
 }
 

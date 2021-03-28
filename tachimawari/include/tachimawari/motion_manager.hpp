@@ -136,6 +136,7 @@ private:
   std::vector<Joint> joints;
 
   bool init_joints_state = false;
+  bool torque_enabled = false;
 };
 
 }  // namespace tachimawari
