@@ -106,6 +106,11 @@ int32_t Joint::get_position()
   return position;
 }
 
+int32_t Joint::get_goal_position()
+{
+  return goal_position;
+}
+
 std::vector<uint16_t> Joint::get_pid_gain()  // temporary
 {
   std::vector<uint16_t> pid_gain;

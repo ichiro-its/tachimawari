@@ -42,6 +42,7 @@ public:
 
   uint8_t get_id();
   int32_t get_position();
+  int32_t get_goal_position();
   std::vector<uint16_t> get_pid_gain();  // temporary
 
 private:

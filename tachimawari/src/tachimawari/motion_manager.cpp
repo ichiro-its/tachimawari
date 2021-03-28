@@ -326,14 +326,22 @@ bool MotionManager::bulk_read_joints(
   return true;
 }
 
-void init_joints_present_position(std::vector<Joint> joints)
+bool init_joints_present_position(std::vector<Joint> joints)
 {
+  bool init_state = true;
+
   if (!init_joints_state) {
-    sync_read_joints(joints);
+    init_state = sync_read_joints(joints);
+    this->joints = joints;
     init_joints_state = true;
   } else {
-    
+    for (int index = 0; index < static_cast<int>(joints.size()); index++) {
+      joints.at(index).set_present_position(this->joints.at(index).get_goal_position());
+    }
+    this->joints = joints;
   }
+
+  return init_state;
 }
 
 bool MotionManager::move_joint(Joint /*joint*/)
@@ -347,20 +355,21 @@ bool MotionManager::move_joints(std::vector<Joint> joints)
   rclcpp::Rate rcl_rate(std::chrono_literals::8ms);
 
   if (torque_enable(joints)) {
-    if (!init_joints_state) {
-      sync_read_joints(joints);
-    } else {
+    if (init_joints_present_position(joints)) {
+      while (true) {
+        rcl_rate.sleep();
 
+        for (int index = 0; index < static_cast<int>(joints.size()); index++) {
+          joints.at(index).interpolate();
+        }
+
+        move_joints_state = sync_write_joints(joints);
+
+        if (!move_joints_state) {
+          break;
+        }
+      }
     }
-
-    while (true) {
-      rcl_rate.sleep();
-      
-    }
-  }
-
-  for (auto joint : joints) {
-    move_joints_state = move_joint(joint);
   }
 
   return move_joints_state;

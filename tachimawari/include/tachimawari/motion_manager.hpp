@@ -125,7 +125,7 @@ private:
   bool move_joint(Joint joint);
   bool move_joints(std::vector<Joint>);
 
-  void init_joints_present_position(std::vector<Joint> joints);
+  bool init_joints_present_position(std::vector<Joint> joints);
 
   dynamixel::PortHandler * port_handler;
   dynamixel::PacketHandler * packet_handler;
