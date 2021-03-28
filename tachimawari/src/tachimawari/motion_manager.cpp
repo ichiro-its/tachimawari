@@ -73,7 +73,7 @@ MotionManager::~MotionManager()
   stop();
 }
 
-void MotionManager::start()
+bool MotionManager::start()
 {
   int baudrate = 57600;
 
@@ -83,7 +83,7 @@ void MotionManager::start()
     std::cout << "succeeded to open the port!\n";
   } else {
     std::cout << "failed to open the port!\n" << "try again!\n";
-    return;
+    return false;
   }
 
   // Set baudrate
@@ -92,10 +92,11 @@ void MotionManager::start()
   } else {
     std::cout << "failed to set the baudrate!\n" << "try again!\n";
     stop();
-    return;
+    return false;
   }
 
   std::cout << "\033[H\033[J";
+  return true;
 }
 
 void MotionManager::stop()
@@ -325,6 +326,16 @@ bool MotionManager::bulk_read_joints(
   return true;
 }
 
+void init_joints_present_position(std::vector<Joint> joints)
+{
+  if (!init_joints_state) {
+    sync_read_joints(joints);
+    init_joints_state = true;
+  } else {
+    
+  }
+}
+
 bool MotionManager::move_joint(Joint /*joint*/)
 {
   return true;
@@ -333,6 +344,20 @@ bool MotionManager::move_joint(Joint /*joint*/)
 bool MotionManager::move_joints(std::vector<Joint> joints)
 {
   bool move_joints_state = true;
+  rclcpp::Rate rcl_rate(std::chrono_literals::8ms);
+
+  if (torque_enable(joints)) {
+    if (!init_joints_state) {
+      sync_read_joints(joints);
+    } else {
+
+    }
+
+    while (true) {
+      rcl_rate.sleep();
+      
+    }
+  }
 
   for (auto joint : joints) {
     move_joints_state = move_joint(joint);
