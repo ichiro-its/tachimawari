@@ -102,7 +102,7 @@ public:
     std::string node_name, std::string port = "tty/ACM0", float protocol_version = 0);
   ~MotionManager();
 
-  void start();
+  bool start();
   void stop();
 
 private:
@@ -125,6 +125,8 @@ private:
   bool move_joint(Joint joint);
   bool move_joints(std::vector<Joint>);
 
+  bool init_joints_present_position(std::vector<Joint> joints);
+
   dynamixel::PortHandler * port_handler;
   dynamixel::PacketHandler * packet_handler;
 
@@ -132,6 +134,9 @@ private:
   set_joints_service;
 
   std::vector<Joint> joints;
+
+  bool init_joints_state = false;
+  bool torque_enabled = false;
 };
 
 }  // namespace tachimawari

@@ -34,6 +34,8 @@
 #include <string>
 #include <vector>
 
+using namespace std::chrono_literals;
+
 namespace tachimawari
 {
 
@@ -73,7 +75,7 @@ MotionManager::~MotionManager()
   stop();
 }
 
-void MotionManager::start()
+bool MotionManager::start()
 {
   int baudrate = 57600;
 
@@ -83,7 +85,7 @@ void MotionManager::start()
     std::cout << "succeeded to open the port!\n";
   } else {
     std::cout << "failed to open the port!\n" << "try again!\n";
-    return;
+    return false;
   }
 
   // Set baudrate
@@ -92,26 +94,35 @@ void MotionManager::start()
   } else {
     std::cout << "failed to set the baudrate!\n" << "try again!\n";
     stop();
-    return;
+    return false;
   }
 
   std::cout << "\033[H\033[J";
+  return true;
 }
 
 void MotionManager::stop()
 {
+  // disable toruqe
+  torque_disable(joints);
+
   // Close port
   port_handler->closePort();
 }
 
 bool MotionManager::torque_enable(std::vector<Joint> joints)
 {
+  if (torque_enabled) {
+    return torque_enabled;
+  }
+
   bool torque_enable_state = false;
 
   for (auto joint : joints) {
     torque_enable_state = torque_enable(joint);
   }
 
+  torque_enabled = true;
   return torque_enable_state;
 }
 
@@ -325,6 +336,24 @@ bool MotionManager::bulk_read_joints(
   return true;
 }
 
+bool MotionManager::init_joints_present_position(std::vector<Joint> joints)
+{
+  bool init_state = true;
+
+  if (!init_joints_state) {
+    init_state = sync_read_joints(joints);
+    this->joints = joints;
+    init_joints_state = true;
+  } else {
+    for (int index = 0; index < static_cast<int>(joints.size()); index++) {
+      joints.at(index).set_present_position(this->joints.at(index).get_goal_position());
+    }
+    this->joints = joints;
+  }
+
+  return init_state;
+}
+
 bool MotionManager::move_joint(Joint /*joint*/)
 {
   return true;
@@ -333,9 +362,24 @@ bool MotionManager::move_joint(Joint /*joint*/)
 bool MotionManager::move_joints(std::vector<Joint> joints)
 {
   bool move_joints_state = true;
+  rclcpp::Rate rcl_rate(8ms);
 
-  for (auto joint : joints) {
-    move_joints_state = move_joint(joint);
+  if (torque_enable(joints)) {
+    if (init_joints_present_position(joints)) {
+      while (true) {
+        rcl_rate.sleep();
+
+        for (int index = 0; index < static_cast<int>(joints.size()); index++) {
+          joints.at(index).interpolate();
+        }
+
+        move_joints_state = sync_write_joints(joints);
+
+        if (!move_joints_state) {
+          break;
+        }
+      }
+    }
   }
 
   return move_joints_state;

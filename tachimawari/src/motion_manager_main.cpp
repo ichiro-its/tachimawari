@@ -18,47 +18,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__JOINT_HPP_
-#define TACHIMAWARI__JOINT_HPP_
+#include <rclcpp/rclcpp.hpp>
 
-#include <map>
+#include <tachimawari/motion_manager.hpp>
+
+#include <iostream>
+#include <memory>
 #include <string>
-#include <vector>
 
-namespace tachimawari
+int main(int argc, char * argv[])
 {
+  rclcpp::init(argc, argv);
 
-class Joint
-{
-public:
-  explicit Joint(std::string joint_name, float present_position = 30.0);
+  std::string port_name = "tty/ACM0";
 
-  void set_target_position(float target_position, float speed = 1.0);
-  void set_target_position(float present_position, float target_position, float speed);
-  void set_present_position(float present_position);
-  void set_pid_gain(float p, float i, float d);
+  // change the port name
+  if (argc > 1) {
+    port_name = argv[1];
+  }
 
-  void interpolate();
+  // init node
+  auto motion_manager = std::make_shared<tachimawari::MotionManager>("motion_manager", port_name);
 
-  uint8_t get_id();
-  int32_t get_position();
-  int32_t get_goal_position();
-  std::vector<uint16_t> get_pid_gain();  // temporary
+  // open the port
+  if (motion_manager->start()) {
+    rclcpp::spin(motion_manager);
+  }
 
-private:
-  uint8_t id;
+  // close the port
+  motion_manager->stop();
 
-  uint16_t p_gain = 850.0;
-  uint16_t i_gain = 0.0;
-  uint16_t d_gain = 0.0;
-
-  int32_t goal_position;
-  int32_t position;
-  int32_t additional_position;
-
-  static const std::map<std::string, uint8_t> ids;
-};
-
-}  // namespace tachimawari
-
-#endif  // TACHIMAWARI__JOINT_HPP_
+  rclcpp::shutdown();
+}
