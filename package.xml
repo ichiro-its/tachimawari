@@ -3,19 +3,15 @@
 <package format="3">
   <name>tachimawari</name>
   <version>0.1.0</version>
-  <description>Motion tools using OpenCR for ROS 2</description>
+  <description>DYNAMIXEL's joints management for ROS 2</description>
   <maintainer email="alfi.maulana.f@gmail.com">Alfi Maulana</maintainer>
   <license>MIT License</license>
-
   <buildtool_depend>ament_cmake</buildtool_depend>
-  
   <depend>dynamixel_sdk</depend>
   <depend>rclcpp</depend>
   <depend>tachimawari_interfaces</depend>
-
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
-
   <export>
     <build_type>ament_cmake</build_type>
   </export>
