@@ -14,4 +14,5 @@ jobs:
         uses: ichiro-its/ros2-ci@v0.4.1
         with:
           ros2-distro: foxy
-          apt-packages: ros-foxy-dynamixel-sdk
+          apt-packages: git ros-foxy-dynamixel-sdk
+          pre-build: git clone https://github.com/ichiro-its/tachimawari_interfaces /ws/tachimawari_interfaces
