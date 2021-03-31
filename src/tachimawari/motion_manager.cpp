@@ -48,7 +48,7 @@ MotionManager::MotionManager(std::string node_name, std::string port, float prot
     using Joint = tachimawari::Joint;
 
     set_joints_service = this->create_service<SetJoints>(
-      node_name + "joints_message",
+      node_name + "/set_joints",
       [this](std::shared_ptr<SetJoints::Request> request,
       std::shared_ptr<SetJoints::Response> response) {
         (void)request;
@@ -80,24 +80,22 @@ bool MotionManager::start()
   int baudrate = 57600;
 
   // Open port
-  std::cout << "open the port\n";
   if (port_handler->openPort()) {
-    std::cout << "succeeded to open the port!\n";
+    RCLCPP_INFO_STREAM(get_logger(), "succeeded to open the port!");
   } else {
-    std::cout << "failed to open the port!\n" << "try again!\n";
+    RCLCPP_ERROR_STREAM(get_logger(), "failed to open the port!, try again!");
     return false;
   }
 
   // Set baudrate
   if (port_handler->setBaudRate(baudrate)) {
-    std::cout << "succeeded to set the baudrate!\n";
+    RCLCPP_INFO_STREAM(get_logger(), "succeeded to set the baudrate!");
   } else {
-    std::cout << "failed to set the baudrate!\n" << "try again!\n";
+    RCLCPP_ERROR_STREAM(get_logger(), "failed to set the baudrate!, try again!");
     stop();
     return false;
   }
 
-  std::cout << "\033[H\033[J";
   return true;
 }
 
@@ -137,21 +135,16 @@ bool MotionManager::torque_enable(Joint joint)
     port_handler, joint.get_id(), static_cast<uint8_t>(MXAddress::TORQUE_ENABLE),
     torque_enable, &comm_error);
   if (comm_result != COMM_SUCCESS) {
-    std::cout << "failed to enable torque [ID:" << std::setfill('0') << std::setw(2) <<
-      static_cast<int>(joint.get_id()) << "]. " << packet_handler->getTxRxResult(comm_result) <<
-      "\n";
+    RCLCPP_ERROR_STREAM(
+      get_logger(), "failed to enable torque [ID:" << std::setfill('0') << std::setw(2) <<
+        static_cast<int>(joint.get_id()) << "]. " << packet_handler->getTxRxResult(comm_result));
     return false;
   } else if (comm_error != 0) {
-    std::cout << "failed to enable torque [ID:" << std::setfill('0') << std::setw(2) <<
-      static_cast<int>(joint.get_id()) << "]. " << packet_handler->getRxPacketError(comm_error) <<
-      "\n";
+    RCLCPP_ERROR_STREAM(
+      get_logger(), "failed to enable torque [ID:" << std::setfill('0') << std::setw(2) <<
+        static_cast<int>(joint.get_id()) << "]. " << packet_handler->getRxPacketError(comm_error));
     return false;
-  } else {
-    std::cout << "[ID:" << std::setfill('0') << std::setw(2) <<
-      static_cast<int>(joint.get_id()) << "]. has been successfully connected\n";
   }
-
-  std::cout << "\033[H\033[J";
 
   return true;
 }
@@ -178,18 +171,16 @@ bool MotionManager::torque_disable(Joint joint)
     port_handler, joint.get_id(), static_cast<uint8_t>(MXAddress::TORQUE_ENABLE),
     torque_disable, &comm_error);
   if (comm_result != COMM_SUCCESS) {
-    std::cout << "failed to disable torque [ID:" << std::setfill('0') << std::setw(2) <<
-      static_cast<int>(joint.get_id()) << "]. " << packet_handler->getTxRxResult(comm_result) <<
-      "\n";
+    RCLCPP_ERROR_STREAM(
+      get_logger(), "failed to enable torque [ID:" << std::setfill('0') << std::setw(2) <<
+        static_cast<int>(joint.get_id()) << "]. " << packet_handler->getTxRxResult(comm_result));
     return false;
   } else if (comm_error != 0) {
-    std::cout << "failed to disable torque [ID:" << std::setfill('0') << std::setw(2) <<
-      static_cast<int>(joint.get_id()) << "]. " << packet_handler->getRxPacketError(comm_error) <<
-      "\n";
+    RCLCPP_ERROR_STREAM(
+      get_logger(), "failed to enable torque [ID:" << std::setfill('0') << std::setw(2) <<
+        static_cast<int>(joint.get_id()) << "]. " << packet_handler->getRxPacketError(comm_error));
     return false;
   }
-
-  std::cout << "\033[H\033[J";
 
   return true;
 }
@@ -216,8 +207,9 @@ bool MotionManager::sync_write_joints(
     // Add Dynamixel data value to the Syncwrite storage
     addparam_state = group_sync_write.addParam(joint.get_id(), param_data);
     if (addparam_state != true) {
-      std::cout << "[ID:" << std::setfill('0') << std::setw(2) <<
-        static_cast<int>(joint.get_id()) << "]. group_sync_write addparam failed\n";
+      RCLCPP_ERROR_STREAM(
+        get_logger(), "[ID:" << std::setfill('0') << std::setw(2) <<
+          static_cast<int>(joint.get_id()) << "]. group_sync_write addparam failed");
     }
   }
 
@@ -225,8 +217,8 @@ bool MotionManager::sync_write_joints(
   int comm_result = COMM_TX_FAIL;
   comm_result = group_sync_write.txPacket();
   if (comm_result != COMM_SUCCESS) {
-    std::cout << "failed to synwrite data. " << packet_handler->getTxRxResult(comm_result) <<
-      "\n";
+    RCLCPP_ERROR_STREAM(
+      get_logger(), "failed to synwrite data. " << packet_handler->getTxRxResult(comm_result));
     return false;
   }
 
@@ -249,8 +241,9 @@ bool MotionManager::sync_read_joints(
   for (auto joint : joints) {
     addparam_state = group_sync_read.addParam(joint.get_id());
     if (addparam_state != true) {
-      std::cout << "[ID:" << std::setfill('0') << std::setw(2) <<
-        static_cast<int>(joint.get_id()) << "]. syncread addparam failed\n";
+      RCLCPP_ERROR_STREAM(
+        get_logger(), "[ID:" << std::setfill('0') << std::setw(2) <<
+          static_cast<int>(joint.get_id()) << "]. syncread addparam failed");
     }
   }
 
@@ -258,8 +251,8 @@ bool MotionManager::sync_read_joints(
   int comm_result = COMM_TX_FAIL;
   comm_result = group_sync_read.txRxPacket();
   if (comm_result != COMM_SUCCESS) {
-    std::cout << "failed to syncread data " << packet_handler->getTxRxResult(comm_result) <<
-      "\n";
+    RCLCPP_ERROR_STREAM(
+      get_logger(), "failed to syncread data " << packet_handler->getTxRxResult(comm_result));
     return false;
   }
 
@@ -271,15 +264,13 @@ bool MotionManager::sync_read_joints(
     getdata_state = group_sync_read.isAvailable(
       joints.at(index).get_id(), static_cast<uint8_t>(start_address), data_length);
     if (getdata_state != true) {
-      std::cout << "[ID:" << std::setfill('0') << std::setw(2) <<
-        static_cast<int>(joints.at(index).get_id()) << "]. syncread getdata failed\n";
+      RCLCPP_ERROR_STREAM(
+        get_logger(), "[ID:" << std::setfill('0') << std::setw(2) <<
+          static_cast<int>(joints.at(index).get_id()) << "]. syncread getdata failed");
     } else {
       // Get Dynamixel present position value
       data_result = group_sync_read.getData(
         joints.at(index).get_id(), static_cast<uint8_t>(start_address), data_length);
-      std::cout << "[ID:" << std::setfill('0') << std::setw(2) <<
-        static_cast<int>(joints.at(index).get_id()) << "]. data: " << std::setfill('0') <<
-        std::setw(4) << data_result << "\n";
       joints.at(index).set_present_position(data_result);
     }
   }
@@ -303,10 +294,20 @@ bool MotionManager::bulk_read_joints(
     addparam_state = group_bulk_read.addParam(
       joint.get_id(), static_cast<uint16_t>(start_address), data_length);
     if (addparam_state != true) {
-      std::cout << "[ID:" << std::setfill('0') << std::setw(2) <<
-        static_cast<int>(joint.get_id()) << "]. bulkread addparam failed\n";
+      RCLCPP_ERROR_STREAM(
+        get_logger(), "[ID:" << std::setfill('0') << std::setw(2) <<
+          static_cast<int>(joint.get_id()) << "]. bulkread addparam failed");
       return false;
     }
+  }
+
+  // Syncread data
+  int comm_result = COMM_TX_FAIL;
+  comm_result = group_bulk_read.txRxPacket();
+  if (comm_result != COMM_SUCCESS) {
+    RCLCPP_ERROR_STREAM(
+      get_logger(), "failed to bulkread data " << packet_handler->getTxRxResult(comm_result));
+    return false;
   }
 
   bool getdata_state = false;
@@ -317,15 +318,13 @@ bool MotionManager::bulk_read_joints(
     getdata_state = group_bulk_read.isAvailable(
       joints.at(index).get_id(), static_cast<uint8_t>(start_address), data_length);
     if (getdata_state != true) {
-      std::cout << "[ID:" << std::setfill('0') << std::setw(2) <<
-        static_cast<int>(joints.at(index).get_id()) << "]. bulkread getdata failed\n";
+      RCLCPP_ERROR_STREAM(
+        get_logger(), "[ID:" << std::setfill('0') << std::setw(2) <<
+          static_cast<int>(joints.at(index).get_id()) << "]. bulkread getdata failed");
     } else {
-      // Get Dynamixel#1 present position value
+      // Get Dynamixel present position value
       data_result = group_bulk_read.getData(
         joints.at(index).get_id(), static_cast<uint8_t>(start_address), data_length);
-      std::cout << "[ID:" << std::setfill('0') << std::setw(2) <<
-        static_cast<int>(joints.at(index).get_id()) << "]. data: " << std::setfill('0') <<
-        std::setw(4) << data_result << "\n";
       joints.at(index).set_present_position(data_result);
     }
   }

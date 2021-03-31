@@ -62,7 +62,8 @@ const std::map<std::string, uint8_t> Joint::ids = {
 };
 
 Joint::Joint(std::string joint_name, float present_position)
-: id(Joint::ids.at(joint_name)), position(present_position)
+: id(Joint::ids.at(joint_name)), position(present_position),
+  name(joint_name)
 {
 }
 
@@ -99,6 +100,11 @@ void Joint::interpolate()
 uint8_t Joint::get_id()
 {
   return id;
+}
+
+std::string Joint::get_joint_name()
+{
+  return name;
 }
 
 int32_t Joint::get_position()
