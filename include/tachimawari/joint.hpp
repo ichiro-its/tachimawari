@@ -41,12 +41,14 @@ public:
   void interpolate();
 
   uint8_t get_id();
+  std::string get_joint_name();
   int32_t get_position();
   int32_t get_goal_position();
   std::vector<uint16_t> get_pid_gain();  // temporary
 
 private:
   uint8_t id;
+  std::string name;
 
   uint16_t p_gain = 850.0;
   uint16_t i_gain = 0.0;
