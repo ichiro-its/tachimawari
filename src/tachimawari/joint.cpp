@@ -62,8 +62,7 @@ const std::map<std::string, uint8_t> Joint::ids = {
 };
 
 Joint::Joint(std::string joint_name, float present_position)
-: id(Joint::ids.at(joint_name)), position(present_position),
-  name(joint_name)
+: id(Joint::ids.at(joint_name)), name(joint_name), position(present_position)
 {
 }
 
@@ -89,12 +88,28 @@ void Joint::set_target_position(float present_position, float target_position, f
 {
   position = (present_position / 360 * 4096) - 1;  // will be placed in utility
   goal_position = (target_position / 360 * 4096) - 1;  // will be placed in utility
-  additional_position = (position - goal_position) * speed;
+  additional_position = (goal_position - position) * speed;
+}
+
+void Joint::set_simulator_target_position(
+  float target_position,
+  float speed)
+{
+  goal_position = target_position;
+  additional_position = (goal_position - position) * speed;
 }
 
 void Joint::interpolate()
 {
-  position = position + additional_position;
+  bool goal_position_is_reached = (additional_position >= 0 && position + additional_position >=
+    goal_position) || (additional_position <= 0 && position + additional_position < goal_position);
+
+  if (goal_position_is_reached) {
+    position = goal_position;
+    additional_position = 0.0;
+  } else {
+    position = position + additional_position;
+  }
 }
 
 uint8_t Joint::get_id()
@@ -107,12 +122,12 @@ std::string Joint::get_joint_name()
   return name;
 }
 
-int32_t Joint::get_position()
+float Joint::get_position()
 {
   return position;
 }
 
-int32_t Joint::get_goal_position()
+float Joint::get_goal_position()
 {
   return goal_position;
 }

@@ -35,6 +35,7 @@ public:
 
   void set_target_position(float target_position, float speed = 1.0);
   void set_target_position(float present_position, float target_position, float speed);
+  void set_simulator_target_position(float target_position, float speed);
   void set_present_position(float present_position);
   void set_pid_gain(float p, float i, float d);
 
@@ -42,21 +43,21 @@ public:
 
   uint8_t get_id();
   std::string get_joint_name();
-  int32_t get_position();
-  int32_t get_goal_position();
+  float get_position();
+  float get_goal_position();
   std::vector<uint16_t> get_pid_gain();  // temporary
 
 private:
   uint8_t id;
   std::string name;
 
-  uint16_t p_gain = 850.0;
-  uint16_t i_gain = 0.0;
-  uint16_t d_gain = 0.0;
+  float p_gain = 850.0;
+  float i_gain = 0.0;
+  float d_gain = 0.0;
 
-  int32_t goal_position;
-  int32_t position;
-  int32_t additional_position;
+  float goal_position;
+  float position;
+  float additional_position;
 
   static const std::map<std::string, uint8_t> ids;
 };
