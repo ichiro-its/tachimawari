@@ -120,10 +120,9 @@ const float & Joint::get_goal_position() const
   return goal_position;
 }
 
-const std::vector<float> & Joint::get_pid_gain() const  // temporary
+std::vector<float> Joint::get_pid_gain() const  // temporary
 {
-  const std::vector<float> & pid_gain{p_gain, i_gain, d_gain};
-  return pid_gain;
+  return {p_gain, i_gain, d_gain};
 }
 
 }  // namespace tachimawari

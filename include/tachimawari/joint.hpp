@@ -43,7 +43,7 @@ public:
   const std::string & get_joint_name() const;
   const float & get_position() const;
   const float & get_goal_position() const;
-  const std::vector<float> & get_pid_gain() const;  // temporary
+  std::vector<float> get_pid_gain() const;  // temporary
 
 private:
   uint8_t id;
