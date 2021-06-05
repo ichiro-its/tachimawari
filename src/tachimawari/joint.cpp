@@ -100,34 +100,29 @@ void Joint::interpolate()
   }
 }
 
-uint8_t Joint::get_id() const
+const uint8_t & Joint::get_id() const
 {
   return id;
 }
 
-std::string Joint::get_joint_name() const
+const std::string & Joint::get_joint_name() const
 {
   return name;
 }
 
-float Joint::get_position() const
+const float & Joint::get_position() const
 {
   return position;
 }
 
-float Joint::get_goal_position() const
+const float & Joint::get_goal_position() const
 {
   return goal_position;
 }
 
-std::vector<uint16_t> Joint::get_pid_gain() const  // temporary
+const std::vector<float> & Joint::get_pid_gain() const  // temporary
 {
-  std::vector<uint16_t> pid_gain;
-
-  pid_gain.push_back(p_gain);
-  pid_gain.push_back(i_gain);
-  pid_gain.push_back(d_gain);
-
+  const std::vector<float> & pid_gain{p_gain, i_gain, d_gain};
   return pid_gain;
 }
 

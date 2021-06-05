@@ -39,11 +39,11 @@ public:
 
   void interpolate();
 
-  uint8_t get_id() const;
-  std::string get_joint_name() const;
-  float get_position() const;
-  float get_goal_position() const;
-  std::vector<uint16_t> get_pid_gain() const;  // temporary
+  const uint8_t & get_id() const;
+  const std::string & get_joint_name() const;
+  const float & get_position() const;
+  const float & get_goal_position() const;
+  const std::vector<float> & get_pid_gain() const;  // temporary
 
 private:
   uint8_t id;
