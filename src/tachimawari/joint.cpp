@@ -61,48 +61,36 @@ const std::map<std::string, uint8_t> Joint::ids = {
   {"right_ankle_pitch", 17},
 };
 
-Joint::Joint(std::string joint_name, float present_position)
+Joint::Joint(const std::string & joint_name, const float & present_position)
 : id(Joint::ids.at(joint_name)), name(joint_name), position(present_position)
 {
 }
 
-void Joint::set_target_position(float target_position, float speed)
+void Joint::set_target_position(const float & target_position, const float & speed)
 {
-  goal_position = (target_position / 360 * 4096) - 1;  // will be placed in utility
-  additional_position = (position - goal_position) * speed;
+  goal_position = target_position;
+  additional_position = (goal_position - position) * speed;
 }
 
-void Joint::set_present_position(float present_position)
+void Joint::set_present_position(const float & present_position)
 {
   position = present_position;
 }
 
-void Joint::set_pid_gain(float p, float i, float d)
+void Joint::set_pid_gain(const float & p, const float & i, const float & d)
 {
   p_gain = p;
   i_gain = i;
   d_gain = d;
 }
 
-void Joint::set_target_position(float present_position, float target_position, float speed)
-{
-  position = (present_position / 360 * 4096) - 1;  // will be placed in utility
-  goal_position = (target_position / 360 * 4096) - 1;  // will be placed in utility
-  additional_position = (goal_position - position) * speed;
-}
-
-void Joint::set_simulator_target_position(
-  float target_position,
-  float speed)
-{
-  goal_position = target_position;
-  additional_position = (goal_position - position) * speed;
-}
-
 void Joint::interpolate()
 {
-  bool goal_position_is_reached = (additional_position >= 0 && position + additional_position >=
-    goal_position) || (additional_position <= 0 && position + additional_position < goal_position);
+  bool goal_position_is_reached = false;
+  goal_position_is_reached |= (additional_position >= 0 &&
+    position + additional_position >= goal_position);
+  goal_position_is_reached |= (additional_position <= 0 &&
+    position + additional_position < goal_position);
 
   if (goal_position_is_reached) {
     position = goal_position;
@@ -112,27 +100,27 @@ void Joint::interpolate()
   }
 }
 
-uint8_t Joint::get_id()
+uint8_t Joint::get_id() const
 {
   return id;
 }
 
-std::string Joint::get_joint_name()
+std::string Joint::get_joint_name() const
 {
   return name;
 }
 
-float Joint::get_position()
+float Joint::get_position() const
 {
   return position;
 }
 
-float Joint::get_goal_position()
+float Joint::get_goal_position() const
 {
   return goal_position;
 }
 
-std::vector<uint16_t> Joint::get_pid_gain()  // temporary
+std::vector<uint16_t> Joint::get_pid_gain() const  // temporary
 {
   std::vector<uint16_t> pid_gain;
 

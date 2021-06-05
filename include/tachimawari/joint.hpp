@@ -31,21 +31,19 @@ namespace tachimawari
 class Joint
 {
 public:
-  explicit Joint(std::string joint_name, float present_position = 30.0);
+  explicit Joint(const std::string & joint_name, const float & present_position = 30.0);
 
-  void set_target_position(float target_position, float speed = 1.0);
-  void set_target_position(float present_position, float target_position, float speed);
-  void set_simulator_target_position(float target_position, float speed);
-  void set_present_position(float present_position);
-  void set_pid_gain(float p, float i, float d);
+  void set_target_position(const float & target_position, const float & speed = 1.0);
+  void set_present_position(const float & present_position);
+  void set_pid_gain(const float & p, const float & i, const float & d);
 
   void interpolate();
 
-  uint8_t get_id();
-  std::string get_joint_name();
-  float get_position();
-  float get_goal_position();
-  std::vector<uint16_t> get_pid_gain();  // temporary
+  uint8_t get_id() const;
+  std::string get_joint_name() const;
+  float get_position() const;
+  float get_goal_position() const;
+  std::vector<uint16_t> get_pid_gain() const;  // temporary
 
 private:
   uint8_t id;
