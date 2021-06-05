@@ -31,32 +31,31 @@ namespace tachimawari
 class Joint
 {
 public:
-  explicit Joint(std::string joint_name, float present_position = 30.0);
+  explicit Joint(const std::string & joint_name, const float & present_position = 30.0);
 
-  void set_target_position(float target_position, float speed = 1.0);
-  void set_target_position(float present_position, float target_position, float speed);
-  void set_present_position(float present_position);
-  void set_pid_gain(float p, float i, float d);
+  void set_target_position(const float & target_position, const float & speed = 1.0);
+  void set_present_position(const float & present_position);
+  void set_pid_gain(const float & p, const float & i, const float & d);
 
   void interpolate();
 
-  uint8_t get_id();
-  std::string get_joint_name();
-  int32_t get_position();
-  int32_t get_goal_position();
-  std::vector<uint16_t> get_pid_gain();  // temporary
+  const uint8_t & get_id() const;
+  const std::string & get_joint_name() const;
+  const float & get_position() const;
+  const float & get_goal_position() const;
+  std::vector<float> get_pid_gain() const;  // temporary
 
 private:
   uint8_t id;
   std::string name;
 
-  uint16_t p_gain = 850.0;
-  uint16_t i_gain = 0.0;
-  uint16_t d_gain = 0.0;
+  float p_gain = 850.0;
+  float i_gain = 0.0;
+  float d_gain = 0.0;
 
-  int32_t goal_position;
-  int32_t position;
-  int32_t additional_position;
+  float goal_position;
+  float position;
+  float additional_position;
 
   static const std::map<std::string, uint8_t> ids;
 };

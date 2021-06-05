@@ -61,71 +61,68 @@ const std::map<std::string, uint8_t> Joint::ids = {
   {"right_ankle_pitch", 17},
 };
 
-Joint::Joint(std::string joint_name, float present_position)
-: id(Joint::ids.at(joint_name)), position(present_position),
-  name(joint_name)
+Joint::Joint(const std::string & joint_name, const float & present_position)
+: id(Joint::ids.at(joint_name)), name(joint_name), position(present_position)
 {
 }
 
-void Joint::set_target_position(float target_position, float speed)
+void Joint::set_target_position(const float & target_position, const float & speed)
 {
-  goal_position = (target_position / 360 * 4096) - 1;  // will be placed in utility
-  additional_position = (position - goal_position) * speed;
+  goal_position = target_position;
+  additional_position = (goal_position - position) * speed;
 }
 
-void Joint::set_present_position(float present_position)
+void Joint::set_present_position(const float & present_position)
 {
   position = present_position;
 }
 
-void Joint::set_pid_gain(float p, float i, float d)
+void Joint::set_pid_gain(const float & p, const float & i, const float & d)
 {
   p_gain = p;
   i_gain = i;
   d_gain = d;
 }
 
-void Joint::set_target_position(float present_position, float target_position, float speed)
-{
-  position = (present_position / 360 * 4096) - 1;  // will be placed in utility
-  goal_position = (target_position / 360 * 4096) - 1;  // will be placed in utility
-  additional_position = (position - goal_position) * speed;
-}
-
 void Joint::interpolate()
 {
-  position = position + additional_position;
+  bool goal_position_is_reached = false;
+  goal_position_is_reached |= (additional_position >= 0 &&
+    position + additional_position >= goal_position);
+  goal_position_is_reached |= (additional_position <= 0 &&
+    position + additional_position < goal_position);
+
+  if (goal_position_is_reached) {
+    position = goal_position;
+    additional_position = 0.0;
+  } else {
+    position = position + additional_position;
+  }
 }
 
-uint8_t Joint::get_id()
+const uint8_t & Joint::get_id() const
 {
   return id;
 }
 
-std::string Joint::get_joint_name()
+const std::string & Joint::get_joint_name() const
 {
   return name;
 }
 
-int32_t Joint::get_position()
+const float & Joint::get_position() const
 {
   return position;
 }
 
-int32_t Joint::get_goal_position()
+const float & Joint::get_goal_position() const
 {
   return goal_position;
 }
 
-std::vector<uint16_t> Joint::get_pid_gain()  // temporary
+std::vector<float> Joint::get_pid_gain() const  // temporary
 {
-  std::vector<uint16_t> pid_gain;
-
-  pid_gain.push_back(p_gain);
-  pid_gain.push_back(i_gain);
-  pid_gain.push_back(d_gain);
-
-  return pid_gain;
+  return {p_gain, i_gain, d_gain};
 }
 
 }  // namespace tachimawari
