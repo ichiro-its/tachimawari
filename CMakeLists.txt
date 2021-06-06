@@ -18,7 +18,7 @@ find_package(dynamixel_sdk REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(tachimawari_interfaces REQUIRED)
 
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME} SHARED
   "src/${PROJECT_NAME}/joint.cpp"
   "src/${PROJECT_NAME}/motion_manager.cpp")
 
