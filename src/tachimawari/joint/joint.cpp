@@ -18,48 +18,49 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__JOINT_HPP_
-#define TACHIMAWARI__JOINT_HPP_
-
 #include <map>
 #include <string>
 #include <vector>
+#include <cmath>
+#include <cstdlib>
+
+#include "tachimawari/joint/joint.hpp"
+
+#include "tachimawari/joint/joint.hpp"
 
 namespace tachimawari
 {
 
-class Joint
+Joint::Joint(const JointId & joint_id, const float & position)
+: id(joint_id), position(position), p_gain(30.0), i_gain(30.0), d_gain(30.0)
 {
-public:
-  explicit Joint(const std::string & joint_name, const float & present_position = 30.0);
+}
 
-  void set_target_position(const float & target_position, const float & speed = 1.0);
-  void set_present_position(const float & present_position);
-  void set_pid_gain(const float & p, const float & i, const float & d);
+void Joint::set_position(const float & position)
+{
+  this->position = position;
+}
 
-  void interpolate();
+void Joint::set_pid_gain(const float & p, const float & i, const float & d)
+{
+  p_gain = p;
+  i_gain = i;
+  d_gain = d;
+}
 
-  const uint8_t & get_id() const;
-  const std::string & get_joint_name() const;
-  const float & get_position() const;
-  const float & get_goal_position() const;
-  std::vector<float> get_pid_gain() const;  // temporary
+const uint8_t & Joint::get_id() const
+{
+  return id;
+}
 
-private:
-  uint8_t id;
-  std::string name;
+const float & Joint::get_position() const
+{
+  return position;
+}
 
-  float p_gain = 850.0;
-  float i_gain = 0.0;
-  float d_gain = 0.0;
-
-  float goal_position;
-  float position;
-  float additional_position;
-
-  static const std::map<std::string, uint8_t> ids;
-};
+std::vector<float> Joint::get_pid_gain() const
+{
+  return {p_gain, i_gain, d_gain};
+}
 
 }  // namespace tachimawari
-
-#endif  // TACHIMAWARI__JOINT_HPP_
