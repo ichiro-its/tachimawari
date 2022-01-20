@@ -18,49 +18,47 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#ifndef TACHIMAWARI__JOINT__MODEL__JOINT_HPP_
+#define TACHIMAWARI__JOINT__MODEL__JOINT_HPP_
+
 #include <map>
 #include <string>
 #include <vector>
-#include <cmath>
-#include <cstdlib>
 
-#include "tachimawari/joint/joint.hpp"
-
-#include "tachimawari/joint/joint.hpp"
+#include "tachimawari/joint/model/joint_id.hpp"
 
 namespace tachimawari
 {
 
-Joint::Joint(const JointId & joint_id, const float & position)
-: id(joint_id), position(position), p_gain(30.0), i_gain(30.0), d_gain(30.0)
+namespace joint
 {
-}
 
-void Joint::set_position(const float & position)
+class Joint
 {
-  this->position = position;
-}
+public:
+  explicit Joint(const JointId & joint_id, const float & position);
 
-void Joint::set_pid_gain(const float & p, const float & i, const float & d)
-{
-  p_gain = p;
-  i_gain = i;
-  d_gain = d;
-}
+  void set_position(const float & position);
 
-const uint8_t & Joint::get_id() const
-{
-  return id;
-}
+  void set_pid_gain(const float & p, const float & i, const float & d);
 
-const float & Joint::get_position() const
-{
-  return position;
-}
+  const uint8_t & get_id() const;
 
-std::vector<float> Joint::get_pid_gain() const
-{
-  return {p_gain, i_gain, d_gain};
-}
+  const float & get_position() const;
+  std::vector<float> get_pid_gain() const;
+
+private:
+  uint8_t id;
+
+  float p_gain;
+  float i_gain;
+  float d_gain;
+
+  float position;
+};
+
+}  // namespace joint
 
 }  // namespace tachimawari
+
+#endif  // TACHIMAWARI__JOINT__MODEL__JOINT_HPP_

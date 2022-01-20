@@ -18,45 +18,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef TACHIMAWARI__JOINT__JOINT_ID_HPP_
-#define TACHIMAWARI__JOINT__JOINT_ID_HPP_
+#ifndef TACHIMAWARI__JOINT__NODE__JOINT_MANAGER_HPP_
+#define TACHIMAWARI__JOINT__NODE__JOINT_MANAGER_HPP_
+
+#include "tachimawari/joint/model/joint.hpp"
 
 namespace tachimawari
 {
 
-enum JointId : uint8_t
+namespace joint
 {
-  // head motors
-  NECK_YAW = 19,
-  NECK_PITCH = 20,
 
-  // left arm motors
-  LEFT_SHOULDER_PITCH = 2,
-  LEFT_SHOULDER_ROLL = 4,
-  LEFT_ELBOW = 6,
+class JointManager
+{
+public:
+  JointManager();
 
-  // right arm motors
-  RIGHT_SHOULDER_PITCH = 1,
-  RIGHT_SHOULDER_ROLL = 3,
-  RIGHT_ELBOW = 5,
+  bool torque_enable(const bool & enable);
 
-  // left leg motors
-  LEFT_HIP_YAW = 8,
-  LEFT_HIP_ROLL = 10,
-  LEFT_HIP_PITCH = 12,
-  LEFT_KNEE = 14,
-  LEFT_ANKLE_ROLL = 16,
-  LEFT_ANKLE_PITCH = 18,
+  bool set_joints(
+    const std::vector<Joint> & joints, const uint8_t & starting_address, const int & data_length);
 
-  // right leg motors
-  RIGHT_HIP_YAW = 7,
-  RIGHT_HIP_ROLL = 9,
-  RIGHT_HIP_PITCH = 11,
-  RIGHT_KNEE = 13,
-  RIGHT_ANKLE_ROLL = 15,
-  RIGHT_ANKLE_PITCH = 17,
+  bool move_joints(
+    const std::vector<Joint> & joints, const uint8_t & starting_address, const int & data_length);
 };
+
+}  // namespace joint
 
 }  // namespace tachimawari
 
-#endif  // TACHIMAWARI__JOINT__JOINT_ID_HPP_
+#endif  // TACHIMAWARI__JOINT__NODE__JOINT_MANAGER_HPP_
