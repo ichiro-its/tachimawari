@@ -18,49 +18,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__P1_PACKET_HPP_
+#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__P1_PACKET_HPP_
+
 #include <string>
 #include <vector>
 
-#include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari/control/packet/packet.hpp"
 
 namespace tachimawari
 {
 
-namespace joint
+class P1Packet : public Packet
 {
+public:
+  P1Packet();
 
-Joint::Joint(const JointId & joint_id, const float & position)
-: id(joint_id), position(position), p_gain(30.0), i_gain(30.0), d_gain(30.0)
-{
-}
+  std::vector<uint8_t> get_packet() const override;
 
-void Joint::set_position(const float & position)
-{
-  this->position = position;
-}
+protected:
+  void calculate_checksum();
 
-void Joint::set_pid_gain(const float & p, const float & i, const float & d)
-{
-  p_gain = p;
-  i_gain = i;
-  d_gain = d;
-}
-
-const uint8_t & Joint::get_id() const
-{
-  return id;
-}
-
-const float & Joint::get_position() const
-{
-  return position;
-}
-
-std::vector<float> Joint::get_pid_gain() const
-{
-  return {p_gain, i_gain, d_gain};
-}
-
-}  // namespace joint
+  uint8_t checksum;
+};
 
 }  // namespace tachimawari
+
+#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__P1_PACKET_HPP_

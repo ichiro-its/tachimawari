@@ -21,46 +21,15 @@
 #include <string>
 #include <vector>
 
-#include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari/control/manager/control_manager.hpp"
 
 namespace tachimawari
 {
 
-namespace joint
-{
-
-Joint::Joint(const JointId & joint_id, const float & position)
-: id(joint_id), position(position), p_gain(30.0), i_gain(30.0), d_gain(30.0)
+ControlManager::ControlManager(
+  const std::string & port_name, const float & protocol_version, const int & baudrate)
+: port_name(port_name), protocol_version(protocol_version), baudrate(baudrate)
 {
 }
-
-void Joint::set_position(const float & position)
-{
-  this->position = position;
-}
-
-void Joint::set_pid_gain(const float & p, const float & i, const float & d)
-{
-  p_gain = p;
-  i_gain = i;
-  d_gain = d;
-}
-
-const uint8_t & Joint::get_id() const
-{
-  return id;
-}
-
-const float & Joint::get_position() const
-{
-  return position;
-}
-
-std::vector<float> Joint::get_pid_gain() const
-{
-  return {p_gain, i_gain, d_gain};
-}
-
-}  // namespace joint
 
 }  // namespace tachimawari

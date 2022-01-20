@@ -21,7 +21,10 @@
 #ifndef TACHIMAWARI__CONTROL__MANAGER__CONTROL_MANAGER_HPP_
 #define TACHIMAWARI__CONTROL__MANAGER__CONTROL_MANAGER_HPP_
 
+#include <string>
 #include <vector>
+
+#include "tachimawari/joint/model/joint.hpp"
 
 namespace tachimawari
 {
@@ -29,19 +32,22 @@ namespace tachimawari
 class ControlManager
 {
 public:
-  ControlManager();
+  explicit ControlManager(
+    const std::string & port_name, const float & protocol_version, const int & baudrate);
   virtual ~ControlManager() {}
 
   virtual bool connect();
   virtual void disconnect();
 
-  virtual bool torque_enable(const bool & enable);
+  virtual bool sync_write_joints(const std::vector<joint::Joint> & joints,
+    const bool & with_pid);
 
-  virtual bool sync_write();
-
-  virtual bool bulk_read();
+  virtual bool bulk_read_joints(const std::vector<joint::Joint> & joints);
 
 protected:
+  std::string port_name;
+  float protocol_version;
+  int baudrate;
 };
 
 }  // namespace tachimawari

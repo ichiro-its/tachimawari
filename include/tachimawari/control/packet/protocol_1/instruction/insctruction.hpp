@@ -18,32 +18,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__CONTROLLER__CM740_HPP_
-#define TACHIMAWARI__CONTROL__CONTROLLER__CM740_HPP_
+#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__INSTRUCTION_HPP
+#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__INSTRUCTION_HPP
 
-#include <vector>
-
-#include "tachimawari/control/manager/control_manager.hpp"
+#include <string>
 
 namespace tachimawari
 {
 
-class CM740 : public ControlManager
+namespace protocol_1
 {
-public:
-  explicit CM740(
-    const std::string & port_name, const int & baudrate = 1000000,
-    const float & protocol_version = 1.0);
 
-  bool connect() override;
-  void disconnect() override;
-
-  bool sync_write_joints(const std::vector<joint::Joint> & joints,
-    const bool & with_pid) override;
-
-  bool bulk_read_joints(const std::vector<joint::Joint> & joints) override;
+enum Instruction : uint8_t
+{
+  PING = 1,
+  READ = 2,
+  WRITE = 3,
+  REG_WRITE = 4,
+  ACTION = 5,
+  RESET = 6,
+  SYNC_WRITE = 131,
+  BULK_READ = 146,
 };
+
+}  // namespace protocol_1
 
 }  // namespace tachimawari
 
-#endif  // TACHIMAWARI__CONTROL__CONTROLLER__CM740_HPP_
+#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__INSTRUCTION_HPP

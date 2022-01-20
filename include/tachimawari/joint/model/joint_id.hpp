@@ -21,6 +21,8 @@
 #ifndef TACHIMAWARI__JOINT__MODEL__JOINT_ID_HPP_
 #define TACHIMAWARI__JOINT__MODEL__JOINT_ID_HPP_
 
+#include <string>
+
 namespace tachimawari
 {
 

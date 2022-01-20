@@ -18,32 +18,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__CONTROLLER__CM740_HPP_
-#define TACHIMAWARI__CONTROL__CONTROLLER__CM740_HPP_
+#ifndef TACHIMAWARI__CONTROL__PACKET__MODEL__PACKET_ID_HPP_
+#define TACHIMAWARI__CONTROL__PACKET__MODEL__PACKET_ID_HPP_
 
-#include <vector>
-
-#include "tachimawari/control/manager/control_manager.hpp"
+#include <string>
 
 namespace tachimawari
 {
 
-class CM740 : public ControlManager
+namespace packet
 {
-public:
-  explicit CM740(
-    const std::string & port_name, const int & baudrate = 1000000,
-    const float & protocol_version = 1.0);
 
-  bool connect() override;
-  void disconnect() override;
-
-  bool sync_write_joints(const std::vector<joint::Joint> & joints,
-    const bool & with_pid) override;
-
-  bool bulk_read_joints(const std::vector<joint::Joint> & joints) override;
+enum PacketId : uint8_t
+{
+  // head motors
+  CONTROLLER = 200,
+  BROADCAST = 254,
 };
+
+}  // namespace packet
 
 }  // namespace tachimawari
 
-#endif  // TACHIMAWARI__CONTROL__CONTROLLER__CM740_HPP_
+#endif  // TACHIMAWARI__CONTROL__PACKET__MODEL__PACKET_ID_HPP_

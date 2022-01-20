@@ -21,8 +21,6 @@
 #ifndef TACHIMAWARI__JOINT__MODEL__JOINT_HPP_
 #define TACHIMAWARI__JOINT__MODEL__JOINT_HPP_
 
-#include <map>
-#include <string>
 #include <vector>
 
 #include "tachimawari/joint/model/joint_id.hpp"

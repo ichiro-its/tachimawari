@@ -18,49 +18,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#ifndef TACHIMAWARI__CONTROL__PACKET__MODEL__PACKET_HPP_
+#define TACHIMAWARI__CONTROL__PACKET__MODEL__PACKET_HPP_
+
 #include <string>
 #include <vector>
-
-#include "tachimawari/joint/model/joint.hpp"
 
 namespace tachimawari
 {
 
-namespace joint
+namespace packet
 {
 
-Joint::Joint(const JointId & joint_id, const float & position)
-: id(joint_id), position(position), p_gain(30.0), i_gain(30.0), d_gain(30.0)
+class Packet
 {
-}
+public:
+  Packet();
 
-void Joint::set_position(const float & position)
-{
-  this->position = position;
-}
+  virtual std::vector<uint8_t> get_packet() const;
 
-void Joint::set_pid_gain(const float & p, const float & i, const float & d)
-{
-  p_gain = p;
-  i_gain = i;
-  d_gain = d;
-}
+protected:
+  std::vector<uint8_t> headers;
 
-const uint8_t & Joint::get_id() const
-{
-  return id;
-}
+  uint8_t packet_id;
+  uint8_t data_length;
+  uint8_t info;
 
-const float & Joint::get_position() const
-{
-  return position;
-}
+  std::vector<uint8_t> parameters;
+};
 
-std::vector<float> Joint::get_pid_gain() const
-{
-  return {p_gain, i_gain, d_gain};
-}
-
-}  // namespace joint
+}  // namespace packet
 
 }  // namespace tachimawari
+
+#endif  // TACHIMAWARI__CONTROL__PACKET__MODEL__PACKET_HPP_

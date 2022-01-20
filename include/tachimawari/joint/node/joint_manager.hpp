@@ -36,11 +36,7 @@ public:
 
   bool torque_enable(const bool & enable);
 
-  bool set_joints(
-    const std::vector<Joint> & joints, const uint8_t & starting_address, const int & data_length);
-
-  bool move_joints(
-    const std::vector<Joint> & joints, const uint8_t & starting_address, const int & data_length);
+  bool set_joints(const std::vector<Joint> & joints);
 };
 
 }  // namespace joint
