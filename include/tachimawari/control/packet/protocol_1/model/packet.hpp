@@ -24,28 +24,36 @@
 #include <string>
 #include <vector>
 
+#include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
+#include "tachimawari/control/packet/protocol_1/instruction/insctruction.hpp"
+
 namespace tachimawari
 {
 
 namespace packet
 {
 
+namespace protocol_1
+{
+
 class Packet
 {
 public:
-  Packet();
+  Packet(const PacketId & pakcet_id, const Instruction & instruction);
 
-  virtual std::vector<uint8_t> get_packet() const;
+  std::vector<uint8_t> get_packet() const;
 
-protected:
+private:
   std::vector<uint8_t> headers;
 
-  uint8_t packet_id;
+  PacketId packet_id;
   uint8_t data_length;
   uint8_t info;
 
   std::vector<uint8_t> parameters;
 };
+
+}  // namespace protocol_1
 
 }  // namespace packet
 

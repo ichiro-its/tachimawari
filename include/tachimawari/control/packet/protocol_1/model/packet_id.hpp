@@ -29,12 +29,16 @@ namespace tachimawari
 namespace packet
 {
 
+namespace protocol_1
+{
+
 enum PacketId : uint8_t
 {
-  // head motors
   CONTROLLER = 200,
   BROADCAST = 254,
 };
+
+}  // namespace protocol_1
 
 }  // namespace packet
 

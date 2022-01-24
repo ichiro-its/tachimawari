@@ -18,10 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__INSTRUCTION_HPP
-#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__INSTRUCTION_HPP
-
-#include <string>
+#ifndef TACHIMAWARI__CONTROL__PACKET__MODEL__PACKET_INDEX_HPP_
+#define TACHIMAWARI__CONTROL__PACKET__MODEL__PACKET_INDEX_HPP_
 
 namespace tachimawari
 {
@@ -32,16 +30,13 @@ namespace packet
 namespace protocol_1
 {
 
-enum Instruction : uint8_t
+enum PacketIndex
 {
-  PING = 1,
-  READ = 2,
-  WRITE = 3,
-  REG_WRITE = 4,
-  ACTION = 5,
-  RESET = 6,
-  SYNC_WRITE = 131,
-  BULK_READ = 146,
+  ID = 2,
+  LENGTH = 3,
+  INSTRUCTION = 4,
+  ERROR = 4,
+  PARAMETER = 5
 };
 
 }  // namespace protocol_1
@@ -50,4 +45,4 @@ enum Instruction : uint8_t
 
 }  // namespace tachimawari
 
-#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__INSTRUCTION_HPP
+#endif  // TACHIMAWARI__CONTROL__PACKET__MODEL__PACKET_INDEX_HPP_

@@ -18,30 +18,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__P1_PACKET_HPP_
-#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__P1_PACKET_HPP_
-
 #include <string>
 #include <vector>
 
-#include "tachimawari/control/packet/packet.hpp"
+#include "tachimawari/control/packet/protocol_1/model/packet.hpp"
+
+#include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
+#include "tachimawari/control/packet/protocol_1/instruction/insctruction.hpp"
 
 namespace tachimawari
 {
 
-class P1Packet : public Packet
+namespace packet
 {
-public:
-  P1Packet();
+  
+namespace protocol_1
+{
 
-  std::vector<uint8_t> get_packet() const override;
+Packet::Packet(const PacketId & pakcet_id, const Instruction & instruction)
+: packet_id(packet_id), info(instruction)
+{
+  headers.push_back(0xFF);
+  headers.push_back(0xFF);
+}
 
-protected:
-  void calculate_checksum();
+}  // namespace protocol_1
 
-  uint8_t checksum;
-};
+}  // namespace packet
 
 }  // namespace tachimawari
-
-#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__P1_PACKET_HPP_
