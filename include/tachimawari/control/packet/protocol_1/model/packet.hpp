@@ -41,11 +41,9 @@ class Packet
 public:
   Packet(const PacketId & pakcet_id, const Instruction & instruction);
 
-  void set_parameters(const std::vector<uint8_t> & parameters);
-
   const std::vector<uint8_t> & get_packet() const;
 
-private:
+protected:
   std::vector<uint8_t> packet;
 
   PacketId packet_id;

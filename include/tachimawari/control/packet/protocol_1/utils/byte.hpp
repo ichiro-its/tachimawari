@@ -18,15 +18,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__SYNC_WRITE_PACKET_HPP_
-#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__SYNC_WRITE_PACKET_HPP_
+#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__UTILS__BYTE_HPP_
+#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__UTILS__BYTE_HPP_
 
 #include <string>
-#include <vector>
-
-#include "tachimawari/control/packet/protocol_1/model/packet.hpp"
-#include "tachimawari/joint/model/joint.hpp"
-#include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
 namespace tachimawari
 {
@@ -37,13 +32,11 @@ namespace packet
 namespace protocol_1
 {
 
-class SyncWritePacket : public Packet
+class Byte
 {
 public:
-  SyncWritePacket();
-
-  void create(const std::vector<joint::Joint> & joints,
-    const uint8_t & starting_address = joint::protocol_1::MX28Address::GOAL_POSITION_L);
+  static uint8_t get_low_byte(int word);
+  static uint8_t get_high_byte(int word);
 };
 
 }  // namespace protocol_1
@@ -52,4 +45,4 @@ public:
 
 }  // namespace tachimawari
 
-#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__SYNC_WRITE_PACKET_HPP_
+#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__UTILS__BYTE_HPP_

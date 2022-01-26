@@ -21,9 +21,11 @@
 #ifndef TACHIMAWARI__CONTROL__CONTROLLER__CM740_HPP_
 #define TACHIMAWARI__CONTROL__CONTROLLER__CM740_HPP_
 
+#include <string>
 #include <vector>
 
 #include "tachimawari/control/manager/control_manager.hpp"
+#include "tachimawari/joint/model/joint.hpp"
 
 namespace tachimawari
 {
@@ -42,6 +44,12 @@ public:
     const bool & with_pid) override;
 
   bool bulk_read_joints(const std::vector<joint::Joint> & joints) override;
+
+private:
+  void close_port();
+
+  int socket_fd;
+  double byte_transfer_time;
 };
 
 }  // namespace tachimawari

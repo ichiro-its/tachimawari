@@ -18,14 +18,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__SYNC_WRITE_PACKET_HPP_
-#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__SYNC_WRITE_PACKET_HPP_
-
 #include <string>
 #include <vector>
 
-#include "tachimawari/control/packet/protocol_1/model/packet.hpp"
-#include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari/control/packet/protocol_1/instruction/sync_write_packet.hpp"
+
+#include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
+#include "tachimawari/control/packet/protocol_1/instruction/insctruction.hpp"
+#include "tachimawari/control/packet/protocol_1/utils/byte.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
 namespace tachimawari
@@ -33,23 +33,38 @@ namespace tachimawari
 
 namespace packet
 {
-
+  
 namespace protocol_1
 {
 
-class SyncWritePacket : public Packet
+SyncWritePacket::SyncWritePacket()
+: Packet(PacketId::BROADCAST, Instruction::SYNC_WRITE)
 {
-public:
-  SyncWritePacket();
+}
 
-  void create(const std::vector<joint::Joint> & joints,
-    const uint8_t & starting_address = joint::protocol_1::MX28Address::GOAL_POSITION_L);
-};
+void SyncWritePacket::create(const std::vector<joint::Joint> & joints,
+    const uint8_t & starting_address)
+{
+  parameters.push_back(starting_address);
+  
+  bool is_include_pid = starting_address == joint::protocol_1::MX28Address::D_GAIN;  
+  parameters.push_back(static_cast<uint8_t>((is_include_pid) ? 6 : 2));
+
+  for (auto & joint : joints) {
+    if (is_include_pid) {
+      parameters.push_back(static_cast<uint8_t>(joint.get_pid_gain()[2]));
+      parameters.push_back(static_cast<uint8_t>(joint.get_pid_gain()[1]));
+      parameters.push_back(static_cast<uint8_t>(joint.get_pid_gain()[0]));
+      parameters.push_back(0x00);
+    }
+
+    parameters.push_back(Byte::get_low_byte(static_cast<int>(joint.get_position())));
+    parameters.push_back(Byte::get_high_byte(static_cast<int>(joint.get_position())));
+  }
+}
 
 }  // namespace protocol_1
 
 }  // namespace packet
 
 }  // namespace tachimawari
-
-#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__SYNC_WRITE_PACKET_HPP_

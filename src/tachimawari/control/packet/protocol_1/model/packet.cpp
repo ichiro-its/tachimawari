@@ -42,11 +42,6 @@ Packet::Packet(const PacketId & pakcet_id, const Instruction & instruction)
   packet.push_back(0xFF);
 }
 
-void Packet::set_parameters(const std::vector<uint8_t> & parameters)
-{
-  this->parameters = parameters;
-}
-
 const std::vector<uint8_t> & Packet::get_packet() const
 {
   packet.push_back(packet_id);
