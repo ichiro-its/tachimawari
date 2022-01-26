@@ -38,8 +38,32 @@ namespace protocol_1
 Packet::Packet(const PacketId & pakcet_id, const Instruction & instruction)
 : packet_id(packet_id), info(instruction)
 {
-  headers.push_back(0xFF);
-  headers.push_back(0xFF);
+  packet.push_back(0xFF);
+  packet.push_back(0xFF);
+}
+
+void Packet::set_parameters(const std::vector<uint8_t> & parameters)
+{
+  this->parameters = parameters;
+}
+
+const std::vector<uint8_t> & Packet::get_packet() const
+{
+  packet.push_back(packet_id);
+  
+  uint8_t data_length = static_cast<uint8_t>(parameters.size() + 2);
+  packet.push_back(data_length);
+
+  packet.push_back(info);
+  packet.insert(packet.end(), parameters.begin(), parameters.end());
+
+  uint8_t checksum = packet_id + data_length + info;
+  for (auto & parameter : parameters) {
+    checksum += parameter;
+  }
+  packet.push_back(~checksum);
+
+  return packet;
 }
 
 }  // namespace protocol_1

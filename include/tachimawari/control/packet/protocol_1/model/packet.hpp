@@ -18,8 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__PACKET__MODEL__PACKET_HPP_
-#define TACHIMAWARI__CONTROL__PACKET__MODEL__PACKET_HPP_
+#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__MODEL__PACKET_HPP_
+#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__MODEL__PACKET_HPP_
 
 #include <string>
 #include <vector>
@@ -41,13 +41,14 @@ class Packet
 public:
   Packet(const PacketId & pakcet_id, const Instruction & instruction);
 
-  std::vector<uint8_t> get_packet() const;
+  void set_parameters(const std::vector<uint8_t> & parameters);
+
+  const std::vector<uint8_t> & get_packet() const;
 
 private:
-  std::vector<uint8_t> headers;
+  std::vector<uint8_t> packet;
 
   PacketId packet_id;
-  uint8_t data_length;
   uint8_t info;
 
   std::vector<uint8_t> parameters;
@@ -59,4 +60,4 @@ private:
 
 }  // namespace tachimawari
 
-#endif  // TACHIMAWARI__CONTROL__PACKET__MODEL__PACKET_HPP_
+#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__MODEL__PACKET_HPP_
