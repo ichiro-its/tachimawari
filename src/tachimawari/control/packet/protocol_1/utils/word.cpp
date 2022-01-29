@@ -25,6 +25,9 @@
 namespace tachimawari
 {
 
+namespace control
+{
+
 namespace packet
 {
   
@@ -45,8 +48,19 @@ uint8_t Word::get_high_byte(int word)
   return static_cast<uint8_t>((temp >> 8));
 }
 
+int Word::make_color(int red, int green, int blue)
+{
+  int r = (red & 0xFF) >> 3;
+  int g = (green & 0xFF) >> 3;
+  int b = (blue & 0xFF) >> 3;
+
+  return static_cast<int>(((b << 10) | (g << 5) | r));
+}
+
 }  // namespace protocol_1
 
 }  // namespace packet
+
+}  // namespace control
 
 }  // namespace tachimawari

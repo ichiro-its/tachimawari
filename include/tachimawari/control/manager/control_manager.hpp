@@ -29,6 +29,9 @@
 namespace tachimawari
 {
 
+namespace control
+{
+
 class ControlManager
 {
 public:
@@ -52,6 +55,8 @@ protected:
   float protocol_version;
   int baudrate;
 };
+
+}  // namespace control
 
 }  // namespace tachimawari
 

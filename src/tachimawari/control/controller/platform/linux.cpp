@@ -105,14 +105,15 @@ int Linux::write_port(const std::vector<uint8_t> & packet)
   return write(socket_fd, packet.data(), packet.size());
 }
 
-int Linux::read_port(std::shared_ptr<std::vector<uint8_t>> packet, const int & packet_length)
+int Linux::read_port(std::shared_ptr<std::vector<uint8_t>> packet, const int & packet_length,
+  const int & packet_index)
 {
   unsigned char * txpacket = packet->data();
-  packet->clear();
 
-  int result_length = read(socket_fd, txpacket, packet_length);
+  int result_length = read(socket_fd, &txpacket[packet_index], packet_length);
 
   if (result_length != 0) {
+    packet->clear();
     packet = std::make_shared<std::vector<uint8_t>>(
       txpacket, txpacket + sizeof txpacket / sizeof txpacket[0]);
   }

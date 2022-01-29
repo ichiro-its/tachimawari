@@ -31,6 +31,9 @@
 namespace tachimawari
 {
 
+namespace control
+{
+
 namespace packet
 {
   
@@ -42,12 +45,12 @@ SyncWritePacket::SyncWritePacket()
 {
 }
 
-void SyncWritePacket::create(const std::vector<joint::Joint> & joints,
+void SyncWritePacket::create(const std::vector<tachimawari::joint::Joint> & joints,
     const uint8_t & starting_address)
 {
   parameters.push_back(starting_address);
   
-  bool is_include_pid = starting_address == joint::protocol_1::MX28Address::D_GAIN;  
+  bool is_include_pid = starting_address == tachimawari::joint::protocol_1::MX28Address::D_GAIN;  
   parameters.push_back(static_cast<uint8_t>((is_include_pid) ? 6 : 2));
 
   for (auto & joint : joints) {
@@ -66,5 +69,7 @@ void SyncWritePacket::create(const std::vector<joint::Joint> & joints,
 }  // namespace protocol_1
 
 }  // namespace packet
+
+}  // namespace control
 
 }  // namespace tachimawari

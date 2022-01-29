@@ -24,6 +24,9 @@
 namespace tachimawari
 {
 
+namespace control
+{
+
 namespace packet
 {
 
@@ -42,6 +45,8 @@ enum PacketIndex
 }  // namespace protocol_1
 
 }  // namespace packet
+
+}  // namespace control
 
 }  // namespace tachimawari
 

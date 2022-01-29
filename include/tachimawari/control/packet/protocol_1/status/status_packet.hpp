@@ -18,10 +18,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__UTILS__WORD_HPP_
-#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__UTILS__WORD_HPP_
+#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__STATUS_PACKET_HPP_
+#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__STATUS_PACKET_HPP_
 
+#include <memory>
 #include <string>
+#include <vector>
+
+#include "tachimawari/control/packet/protocol_1/model/packet.hpp"
+#include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
 namespace tachimawari
 {
@@ -35,13 +41,27 @@ namespace packet
 namespace protocol_1
 {
 
-class Word
+class StatusPacket : public Packet
 {
 public:
-  static uint8_t get_low_byte(int word);
-  static uint8_t get_high_byte(int word);
+  StatusPacket(std::shared_ptr<std::vector<uint8_t>> rxpacket);
 
-  static int make_color(int red, int green, int blue);
+  bool is_headers_matched();
+
+  bool is_valid(const int & packet_length);
+
+  bool is_success();
+
+  const int & get_header_place() const;
+
+  std::shared_ptr<std::vector<uint8_t>> get_raw_packet();
+
+  const uint8_t & get_data_length() const override;
+
+private:
+  std::shared_ptr<std::vector<uint8_t>> rxpacket;
+
+  int header_place;
 };
 
 }  // namespace protocol_1
@@ -52,4 +72,4 @@ public:
 
 }  // namespace tachimawari
 
-#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__UTILS__WORD_HPP_
+#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__STATUS_PACKET_HPP_

@@ -24,7 +24,10 @@
 
 #include "tachimawari/control/controller/module/cm740.hpp"
 
+#include "tachimawari/control/controller/module/cm740_address.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/write_packet.hpp"
+#include "tachimawari/control/packet/protocol_1/status/status_packet.hpp"
+#include "tachimawari/control/packet/protocol_1/utils/word.hpp"
 
 #include "errno.h"  // NOLINT
 #include "fcntl.h"  // NOLINT
@@ -37,6 +40,9 @@
 #include "sys/time.h"
 
 namespace tachimawari
+{
+
+namespace control
 {
 
 CM740::CM740(const std::string & port_name, const int & baudrate = 1000000,
@@ -59,32 +65,76 @@ bool CM740::connect()
 
 bool CM740::dxl_power_on()
 {
-  
-}
+  if (write_packet(CM740Address::DXL_POWER, 1)) {
+    write_packet(CM740Address::LED_HEAD_L, packet::protocol_1::Word::make_color(255, 128, 0), 2);
 
-std::vector<uint8_t> CM740::send_packet(std::vector<uint8_t> packet)
-{
-
-  unsigned char result[1024] = { 0, };
-
-  // if not, TX_FAIL
-  if (platform->write_port(packet) == packet.size()) {
-
+    return true;
   }
 
-  return std::vector<uint8_t>(result, result + sizeof result / sizeof result[0]);
+  return false;
+}
+
+packet::protocol_1::StatusPacket CM740::send_packet(packet::protocol_1::Packet packet)
+{
+  std::vector<uint8_t> txpacket = packet.get_packet();
+  auto rxpacket = std::make_shared<std::vector<uint8_t>>(1024, 0x00);
+
+  if (platform->write_port(txpacket) == txpacket.size()) {
+    int expected_length = 6;
+    if (packet.get_info() == packet::protocol_1::Instruction::READ) {
+      expected_length = packet.get_parameters()[1];
+    }
+
+    // set packet timeout;
+
+    int get_length = 0;
+    while (true) {
+      get_length += platform->read_port(rxpacket, expected_length - get_length, get_length);
+
+      if (get_length == expected_length) {
+        packet::protocol_1::StatusPacket status_packet(rxpacket);
+
+        if (status_packet.is_valid(get_length)) {
+          return status_packet;
+        } else {
+          if (status_packet.is_headers_matched()) {
+            // so RX_CORRUPT
+            break;
+          } else {
+            get_length -= status_packet.get_header_place();
+            rxpacket = status_packet.get_raw_packet();
+          }
+        }
+      } else {
+        // is packet timeout ? so RX_TIMEOUT
+        // or RX_CORRUPT if the rx length is not zero
+      }
+    }
+  } else {
+    // so TX_FAIL
+  }
+
+  return packet::protocol_1::StatusPacket(nullptr);
 }
 
 bool CM740::write_packet(const uint8_t & address, const int & value, const int & data_length)
 {
-  packet::protocol_1::WritePacket write_packet;
+  if (protocol_version == 1.0) {
+    packet::protocol_1::WritePacket instruction_packet;
 
-  if (data_length == 1) {
-    write_packet.create(address, static_cast<uint8_t>(value));
-  } else if (data_length == 2) {
-    write_packet.create(address, static_cast<uint16_t>(value));
+    if (data_length == 1) {
+      instruction_packet.create(address, static_cast<uint8_t>(value));
+    } else if (data_length == 2) {
+      instruction_packet.create(address, static_cast<uint16_t>(value));
+    }
+
+    auto status_packet = send_packet(instruction_packet);
+    return status_packet.is_success();
   }
 
+  return false;
 }
+
+}  // namespace control
 
 }  // namespace tachimawari

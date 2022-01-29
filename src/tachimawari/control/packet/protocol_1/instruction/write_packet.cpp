@@ -31,6 +31,9 @@
 namespace tachimawari
 {
 
+namespace control
+{
+
 namespace packet
 {
   
@@ -58,5 +61,7 @@ void WritePacket::create(const uint8_t & address, const uint16_t & value)
 }  // namespace protocol_1
 
 }  // namespace packet
+
+}  // namespace control
 
 }  // namespace tachimawari

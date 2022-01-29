@@ -31,6 +31,9 @@
 namespace tachimawari
 {
 
+namespace control
+{
+
 namespace packet
 {
 
@@ -50,6 +53,8 @@ public:
 }  // namespace protocol_1
 
 }  // namespace packet
+
+}  // namespace control
 
 }  // namespace tachimawari
 

@@ -41,7 +41,8 @@ public:
   void clear_port();
 
   int write_port(const std::vector<uint8_t> & packet);
-  int read_port(std::shared_ptr<std::vector<uint8_t>> packet, const int & packet_length);
+  int read_port(std::shared_ptr<std::vector<uint8_t>> packet, const int & packet_length,
+    const int & packet_index);
 
 private:
   int socket_fd;

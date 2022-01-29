@@ -26,10 +26,15 @@
 namespace tachimawari
 {
 
+namespace control
+{
+
 ControlManager::ControlManager(
   const std::string & port_name, const float & protocol_version, const int & baudrate)
 : port_name(port_name), protocol_version(protocol_version), baudrate(baudrate)
 {
 }
+
+}  // namespace control
 
 }  // namespace tachimawari

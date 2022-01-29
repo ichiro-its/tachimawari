@@ -30,6 +30,9 @@
 namespace tachimawari
 {
 
+namespace control
+{
+
 namespace packet
 {
 
@@ -39,22 +42,34 @@ namespace protocol_1
 class Packet
 {
 public:
-  Packet(const PacketId & pakcet_id, const Instruction & instruction);
+  Packet(const uint8_t & pakcet_id, const uint8_t & instruction);
 
-  const std::vector<uint8_t> & get_packet() const;
+  const uint8_t & get_info() const;
+
+  virtual const uint8_t & get_data_length() const;
+
+  const std::vector<uint8_t> & get_parameters() const;
+  
+  std::vector<uint8_t> get_packet();
 
 protected:
+  void calculate_checksum();
+
   std::vector<uint8_t> packet;
 
-  PacketId packet_id;
+  uint8_t packet_id;
   uint8_t info;
 
   std::vector<uint8_t> parameters;
+
+  uint8_t checksum;
 };
 
 }  // namespace protocol_1
 
 }  // namespace packet
+
+}  // namespace control
 
 }  // namespace tachimawari
 

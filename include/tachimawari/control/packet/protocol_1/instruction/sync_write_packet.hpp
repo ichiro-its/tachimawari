@@ -31,6 +31,9 @@
 namespace tachimawari
 {
 
+namespace control
+{
+
 namespace packet
 {
 
@@ -42,13 +45,15 @@ class SyncWritePacket : public Packet
 public:
   SyncWritePacket();
 
-  void create(const std::vector<joint::Joint> & joints,
-    const uint8_t & starting_address = joint::protocol_1::MX28Address::GOAL_POSITION_L);
+  void create(const std::vector<tachimawari::joint::Joint> & joints,
+    const uint8_t & starting_address = tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
 };
 
 }  // namespace protocol_1
 
 }  // namespace packet
+
+}  // namespace control
 
 }  // namespace tachimawari
 

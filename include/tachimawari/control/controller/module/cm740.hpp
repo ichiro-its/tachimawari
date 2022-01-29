@@ -27,9 +27,13 @@
 
 #include "tachimawari/control/controller/platform/linux.hpp"
 #include "tachimawari/control/manager/control_manager.hpp"
+#include "tachimawari/control/packet/protocol_1/status/status_packet.hpp"
 #include "tachimawari/joint/model/joint.hpp"
 
 namespace tachimawari
+{
+
+namespace control
 {
 
 class CM740 : public ControlManager
@@ -57,11 +61,14 @@ public:
 private:
   bool dxl_power_on();
 
-  std::vector<uint8_t> send_packet(std::vector<uint8_t> packet);
+  packet::protocol_1::StatusPacket send_packet(packet::protocol_1::Packet packet);
 
   std::shared_ptr<Linux> platform;
+
   double byte_transfer_time;
 };
+
+}  // namespace control
 
 }  // namespace tachimawari
 

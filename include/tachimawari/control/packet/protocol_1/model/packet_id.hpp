@@ -26,6 +26,9 @@
 namespace tachimawari
 {
 
+namespace control
+{
+
 namespace packet
 {
 
@@ -41,6 +44,8 @@ enum PacketId : uint8_t
 }  // namespace protocol_1
 
 }  // namespace packet
+
+}  // namespace control
 
 }  // namespace tachimawari
 
