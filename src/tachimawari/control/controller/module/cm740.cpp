@@ -18,10 +18,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <memory>
 #include <string>
 #include <vector>
 
-#include "tachimawari/control/controller/cm740.hpp"
+#include "tachimawari/control/controller/module/cm740.hpp"
+
+#include "tachimawari/control/packet/protocol_1/instruction/write_packet.hpp"
 
 #include "errno.h"  // NOLINT
 #include "fcntl.h"  // NOLINT
@@ -36,63 +39,52 @@
 namespace tachimawari
 {
 
-CM740::CM740(
-  const std::string & port_name, const int & baudrate, const float & protocol_version)
-: ControlManager(port_name, protocol_version, baudrate)
+CM740::CM740(const std::string & port_name, const int & baudrate = 1000000,
+  const float & protocol_version = 1.0)
+: ControlManager(port_name, protocol_version, baudrate), byte_transfer_time(0.0),
+  platform(std::make_shared<Linux>())
 {
 }
 
 bool CM740::connect()
 {
-  struct termios newtio;
-  struct serial_struct serinfo;
+  if (platform->open_port(port_name, baudrate)) {
+    byte_transfer_time = (1000.0 / baudrate) * 12.0;
 
-  close_port();
-
-  if ((socket_fd = open(port_name.c_str(), O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
-    close_port();
-    return false;
+    return dxl_power_on();
   }
 
-  // You must set 38400bps!
-  memset(&newtio, 0, sizeof(newtio));
-  newtio.c_cflag = B38400 | CS8 | CLOCAL | CREAD;
-  newtio.c_iflag = IGNPAR;
-  newtio.c_oflag = 0;
-  newtio.c_lflag = 0;
-  newtio.c_cc[VTIME] = 0;
-  newtio.c_cc[VMIN] = 0;
-  tcsetattr(socket_fd, TCSANOW, &newtio);
-
-  // Set non-standard baudrate
-  if (ioctl(socket_fd, TIOCGSERIAL, &serinfo) < 0) {
-    close_port();
-    return false;
-  }
-
-  serinfo.flags &= ~ASYNC_SPD_MASK;
-  serinfo.flags |= ASYNC_SPD_CUST;
-  serinfo.flags |= ASYNC_LOW_LATENCY;
-  serinfo.custom_divisor = serinfo.baud_base / baudrate;
-
-  if (ioctl(socket_fd, TIOCSSERIAL, &serinfo) < 0) {
-    close_port();
-    return false;
-  }
-
-  tcflush(socket_fd, TCIFLUSH);
-
-  byte_transfer_time = (1000.0 / baudrate) * 12.0;
-
-  return true;
+  return false;
 }
 
-void CM740::close_port()
+bool CM740::dxl_power_on()
 {
-  if (socket_fd != -1) {
-    close(socket_fd);
+  
+}
+
+std::vector<uint8_t> CM740::send_packet(std::vector<uint8_t> packet)
+{
+
+  unsigned char result[1024] = { 0, };
+
+  // if not, TX_FAIL
+  if (platform->write_port(packet) == packet.size()) {
+
   }
-  socket_fd = -1;
+
+  return std::vector<uint8_t>(result, result + sizeof result / sizeof result[0]);
+}
+
+bool CM740::write_packet(const uint8_t & address, const int & value, const int & data_length)
+{
+  packet::protocol_1::WritePacket write_packet;
+
+  if (data_length == 1) {
+    write_packet.create(address, static_cast<uint8_t>(value));
+  } else if (data_length == 2) {
+    write_packet.create(address, static_cast<uint16_t>(value));
+  }
+
 }
 
 }  // namespace tachimawari

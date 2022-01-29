@@ -21,7 +21,7 @@
 #include <string>
 #include <vector>
 
-#include "tachimawari/control/packet/protocol_1/instruction/sync_write_packet.hpp"
+#include "tachimawari/control/packet/protocol_1/instruction/write_packet.hpp"
 
 #include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/insctruction.hpp"
@@ -37,30 +37,22 @@ namespace packet
 namespace protocol_1
 {
 
-SyncWritePacket::SyncWritePacket()
-: Packet(PacketId::BROADCAST, Instruction::SYNC_WRITE)
+WritePacket::WritePacket()
+: Packet(PacketId::CONTROLLER, Instruction::WRITE)
 {
 }
 
-void SyncWritePacket::create(const std::vector<joint::Joint> & joints,
-    const uint8_t & starting_address)
+void WritePacket::create(const uint8_t & address, const uint8_t & value)
 {
-  parameters.push_back(starting_address);
-  
-  bool is_include_pid = starting_address == joint::protocol_1::MX28Address::D_GAIN;  
-  parameters.push_back(static_cast<uint8_t>((is_include_pid) ? 6 : 2));
+  parameters.push_back(address);
+  parameters.push_back(value);
+}
 
-  for (auto & joint : joints) {
-    if (is_include_pid) {
-      parameters.push_back(static_cast<uint8_t>(joint.get_pid_gain()[2]));
-      parameters.push_back(static_cast<uint8_t>(joint.get_pid_gain()[1]));
-      parameters.push_back(static_cast<uint8_t>(joint.get_pid_gain()[0]));
-      parameters.push_back(0x00);
-    }
-
-    parameters.push_back(Word::get_low_byte(static_cast<int>(joint.get_position())));
-    parameters.push_back(Word::get_high_byte(static_cast<int>(joint.get_position())));
-  }
+void WritePacket::create(const uint8_t & address, const uint16_t & value)
+{
+  parameters.push_back(address);
+  parameters.push_back(Word::get_low_byte(value));
+  parameters.push_back(Word::get_high_byte(value));
 }
 
 }  // namespace protocol_1

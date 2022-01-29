@@ -18,35 +18,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <string>
+#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__WRITE_PACKET_HPP_
+#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__WRITE_PACKET_HPP_
 
-#include "tachimawari/control/packet/protocol_1/utils/byte.hpp"
+#include <string>
+#include <vector>
+
+#include "tachimawari/control/packet/protocol_1/model/packet.hpp"
+#include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
 namespace tachimawari
 {
 
 namespace packet
 {
-  
+
 namespace protocol_1
 {
 
-uint8_t Byte::get_low_byte(int word)
+class WritePacket : public Packet
 {
-  uint16_t temp;
-  temp = word & 0x00FF;
-  return static_cast<uint8_t>(temp);
-}
+public:
+  WritePacket();
 
-uint8_t Byte::get_high_byte(int word)
-{
-  uint16_t temp;
-  temp = word & 0xFF00;
-  return static_cast<uint8_t>((temp >> 8));
-}
+  void create(const uint8_t & address, const uint8_t & value);
+
+  void create(const uint8_t & address, const uint16_t & value);
+};
 
 }  // namespace protocol_1
 
 }  // namespace packet
 
 }  // namespace tachimawari
+
+#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__WRITE_PACKET_HPP_

@@ -18,9 +18,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__CONTROLLER__CM740_HPP_
-#define TACHIMAWARI__CONTROL__CONTROLLER__CM740_HPP_
+#ifndef TACHIMAWARI__CONTROL__CONTROLLER__PLATFORM__LINUX_HPP_
+#define TACHIMAWARI__CONTROL__CONTROLLER__PLATFORM__LINUX_HPP_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -30,28 +31,24 @@
 namespace tachimawari
 {
 
-class CM740 : public ControlManager
+class Linux
 {
 public:
-  explicit CM740(
-    const std::string & port_name, const int & baudrate = 1000000,
-    const float & protocol_version = 1.0);
+  explicit Linux();
 
-  bool connect() override;
-  void disconnect() override;
+  bool open_port(const std::string & port_name, const int & baudrate = 1000000);
+  void close_port();
+  void clear_port();
 
-  bool sync_write_joints(const std::vector<joint::Joint> & joints,
-    const bool & with_pid) override;
-
-  bool bulk_read_joints(const std::vector<joint::Joint> & joints) override;
+  int write_port(const std::vector<uint8_t> & packet);
+  int read_port(std::shared_ptr<std::vector<uint8_t>> packet, const int & packet_length);
 
 private:
-  void close_port();
-
   int socket_fd;
-  double byte_transfer_time;
+  std::string port_name;
+  int baudrate;
 };
 
 }  // namespace tachimawari
 
-#endif  // TACHIMAWARI__CONTROL__CONTROLLER__CM740_HPP_
+#endif  // TACHIMAWARI__CONTROL__CONTROLLER__PLATFORM__LINUX_HPP_

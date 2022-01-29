@@ -18,8 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__UTILS__BYTE_HPP_
-#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__UTILS__BYTE_HPP_
+#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__UTILS__WORD_HPP_
+#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__UTILS__WORD_HPP_
 
 #include <string>
 
@@ -32,7 +32,7 @@ namespace packet
 namespace protocol_1
 {
 
-class Byte
+class Word
 {
 public:
   static uint8_t get_low_byte(int word);
@@ -45,4 +45,4 @@ public:
 
 }  // namespace tachimawari
 
-#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__UTILS__BYTE_HPP_
+#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__UTILS__WORD_HPP_
