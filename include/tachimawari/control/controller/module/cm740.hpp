@@ -50,11 +50,15 @@ public:
   bool connect() override;
   void disconnect() override;
 
+  bool ping(const uint8_t & address) override;
+
   bool write_packet(const uint8_t & address, const int & value,
     const int & data_length = 1) override;
 
   bool sync_write_packet(const std::vector<joint::Joint> & joints,
     const bool & with_pid) override;
+
+  bool bulk_read_packet();
 
   bool bulk_read_packet(const std::vector<joint::Joint> & joints) override;
 

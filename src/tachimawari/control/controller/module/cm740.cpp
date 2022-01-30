@@ -25,9 +25,15 @@
 #include "tachimawari/control/controller/module/cm740.hpp"
 
 #include "tachimawari/control/controller/module/cm740_address.hpp"
+#include "tachimawari/control/packet/protocol_1/instruction/bulk_read_packet.hpp"
+#include "tachimawari/control/packet/protocol_1/instruction/insctruction.hpp"
+#include "tachimawari/control/packet/protocol_1/instruction/sync_write_packet.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/write_packet.hpp"
+#include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
 #include "tachimawari/control/packet/protocol_1/status/status_packet.hpp"
 #include "tachimawari/control/packet/protocol_1/utils/word.hpp"
+#include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
 #include "errno.h"  // NOLINT
 #include "fcntl.h"  // NOLINT
@@ -117,6 +123,22 @@ packet::protocol_1::StatusPacket CM740::send_packet(packet::protocol_1::Packet p
   return packet::protocol_1::StatusPacket(nullptr);
 }
 
+bool CM740::ping(const uint8_t & address)
+{
+  if (protocol_version == 1.0) {
+    {
+      using namespace packet::protocol_1;
+
+      Packet instruction_packet(address, Instruction::PING);
+      auto status_packet = send_packet(instruction_packet);
+
+      return status_packet.is_success();
+    }
+  }
+
+  return false;
+}
+
 bool CM740::write_packet(const uint8_t & address, const int & value, const int & data_length)
 {
   if (protocol_version == 1.0) {
@@ -130,6 +152,46 @@ bool CM740::write_packet(const uint8_t & address, const int & value, const int &
 
     auto status_packet = send_packet(instruction_packet);
     return status_packet.is_success();
+  }
+
+  return false;
+}
+
+bool CM740::sync_write_packet(const std::vector<joint::Joint> & joints, const bool & with_pid)
+{
+  if (protocol_version == 1.0) {
+    packet::protocol_1::SyncWritePacket instruction_packet;
+
+    if (with_pid) {
+      instruction_packet.create(joints, tachimawari::joint::protocol_1::MX28Address::D_GAIN);
+    } else {
+      instruction_packet.create(joints);
+    }
+
+    std::vector<uint8_t> txpacket = instruction_packet.get_packet();
+    return platform->write_port(txpacket) == txpacket.size();
+  }
+
+  return false;
+}
+
+bool CM740::bulk_read_packet()
+{
+  if (protocol_version == 1.0) {
+    {
+      using namespace packet::protocol_1;
+
+      BulkReadPacket instruction_packet;
+
+      if (ping(PacketId::CONTROLLER)) {
+        instruction_packet.add(PacketId::CONTROLLER, CM740Address::DXL_POWER,
+          static_cast<uint8_t>(26));
+      }
+
+      if (instruction_packet.is_parameters_filled()) {
+        
+      }
+    }
   }
 
   return false;

@@ -18,11 +18,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__BULK_READ_PACKET_HPP_
-#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__BULK_READ_PACKET_HPP_
+#include <string>
+#include <vector>
 
-#include "tachimawari/control/packet/protocol_1/model/packet.hpp"
-#include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari/control/packet/protocol_1/instruction/bulk_read_packet.hpp"
+
+#include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
+#include "tachimawari/control/packet/protocol_1/instruction/insctruction.hpp"
+#include "tachimawari/control/packet/protocol_1/utils/word.hpp"
+#include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
 namespace tachimawari
 {
@@ -32,22 +36,31 @@ namespace control
 
 namespace packet
 {
-
+  
 namespace protocol_1
 {
 
-class BulkReadPacket : public Packet
+BulkReadPacket::BulkReadPacket()
+: Packet(PacketId::BROADCAST, Instruction::BULK_READ)
 {
-public:
-  BulkReadPacket();
+}
 
-  bool is_parameters_filled();
+bool BulkReadPacket::is_parameters_filled()
+{
+  return parameters.size() != 0;
+}
 
-  void add(const uint8_t & id, const uint8_t & starting_address,
-    const uint8_t & data_length);
+void BulkReadPacket::add(const uint8_t & id, const uint8_t & starting_address,
+  const uint8_t & data_length)
+{
+  parameters.push_back(data_length);
+  parameters.push_back(id);
+  parameters.push_back(starting_address);
+}
 
-  void add(const std::vector<tachimawari::joint::Joint> & joints);
-};
+void BulkReadPacket::add(const std::vector<tachimawari::joint::Joint> & joints)
+{
+}
 
 }  // namespace protocol_1
 
@@ -56,5 +69,3 @@ public:
 }  // namespace control
 
 }  // namespace tachimawari
-
-#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__BULK_READ_PACKET_HPP_

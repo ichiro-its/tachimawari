@@ -42,11 +42,15 @@ public:
   virtual bool connect();
   virtual void disconnect();
 
+  virtual bool ping(const uint8_t & address);
+
   virtual bool write_packet(const uint8_t & address, const int & value,
     const int & data_length);
 
   virtual bool sync_write_packet(const std::vector<joint::Joint> & joints,
     const bool & with_pid);
+
+  virtual bool bulk_read_packet();
 
   virtual bool bulk_read_packet(const std::vector<joint::Joint> & joints);
 

@@ -102,6 +102,8 @@ void Linux::clear_port()
 
 int Linux::write_port(const std::vector<uint8_t> & packet)
 {
+  clear_port();
+
   return write(socket_fd, packet.data(), packet.size());
 }
 
