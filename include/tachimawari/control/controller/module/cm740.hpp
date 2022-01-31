@@ -28,6 +28,7 @@
 
 #include "tachimawari/control/controller/platform/linux.hpp"
 #include "tachimawari/control/manager/control_manager.hpp"
+#include "tachimawari/control/packet/protocol_1/instruction/bulk_read_packet.hpp"
 #include "tachimawari/control/packet/protocol_1/status/bulk_read_data.hpp"
 #include "tachimawari/control/packet/protocol_1/status/status_packet.hpp"
 #include "tachimawari/joint/model/joint.hpp"
@@ -41,6 +42,11 @@ namespace control
 class CM740 : public ControlManager
 {
 public:
+  enum
+  {
+    MAX_PACKET_SIZE = 1024
+  };
+
   explicit CM740(
     const std::string & port_name, const int & baudrate = 1000000,
     const float & protocol_version = 1.0);
@@ -52,15 +58,18 @@ public:
   bool connect() override;
   void disconnect() override;
 
-  bool ping(const uint8_t & address) override;
+  bool ping(const uint8_t & id) override;
 
   bool write_packet(const uint8_t & address, const int & value,
     const int & data_length = 1) override;
 
-  bool sync_write_packet(const std::vector<joint::Joint> & joints,
-    const bool & with_pid) override;
+  bool write_packet(const uint8_t & id, const uint8_t & address, const int & value,
+    const int & data_length = 1) override;
 
-  bool bulk_read_packet();
+  bool sync_write_packet(const std::vector<joint::Joint> & joints,
+    const bool & with_pid = false) override;
+
+  bool bulk_read_packet() override;
 
   bool bulk_read_packet(const std::vector<joint::Joint> & joints) override;
 
@@ -68,6 +77,8 @@ private:
   bool dxl_power_on();
 
   packet::protocol_1::StatusPacket send_packet(packet::protocol_1::Packet packet);
+
+  bool send_bulk_read_packet(packet::protocol_1::BulkReadPacket packet);
 
   std::shared_ptr<Linux> platform;
 

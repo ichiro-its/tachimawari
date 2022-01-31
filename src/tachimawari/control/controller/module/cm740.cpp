@@ -94,7 +94,7 @@ packet::protocol_1::StatusPacket CM740::send_packet(packet::protocol_1::Packet p
       // set packet timeout;
       int get_length = 0;
       int expected_length = packet.get_expected_length();
-      auto rxpacket = std::make_shared<std::vector<uint8_t>>(1024, 0x00);
+      auto rxpacket = std::make_shared<std::vector<uint8_t>>(MAX_PACKET_SIZE, 0x00);
 
       while (true) {
         get_length += platform->read_port(rxpacket, expected_length - get_length, get_length);
@@ -113,7 +113,9 @@ packet::protocol_1::StatusPacket CM740::send_packet(packet::protocol_1::Packet p
           }
         } else {
           // is packet timeout ? so RX_TIMEOUT
-          // or RX_CORRUPT if the rx length is not zero
+          if (get_length > expected_length) {
+            break;
+          }
         }
       }
     } else {
@@ -124,13 +126,64 @@ packet::protocol_1::StatusPacket CM740::send_packet(packet::protocol_1::Packet p
   }
 }
 
-bool CM740::ping(const uint8_t & address)
+bool CM740::send_bulk_read_packet(packet::protocol_1::BulkReadPacket packet)
+{
+  {
+    using namespace packet::protocol_1;
+
+    std::vector<uint8_t> txpacket = packet.get_packet();
+    
+    if (platform->write_port(txpacket) == txpacket.size()) {
+      int data_number = packet.get_data_number();
+      BulkReadData::insert_all(bulk_data, packet);        
+
+      // set packet timeout;
+      int get_length = 0;
+      int expected_length = packet.get_expected_length();
+      auto rxpacket = std::make_shared<std::vector<uint8_t>>(MAX_PACKET_SIZE, 0x00);
+
+      while (true) {
+        get_length += platform->read_port(rxpacket, expected_length - get_length, get_length);
+
+        if (get_length == expected_length) {
+          int new_get_length = BulkReadData::validate(rxpacket, get_length);
+
+          if (new_get_length == get_length) {
+            data_number = BulkReadData::update_all(bulk_data, rxpacket, get_length, data_number);
+
+            if (data_number == 0) {
+              return true;
+            } else {
+              // is packet timeout ? so RX_TIMEOUT
+              // or RX_CORRUPT / data is inclompete if data number more than 0
+              return false;
+            }
+          } else {
+            // is packet timeout ? so RX_TIMEOUT
+            get_length = new_get_length;
+          }
+        } else {
+          // is packet timeout ? so RX_TIMEOUT
+          if (get_length > expected_length) {
+            break;
+          }
+        }
+      }
+    } else {
+      // so TX_FAIL
+    }
+
+    return false;
+  }
+}
+
+bool CM740::ping(const uint8_t & id)
 {
   if (protocol_version == 1.0) {
     {
       using namespace packet::protocol_1;
 
-      Packet instruction_packet(address, Instruction::PING);
+      Packet instruction_packet(id, Instruction::PING);
       auto status_packet = send_packet(instruction_packet);
 
       return status_packet.is_success();
@@ -140,7 +193,8 @@ bool CM740::ping(const uint8_t & address)
   return false;
 }
 
-bool CM740::write_packet(const uint8_t & address, const int & value, const int & data_length)
+bool CM740::write_packet(const uint8_t & address, const int & value,
+  const int & data_length)
 {
   if (protocol_version == 1.0) {
     packet::protocol_1::WritePacket instruction_packet;
@@ -149,6 +203,25 @@ bool CM740::write_packet(const uint8_t & address, const int & value, const int &
       instruction_packet.create(address, static_cast<uint8_t>(value));
     } else if (data_length == 2) {
       instruction_packet.create(address, static_cast<uint16_t>(value));
+    }
+
+    auto status_packet = send_packet(instruction_packet);
+    return status_packet.is_success();
+  }
+
+  return false;
+}
+
+bool CM740::write_packet(const uint8_t & id, const uint8_t & address, const int & value,
+  const int & data_length)
+{
+  if (protocol_version == 1.0) {
+    packet::protocol_1::WritePacket instruction_packet;
+
+    if (data_length == 1) {
+      instruction_packet.create(id, address, static_cast<uint8_t>(value));
+    } else if (data_length == 2) {
+      instruction_packet.create(id, address, static_cast<uint16_t>(value));
     }
 
     auto status_packet = send_packet(instruction_packet);
@@ -190,45 +263,29 @@ bool CM740::bulk_read_packet()
       }
 
       if (instruction_packet.is_parameters_filled()) {
-        std::vector<uint8_t> txpacket = instruction_packet.get_packet();
-        
-        if (platform->write_port(txpacket) == txpacket.size()) {
-          int data_number = instruction_packet.get_data_number();
-          BulkReadData::insert_all(bulk_data, instruction_packet);        
-
-          // set packet timeout;
-          int get_length = 0;
-          int expected_length = instruction_packet.get_expected_length();
-          auto rxpacket = std::make_shared<std::vector<uint8_t>>(1024, 0x00);
-
-          while (true) {
-            get_length += platform->read_port(rxpacket, expected_length - get_length, get_length);
-
-            if (get_length == expected_length) {
-              int new_get_length = BulkReadData::validate(rxpacket, get_length); 
-
-              if (new_get_length == get_length) {
-                data_number = BulkReadData::update_all(bulk_data, rxpacket, get_length, data_number);
-
-                if (data_number == 0) {
-                  return true;
-                } else {
-                  // is packet timeout ? so RX_TIMEOUT
-                  // or RX_CORRUPT if data number is not zero
-                  return false;
-                }
-              } else {
-                // is packet timeout ? so RX_TIMEOUT
-                get_length = new_get_length;
-              }
-            } else {
-              // is packet timeout ? so RX_TIMEOUT
-            }
-          }
-        }
+        return send_bulk_read_packet(instruction_packet);
       } else {
-        // so TX_FAIL
+        return false;
       }
+    }
+  }
+
+  return false;
+}
+
+bool CM740::bulk_read_packet(const std::vector<joint::Joint> & joints)
+{
+  if (protocol_version == 1.0) {
+    packet::protocol_1::BulkReadPacket instruction_packet;
+
+    if (joints.size()) {
+      instruction_packet.add(joints);
+    }
+
+    if (instruction_packet.is_parameters_filled()) {
+      return send_bulk_read_packet(instruction_packet);
+    } else {
+      return false;
     }
   }
 

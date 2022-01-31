@@ -42,13 +42,16 @@ public:
   virtual bool connect();
   virtual void disconnect();
 
-  virtual bool ping(const uint8_t & address);
+  virtual bool ping(const uint8_t & id);
 
   virtual bool write_packet(const uint8_t & address, const int & value,
-    const int & data_length);
+    const int & data_length = 1);
+
+  virtual bool write_packet(const uint8_t & id, const uint8_t & address, const int & value,
+    const int & data_length = 1);
 
   virtual bool sync_write_packet(const std::vector<joint::Joint> & joints,
-    const bool & with_pid);
+    const bool & with_pid = false);
 
   virtual bool bulk_read_packet();
 

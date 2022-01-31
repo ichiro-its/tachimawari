@@ -18,48 +18,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__WRITE_PACKET_HPP_
-#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__WRITE_PACKET_HPP_
-
-#include <string>
+#include <memory>
 #include <vector>
 
-#include "tachimawari/control/packet/protocol_1/model/packet.hpp"
-#include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari/joint/node/joint_manager.hpp"
+
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
 namespace tachimawari
 {
 
-namespace control
+namespace joint
 {
 
-namespace packet
+JointManager::JointManager(std::shared_ptr<tachimawari::control::ControlManager> control_manager)
+: control_manager(control_manager)
 {
+}
 
-namespace protocol_1
+bool JointManager::torque_enable(const std::vector<Joint> & joints, const bool & enable)
 {
+  if (joints.size()) {
+    for (auto & joint : joints) {
+      control_manager->write_packet(joint.get_id(), protocol_1::MX28Address::TORQUE_ENABLE,
+        static_cast<int>(enable));
+    }
+  }
+}
 
-class WritePacket : public Packet
+bool JointManager::set_joints(const std::vector<Joint> & joints)
 {
-public:
-  WritePacket();
+  if (joints.size()) {
+    control_manager->sync_write_packet(joints);
+  }
+}
 
-  void create(const uint8_t & address, const uint8_t & value);
-
-  void create(const uint8_t & address, const uint16_t & value);
-
-  void create(const uint8_t & id, const uint8_t & address, const uint8_t & value);
-
-  void create(const uint8_t & id, const uint8_t & address, const uint16_t & value);
-};
-
-}  // namespace protocol_1
-
-}  // namespace packet
-
-}  // namespace control
+}  // namespace joint
 
 }  // namespace tachimawari
-
-#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__WRITE_PACKET_HPP_

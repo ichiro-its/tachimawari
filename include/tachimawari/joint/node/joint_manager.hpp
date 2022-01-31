@@ -21,6 +21,9 @@
 #ifndef TACHIMAWARI__JOINT__NODE__JOINT_MANAGER_HPP_
 #define TACHIMAWARI__JOINT__NODE__JOINT_MANAGER_HPP_
 
+#include <memory>
+
+#include "tachimawari/control/manager/control_manager.hpp"
 #include "tachimawari/joint/model/joint.hpp"
 
 namespace tachimawari
@@ -32,11 +35,14 @@ namespace joint
 class JointManager
 {
 public:
-  JointManager();
+  JointManager(std::shared_ptr<tachimawari::control::ControlManager> control_manager);
 
-  bool torque_enable(const bool & enable);
+  bool torque_enable(const std::vector<Joint> & joints, const bool & enable);
 
   bool set_joints(const std::vector<Joint> & joints);
+
+private:
+  std::shared_ptr<tachimawari::control::ControlManager> control_manager;
 };
 
 }  // namespace joint

@@ -55,7 +55,7 @@ const int & BulkReadPacket::get_expected_length() const
 {
   int length = 0;
   for (int i = 1; i < parameters.size(); i += 3) {
-    length += (parameters[i] + 6);
+    length += (parameters[i] + 6);  // added the size of packet
   }
 
   return length;
@@ -64,7 +64,7 @@ const int & BulkReadPacket::get_expected_length() const
 const int & BulkReadPacket::get_data_number() const
 {
   int data_number = parameters.size() - 1;
-  return data_number / 3;
+  return data_number / 3;  // divided by instruction packet structure of its parameters
 }
 
 void BulkReadPacket::add(const uint8_t & id, const uint8_t & starting_address,
@@ -77,6 +77,11 @@ void BulkReadPacket::add(const uint8_t & id, const uint8_t & starting_address,
 
 void BulkReadPacket::add(const std::vector<tachimawari::joint::Joint> & joints)
 {
+  for (auto & joint : joints) {
+    parameters.push_back(2);  // present position size
+    parameters.push_back(joint.get_id());
+    parameters.push_back(tachimawari::joint::protocol_1::MX28Address::PRESENT_POSITION_L);
+  }
 }
 
 }  // namespace protocol_1

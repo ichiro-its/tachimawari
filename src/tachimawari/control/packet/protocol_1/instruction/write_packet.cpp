@@ -58,6 +58,18 @@ void WritePacket::create(const uint8_t & address, const uint16_t & value)
   parameters.push_back(Word::get_high_byte(value));
 }
 
+void WritePacket::create(const uint8_t & id, const uint8_t & address, const uint8_t & value)
+{
+  packet_id = id;
+  create(address, value);
+}
+
+void WritePacket::create(const uint8_t & id, const uint8_t & address, const uint16_t & value)
+{
+  packet_id = id;
+  create(address, value);
+}
+
 }  // namespace protocol_1
 
 }  // namespace packet
