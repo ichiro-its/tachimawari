@@ -109,7 +109,7 @@ packet::protocol_1::StatusPacket CM740::send_packet(packet::protocol_1::Packet p
             get_length = new_get_length;
           } else {
             // so RX_CORRUPT
-            break;
+            return StatusPacket(nullptr, 0);
           }
         } else {
           // is packet timeout ? so RX_TIMEOUT
@@ -208,14 +208,21 @@ bool CM740::bulk_read_packet()
               int new_get_length = BulkReadData::validate(rxpacket, get_length); 
 
               if (new_get_length == get_length) {
-                
+                data_number = BulkReadData::update_all(bulk_data, rxpacket, get_length, data_number);
+
+                if (data_number == 0) {
+                  return true;
+                } else {
+                  // is packet timeout ? so RX_TIMEOUT
+                  // or RX_CORRUPT if data number is not zero
+                  return false;
+                }
               } else {
                 // is packet timeout ? so RX_TIMEOUT
                 get_length = new_get_length;
               }
             } else {
               // is packet timeout ? so RX_TIMEOUT
-              // or RX_CORRUPT if the rx length is not zero
             }
           }
         }

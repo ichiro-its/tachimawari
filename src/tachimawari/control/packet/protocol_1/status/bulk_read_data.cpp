@@ -96,11 +96,26 @@ int BulkReadData::update_all(std::shared_ptr<std::map<uint8_t, BulkReadData>> bu
         int length = rxpacket->at(PacketIndex::LENGTH) + 4;
         
         if (bulk_data->at(packet_id).is_valid(* rxpacket.get())) {
-          int packet_length = rxpacket->at(PacketIndex::LENGTH) + 4;
+          int bulk_data_length = rxpacket->at(PacketIndex::LENGTH) + 4;
 
-          
+          for (int i = 0; i < packet_length - bulk_data_length; i++) {
+            rxpacket->at(i) = rxpacket->at(i + bulk_data_length);
+          }
+
           data_number--;
+          packet_length -= bulk_data_length;
+        } else {
+          // so RX_CORRUPT
+          for (int i = 0; i < packet_length - 2; i++) {
+            rxpacket->at(i) = rxpacket->at(i + 2);
+          }
+
+          packet_length -= 2;
         }
+      }
+
+      if (data_number <= 0 || packet_length <= 0) {
+        return data_number;
       }
     } else {
       for (int i = 0; i < (packet_length - header_place); i++) {
