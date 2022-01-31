@@ -21,12 +21,14 @@
 #ifndef TACHIMAWARI__CONTROL__CONTROLLER__MODULE__CM740_HPP_
 #define TACHIMAWARI__CONTROL__CONTROLLER__MODULE__CM740_HPP_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "tachimawari/control/controller/platform/linux.hpp"
 #include "tachimawari/control/manager/control_manager.hpp"
+#include "tachimawari/control/packet/protocol_1/status/bulk_read_data.hpp"
 #include "tachimawari/control/packet/protocol_1/status/status_packet.hpp"
 #include "tachimawari/joint/model/joint.hpp"
 
@@ -70,6 +72,8 @@ private:
   std::shared_ptr<Linux> platform;
 
   double byte_transfer_time;
+
+  std::shared_ptr<std::map<uint8_t, packet::protocol_1::BulkReadData>> bulk_data;
 };
 
 }  // namespace control

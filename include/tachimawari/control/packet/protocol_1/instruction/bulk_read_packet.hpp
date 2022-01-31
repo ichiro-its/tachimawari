@@ -41,6 +41,10 @@ class BulkReadPacket : public Packet
 public:
   BulkReadPacket();
 
+  const int & get_expected_length() const override;
+
+  const int & get_data_number() const;
+
   bool is_parameters_filled();
 
   void add(const uint8_t & id, const uint8_t & starting_address,

@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -40,23 +41,10 @@ namespace packet
 namespace protocol_1
 {
 
-StatusPacket::StatusPacket(std::shared_ptr<std::vector<uint8_t>> rxpacket)
-: Packet(rxpacket->at(PacketIndex::ID), rxpacket->at(PacketIndex::ERROR)),
-  rxpacket(rxpacket), header_place(0)
+int StatusPacket::validate(std::shared_ptr<std::vector<uint8_t>> rxpacket,
+  const int & packet_length)
 {
-}
-
-bool StatusPacket::is_headers_matched()
-{
-  bool is_headers_matched = packet[0] == 0xFF;
-  is_headers_matched &= packet[1] == 0xFF;
-  return is_headers_matched;
-}
-
-bool StatusPacket::is_valid(const int & packet_length)
-{
-  bool is_valid = false;
-
+  int header_place = 0;
   for (header_place = 0; header_place < (packet_length - 1); header_place++) {
     if (rxpacket->at(header_place) == 0xFF && rxpacket->at(header_place + 1) == 0xFF) {
       break;
@@ -66,32 +54,41 @@ bool StatusPacket::is_valid(const int & packet_length)
   }
 
   if (header_place == 0) {
-    for (int i = PacketIndex::PARAMETER; i < packet_length - 1; i++) {
-      parameters.push_back(rxpacket->at(i));
+    StatusPacket status_packet(rxpacket, packet_length);
+
+    if (status_packet.is_valid()) {
+      return packet_length;
+    } else {
+      return 0;
     }
-
-    calculate_checksum();
-    is_valid = checksum == rxpacket->at(packet_length - 1);
   } else {
-    packet[0] = 0x00;
-    packet[1] = 0x00;
-
     for (int i = 0; i < (packet_length - header_place); i++) {
       rxpacket->at(i) = rxpacket->at(i + header_place);
     }
+
+    return packet_length - header_place;
+  }
+}
+
+StatusPacket::StatusPacket(std::shared_ptr<std::vector<uint8_t>> rxpacket, const int & packet_length)
+: Packet(rxpacket->at(PacketIndex::ID), rxpacket->at(PacketIndex::ERROR)),
+  rxpacket_length(packet_length), rxpacket(rxpacket)
+{
+}
+
+bool StatusPacket::is_valid()
+{
+  for (int i = PacketIndex::PARAMETER; i < rxpacket_length - 1; i++) {
+    parameters.push_back(rxpacket->at(i));
   }
 
-  return is_valid;
+  calculate_checksum();
+  return checksum == rxpacket->at(rxpacket_length - 1);
 }
 
 const uint8_t & StatusPacket::get_data_length() const
 {
   return rxpacket->at(PacketIndex::LENGTH);
-}
-
-const int & StatusPacket::get_header_place() const
-{
-  return header_place;
 }
 
 std::shared_ptr<std::vector<uint8_t>> StatusPacket::get_raw_packet()

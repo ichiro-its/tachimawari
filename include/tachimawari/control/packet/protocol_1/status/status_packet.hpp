@@ -44,15 +44,14 @@ namespace protocol_1
 class StatusPacket : public Packet
 {
 public:
-  StatusPacket(std::shared_ptr<std::vector<uint8_t>> rxpacket);
+  static int validate(std::shared_ptr<std::vector<uint8_t>> rxpacket,
+    const int & packet_length);
 
-  bool is_headers_matched();
+  StatusPacket(std::shared_ptr<std::vector<uint8_t>> rxpacket, const int & packet_length);
 
-  bool is_valid(const int & packet_length);
+  bool is_valid();
 
   bool is_success();
-
-  const int & get_header_place() const;
 
   std::shared_ptr<std::vector<uint8_t>> get_raw_packet();
 
@@ -60,8 +59,8 @@ public:
 
 private:
   std::shared_ptr<std::vector<uint8_t>> rxpacket;
-
-  int header_place;
+  
+  int rxpacket_length;
 };
 
 }  // namespace protocol_1

@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -30,6 +31,7 @@
 #include "tachimawari/control/packet/protocol_1/instruction/sync_write_packet.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/write_packet.hpp"
 #include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
+#include "tachimawari/control/packet/protocol_1/status/bulk_read_data.hpp"
 #include "tachimawari/control/packet/protocol_1/status/status_packet.hpp"
 #include "tachimawari/control/packet/protocol_1/utils/word.hpp"
 #include "tachimawari/joint/model/joint.hpp"
@@ -54,7 +56,8 @@ namespace control
 CM740::CM740(const std::string & port_name, const int & baudrate = 1000000,
   const float & protocol_version = 1.0)
 : ControlManager(port_name, protocol_version, baudrate), byte_transfer_time(0.0),
-  platform(std::make_shared<Linux>())
+  platform(std::make_shared<Linux>()),
+  bulk_data(std::make_shared<std::map<uint8_t, packet::protocol_1::BulkReadData>>())
 {
 }
 
@@ -82,45 +85,43 @@ bool CM740::dxl_power_on()
 
 packet::protocol_1::StatusPacket CM740::send_packet(packet::protocol_1::Packet packet)
 {
-  std::vector<uint8_t> txpacket = packet.get_packet();
-  auto rxpacket = std::make_shared<std::vector<uint8_t>>(1024, 0x00);
+  {
+    using namespace packet::protocol_1;
 
-  if (platform->write_port(txpacket) == txpacket.size()) {
-    int expected_length = 6;
-    if (packet.get_info() == packet::protocol_1::Instruction::READ) {
-      expected_length = packet.get_parameters()[1];
-    }
+    std::vector<uint8_t> txpacket = packet.get_packet();
 
-    // set packet timeout;
+    if (platform->write_port(txpacket) == txpacket.size()) {
+      // set packet timeout;
+      int get_length = 0;
+      int expected_length = packet.get_expected_length();
+      auto rxpacket = std::make_shared<std::vector<uint8_t>>(1024, 0x00);
 
-    int get_length = 0;
-    while (true) {
-      get_length += platform->read_port(rxpacket, expected_length - get_length, get_length);
+      while (true) {
+        get_length += platform->read_port(rxpacket, expected_length - get_length, get_length);
 
-      if (get_length == expected_length) {
-        packet::protocol_1::StatusPacket status_packet(rxpacket);
+        if (get_length == expected_length) {
+          int new_get_length = StatusPacket::validate(rxpacket, get_length);
 
-        if (status_packet.is_valid(get_length)) {
-          return status_packet;
-        } else {
-          if (status_packet.is_headers_matched()) {
+          if (new_get_length == get_length) {
+            return StatusPacket(rxpacket, get_length);
+          } else if (new_get_length != 0) {
+            // is packet timeout ? so RX_TIMEOUT
+            get_length = new_get_length;
+          } else {
             // so RX_CORRUPT
             break;
-          } else {
-            get_length -= status_packet.get_header_place();
-            rxpacket = status_packet.get_raw_packet();
           }
+        } else {
+          // is packet timeout ? so RX_TIMEOUT
+          // or RX_CORRUPT if the rx length is not zero
         }
-      } else {
-        // is packet timeout ? so RX_TIMEOUT
-        // or RX_CORRUPT if the rx length is not zero
       }
+    } else {
+      // so TX_FAIL
     }
-  } else {
-    // so TX_FAIL
-  }
 
-  return packet::protocol_1::StatusPacket(nullptr);
+    return StatusPacket(nullptr, 0);
+  }
 }
 
 bool CM740::ping(const uint8_t & address)
@@ -185,11 +186,41 @@ bool CM740::bulk_read_packet()
 
       if (ping(PacketId::CONTROLLER)) {
         instruction_packet.add(PacketId::CONTROLLER, CM740Address::DXL_POWER,
-          static_cast<uint8_t>(26));
+          static_cast<uint8_t>(30));
       }
 
       if (instruction_packet.is_parameters_filled()) {
+        std::vector<uint8_t> txpacket = instruction_packet.get_packet();
         
+        if (platform->write_port(txpacket) == txpacket.size()) {
+          int data_number = instruction_packet.get_data_number();
+          BulkReadData::insert_all(bulk_data, instruction_packet);        
+
+          // set packet timeout;
+          int get_length = 0;
+          int expected_length = instruction_packet.get_expected_length();
+          auto rxpacket = std::make_shared<std::vector<uint8_t>>(1024, 0x00);
+
+          while (true) {
+            get_length += platform->read_port(rxpacket, expected_length - get_length, get_length);
+
+            if (get_length == expected_length) {
+              int new_get_length = BulkReadData::validate(rxpacket, get_length); 
+
+              if (new_get_length == get_length) {
+                
+              } else {
+                // is packet timeout ? so RX_TIMEOUT
+                get_length = new_get_length;
+              }
+            } else {
+              // is packet timeout ? so RX_TIMEOUT
+              // or RX_CORRUPT if the rx length is not zero
+            }
+          }
+        }
+      } else {
+        // so TX_FAIL
       }
     }
   }

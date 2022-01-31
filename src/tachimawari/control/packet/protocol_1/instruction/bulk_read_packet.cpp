@@ -43,11 +43,28 @@ namespace protocol_1
 BulkReadPacket::BulkReadPacket()
 : Packet(PacketId::BROADCAST, Instruction::BULK_READ)
 {
+  parameters.push_back(0x00);
 }
 
 bool BulkReadPacket::is_parameters_filled()
 {
-  return parameters.size() != 0;
+  return parameters.size() > 1;
+}
+
+const int & BulkReadPacket::get_expected_length() const
+{
+  int length = 0;
+  for (int i = 1; i < parameters.size(); i += 3) {
+    length += (parameters[i] + 6);
+  }
+
+  return length;
+}
+
+const int & BulkReadPacket::get_data_number() const
+{
+  int data_number = parameters.size() - 1;
+  return data_number / 3;
 }
 
 void BulkReadPacket::add(const uint8_t & id, const uint8_t & starting_address,
