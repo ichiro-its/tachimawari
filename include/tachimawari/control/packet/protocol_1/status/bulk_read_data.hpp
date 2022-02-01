@@ -26,6 +26,7 @@
 #include <string>
 #include <vector>
 
+#include "tachimawari/control/packet/protocol_1/instruction/bulk_read_packet.hpp"
 #include "tachimawari/control/packet/protocol_1/model/packet.hpp"
 #include "tachimawari/joint/model/joint.hpp"
 

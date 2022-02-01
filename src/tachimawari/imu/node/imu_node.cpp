@@ -19,6 +19,7 @@
 // THE SOFTWARE.
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "tachimawari/imu/node/imu_node.hpp"
@@ -51,6 +52,11 @@ void ImuNode::update_imu()
   unit_msg.accelero = {accelero[0], accelero[1], accelero[2]};
 
   unit_publisher->publish(unit_msg);
+}
+
+std::string ImuNode::get_node_prefix() const
+{
+  return "imu";
 }
 
 }  // namespace imu

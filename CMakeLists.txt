@@ -15,12 +15,27 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(dynamixel_sdk REQUIRED)
+find_package(kansei_interfaces REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(tachimawari_interfaces REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
-  "src/${PROJECT_NAME}/joint.cpp"
-  "src/${PROJECT_NAME}/motion_manager.cpp")
+  "src/${PROJECT_NAME}/control/controller/module/cm740.cpp"
+  "src/${PROJECT_NAME}/control/controller/platform/linux.cpp"
+  "src/${PROJECT_NAME}/control/manager/control_manager.cpp"
+  "src/${PROJECT_NAME}/control/packet/protocol_1/instruction/bulk_read_packet.cpp"
+  "src/${PROJECT_NAME}/control/packet/protocol_1/instruction/sync_write_packet.cpp"
+  "src/${PROJECT_NAME}/control/packet/protocol_1/instruction/write_packet.cpp"
+  "src/${PROJECT_NAME}/control/packet/protocol_1/model/packet.cpp"
+  "src/${PROJECT_NAME}/control/packet/protocol_1/status/bulk_read_data.cpp"
+  "src/${PROJECT_NAME}/control/packet/protocol_1/status/status_packet.cpp"
+  "src/${PROJECT_NAME}/control/packet/protocol_1/utils/word.cpp"
+  "src/${PROJECT_NAME}/imu/node/imu_node.cpp"
+  "src/${PROJECT_NAME}/imu/node/imu_provider.cpp"
+  "src/${PROJECT_NAME}/joint/model/joint.cpp"
+  "src/${PROJECT_NAME}/joint/node/joint_manager.cpp"
+  "src/${PROJECT_NAME}/joint/node/joint_node.cpp"
+  "src/${PROJECT_NAME}/node/tachimawari_node.cpp")
 
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -28,6 +43,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 ament_target_dependencies(${PROJECT_NAME}
   dynamixel_sdk
+  kansei_interfaces
   rclcpp
   tachimawari_interfaces)
 
@@ -51,16 +67,9 @@ target_include_directories(move_joint PUBLIC
   $<INSTALL_INTERFACE:include>)
 target_link_libraries(move_joint ${PROJECT_NAME})
 
-add_executable(motion_manager "src/motion_manager_main.cpp")
-target_include_directories(motion_manager PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
-target_link_libraries(motion_manager ${PROJECT_NAME})
-
 install(TARGETS
   check_joints
   move_joint
-  motion_manager
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
@@ -70,6 +79,7 @@ endif()
 
 ament_export_dependencies(
   dynamixel_sdk
+  kansei_interfaces
   rclcpp
   tachimawari_interfaces)
 ament_export_include_directories("include")

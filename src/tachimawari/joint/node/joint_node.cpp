@@ -39,10 +39,10 @@ JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager>
 {
   set_joints_subscriber = node->create_subscription<tachimawari_interfaces::msg::SetJoints>(
     get_node_prefix() + "/set_joints", 10,
-    [this] (const tachimawari_interfaces::msg::SetJoints message) {
+    [this] (const tachimawari_interfaces::msg::SetJoints::SharedPtr message) {
       std::vector<Joint> joints;
       
-      for (auto & joint : message.joints) {
+      for (auto & joint : message->joints) {
         joints.push_back(Joint(joint.id, joint.position));
       }
 

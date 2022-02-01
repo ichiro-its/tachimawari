@@ -43,7 +43,7 @@ Linux::Linux()
 {
 }
 
-bool Linux::open_port(const std::string & port_name, const int & baudrate = 1000000)
+bool Linux::open_port(const std::string & port_name, const int & baudrate)
 {
   struct termios newtio;
   struct serial_struct serinfo;

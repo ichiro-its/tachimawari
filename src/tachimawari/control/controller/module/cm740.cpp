@@ -53,8 +53,8 @@ namespace tachimawari
 namespace control
 {
 
-CM740::CM740(const std::string & port_name, const int & baudrate = 1000000,
-  const float & protocol_version = 1.0)
+CM740::CM740(const std::string & port_name, const int & baudrate,
+    const float & protocol_version)
 : ControlManager(port_name, protocol_version, baudrate), byte_transfer_time(0.0),
   platform(std::make_shared<Linux>()),
   bulk_data(std::make_shared<std::map<uint8_t, packet::protocol_1::BulkReadData>>())
@@ -293,7 +293,7 @@ bool CM740::bulk_read_packet(const std::vector<joint::Joint> & joints)
 }
 
 int CM740::get_bulk_data(const uint8_t & id, const uint8_t & address,
-  const int & data_length = 1)
+  const int & data_length)
 {
   if (bulk_data->find(id) != bulk_data->end()) {
     if (data_length == 1) {
@@ -306,6 +306,18 @@ int CM740::get_bulk_data(const uint8_t & id, const uint8_t & address,
   }
 
   return -1;
+}
+
+void CM740::disconnect()
+{
+  write_packet(CM740Address::LED_HEAD_L, packet::protocol_1::Word::make_color(0, 255, 0), 2);
+
+  platform->close_port();
+}
+
+CM740::~CM740()
+{
+  disconnect();
 }
 
 }  // namespace control

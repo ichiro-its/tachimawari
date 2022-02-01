@@ -35,7 +35,7 @@ namespace joint
 class Joint
 {
 public:
-  explicit Joint(const uint8_t & joint_id, const float & position);
+  explicit Joint(const uint8_t & joint_id, const float & position = 0.0);
 
   void set_position(const float & position);
 
