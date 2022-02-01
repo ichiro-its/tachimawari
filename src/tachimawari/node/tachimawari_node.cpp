@@ -18,49 +18,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <chrono>
+#include <memory>
 #include <string>
-#include <vector>
 
-#include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari/node/tachimawari_node.hpp"
+
+#include "tachimawari/control/manager/control_manager.hpp"
+#include "tachimawari/joint/node/joint_manager.hpp"
+#include "tachimawari/joint/node/joint_node.hpp"
+
+using namespace std::chrono_literals;
 
 namespace tachimawari
 {
 
-namespace joint
+TachimawariNode::TachimawariNode(rclcpp::Node::SharedPtr node)
+: node(node), control_manager(nullptr)
 {
-
-Joint::Joint(const uint8_t & joint_id, const float & position)
-: id(joint_id), position(position), p_gain(30.0), i_gain(30.0), d_gain(30.0)
-{
+  node_timer = node->create_wall_timer(
+    8ms,
+    [this]() {
+      if (control_manager) {
+      }
+    }
+  );
 }
 
-void Joint::set_position(const float & position)
+void TachimawariNode::set_control_manager(
+  std::shared_ptr<control::ControlManager> control_manager)
 {
-  this->position = position;
+  joint_node = std::make_shared<joint::JointNode>(node,
+    std::make_shared<joint::JointManager>(control_manager));
 }
-
-void Joint::set_pid_gain(const float & p, const float & i, const float & d)
-{
-  p_gain = p;
-  i_gain = i;
-  d_gain = d;
-}
-
-const uint8_t & Joint::get_id() const
-{
-  return id;
-}
-
-const float & Joint::get_position() const
-{
-  return position;
-}
-
-std::vector<float> Joint::get_pid_gain() const
-{
-  return {p_gain, i_gain, d_gain};
-}
-
-}  // namespace joint
 
 }  // namespace tachimawari

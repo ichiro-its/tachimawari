@@ -23,6 +23,7 @@
 
 #include "tachimawari/joint/node/joint_manager.hpp"
 
+#include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
 namespace tachimawari
@@ -34,6 +35,13 @@ namespace joint
 JointManager::JointManager(std::shared_ptr<tachimawari::control::ControlManager> control_manager)
 : control_manager(control_manager)
 {
+  torque_enable(true);
+}
+
+bool JointManager::torque_enable(const bool & enable)
+{
+  control_manager->write_packet(tachimawari::control::packet::protocol_1::PacketId::CONTROLLER,
+    protocol_1::MX28Address::TORQUE_ENABLE, static_cast<int>(enable));
 }
 
 bool JointManager::torque_enable(const std::vector<Joint> & joints, const bool & enable)

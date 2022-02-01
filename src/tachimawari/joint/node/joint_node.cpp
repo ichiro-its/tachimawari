@@ -18,10 +18,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <memory>
 #include <string>
-#include <vector>
+
+#include "tachimawari/joint/node/joint_node.hpp"
 
 #include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari/joint/node/joint_manager.hpp"
+#include "tachimawari_interfaces/msg/joint.hpp"
+#include "tachimawari_interfaces/msg/set_joints.hpp"
 
 namespace tachimawari
 {
@@ -29,36 +34,26 @@ namespace tachimawari
 namespace joint
 {
 
-Joint::Joint(const uint8_t & joint_id, const float & position)
-: id(joint_id), position(position), p_gain(30.0), i_gain(30.0), d_gain(30.0)
+JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager)
+: joint_manager(joint_manager)
 {
+  set_joints_subscriber = node->create_subscription<tachimawari_interfaces::msg::SetJoints>(
+    get_node_prefix() + "/set_joints", 10,
+    [this] (const tachimawari_interfaces::msg::SetJoints message) {
+      std::vector<Joint> joints;
+      
+      for (auto & joint : message.joints) {
+        joints.push_back(Joint(joint.id, joint.position));
+      }
+
+      this->joint_manager->set_joints(joints);
+    }
+  );
 }
 
-void Joint::set_position(const float & position)
+std::string JointNode::get_node_prefix() const
 {
-  this->position = position;
-}
-
-void Joint::set_pid_gain(const float & p, const float & i, const float & d)
-{
-  p_gain = p;
-  i_gain = i;
-  d_gain = d;
-}
-
-const uint8_t & Joint::get_id() const
-{
-  return id;
-}
-
-const float & Joint::get_position() const
-{
-  return position;
-}
-
-std::vector<float> Joint::get_pid_gain() const
-{
-  return {p_gain, i_gain, d_gain};
+  return "joint";
 }
 
 }  // namespace joint

@@ -21,6 +21,7 @@
 #ifndef TACHIMAWARI__JOINT__MODEL__JOINT_HPP_
 #define TACHIMAWARI__JOINT__MODEL__JOINT_HPP_
 
+#include <string>
 #include <vector>
 
 #include "tachimawari/joint/model/joint_id.hpp"
@@ -34,7 +35,7 @@ namespace joint
 class Joint
 {
 public:
-  explicit Joint(const JointId & joint_id, const float & position);
+  explicit Joint(const uint8_t & joint_id, const float & position);
 
   void set_position(const float & position);
 

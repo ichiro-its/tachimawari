@@ -37,6 +37,8 @@ class JointManager
 public:
   JointManager(std::shared_ptr<tachimawari::control::ControlManager> control_manager);
 
+  bool torque_enable(const bool & enable);
+
   bool torque_enable(const std::vector<Joint> & joints, const bool & enable);
 
   bool set_joints(const std::vector<Joint> & joints);

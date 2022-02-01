@@ -21,6 +21,13 @@
 #ifndef TACHIMAWARI__JOINT__NODE__JOINT_NODE_HPP_
 #define TACHIMAWARI__JOINT__NODE__JOINT_NODE_HPP_
 
+#include <memory>
+#include <string>
+
+#include "rclcpp/rclcpp.hpp"
+#include "tachimawari/joint/node/joint_manager.hpp"
+#include "tachimawari_interfaces/msg/set_joints.hpp"
+
 namespace tachimawari
 {
 
@@ -30,7 +37,15 @@ namespace joint
 class JointNode
 {
 public:
-  JointNode();
+  JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager);
+
+private:
+  std::string get_node_prefix() const;
+
+  std::shared_ptr<JointManager> joint_manager;
+
+  rclcpp::Subscription<tachimawari_interfaces::msg::SetJoints>::SharedPtr
+    set_joints_subscriber;
 };
 
 }  // namespace joint
