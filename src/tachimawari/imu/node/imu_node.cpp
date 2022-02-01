@@ -18,53 +18,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <chrono>
 #include <memory>
-#include <string>
+#include <vector>
 
-#include "tachimawari/node/tachimawari_node.hpp"
-
-#include "tachimawari/control/manager/control_manager.hpp"
 #include "tachimawari/imu/node/imu_node.hpp"
-#include "tachimawari/imu/node/imu_provider.hpp"
-#include "tachimawari/joint/node/joint_manager.hpp"
-#include "tachimawari/joint/node/joint_node.hpp"
 
-using namespace std::chrono_literals;
+#include "rclcpp/rclcpp.hpp"
+#include "kansei_interfaces/msg/unit.hpp"
+#include "tachimawari/imu/node/imu_provider.hpp"
 
 namespace tachimawari
 {
 
-TachimawariNode::TachimawariNode(rclcpp::Node::SharedPtr node)
-: node(node), control_manager(nullptr), joint_node(nullptr), imu_node(nullptr)
+namespace imu
 {
-  node_timer = node->create_wall_timer(
-    8ms,
-    [this]() {
-      if (control_manager) {
 
-        if (imu_node != nullptr) {
-          control_manager->bulk_read_packet();
-
-          imu_node->update_imu();
-        }
-      }
-    }
-  );
+ImuNode::ImuNode(rclcpp::Node::SharedPtr node, std::shared_ptr<ImuProvider> imu_provider)
+: imu_provider(imu_provider)
+{
+  unit_publisher = node->create_publisher<kansei_interfaces::msg::Unit>(
+    get_node_prefix() + "/unit", 10);
 }
 
-void TachimawariNode::set_joint_manager(
-  std::shared_ptr<control::ControlManager> control_manager)
+void ImuNode::update_imu()
 {
-  joint_node = std::make_shared<joint::JointNode>(node,
-    std::make_shared<joint::JointManager>(control_manager));
+  auto unit_msg = kansei_interfaces::msg::Unit();
+
+  float * gyro = imu_provider->get_gyro();
+  float * accelero = imu_provider->get_accelero();
+
+  unit_msg.gyro = {gyro[0], gyro[1], gyro[2]};
+  unit_msg.accelero = {accelero[0], accelero[1], accelero[2]};
+
+  unit_publisher->publish(unit_msg);
 }
 
-void TachimawariNode::set_imu_provider(
-  std::shared_ptr<control::ControlManager> control_manager)
-{
-  imu_node = std::make_shared<imu::ImuNode>(node,
-    std::make_shared<imu::ImuProvider>(control_manager));
-}
+}  // namespace imu
 
 }  // namespace tachimawari

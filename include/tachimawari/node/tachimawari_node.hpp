@@ -26,6 +26,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "tachimawari/control/manager/control_manager.hpp"
+#include "tachimawari/imu/node/imu_node.hpp"
 #include "tachimawari/joint/node/joint_node.hpp"
 
 namespace tachimawari
@@ -36,9 +37,9 @@ class TachimawariNode
 public:
   explicit TachimawariNode(rclcpp::Node::SharedPtr node);
 
-  void set_control_manager(std::shared_ptr<control::ControlManager> control_manager);
+  void set_joint_manager(std::shared_ptr<control::ControlManager> control_manager);
 
-  void set_imu_provider();
+  void set_imu_provider(std::shared_ptr<control::ControlManager> control_manager);
 
 private:
   rclcpp::Node::SharedPtr node;
@@ -47,6 +48,8 @@ private:
   std::shared_ptr<control::ControlManager> control_manager;
 
   std::shared_ptr<joint::JointNode> joint_node;
+
+  std::shared_ptr<imu::ImuNode> imu_node;
 };
 
 }  // namespace tachimawari
