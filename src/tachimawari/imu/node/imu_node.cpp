@@ -26,6 +26,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "kansei_interfaces/msg/unit.hpp"
+#include "keisan/keisan.hpp"
 #include "tachimawari/imu/node/imu_provider.hpp"
 
 namespace tachimawari
@@ -45,11 +46,13 @@ void ImuNode::update_imu()
 {
   auto unit_msg = kansei_interfaces::msg::Unit();
 
-  float * gyro = imu_provider->get_gyro();
-  float * accelero = imu_provider->get_accelero();
+  keisan::Vector<3> gyro = imu_provider->get_gyro();
+  keisan::Vector<3> accelero = imu_provider->get_accelero();
 
-  unit_msg.gyro = {gyro[0], gyro[1], gyro[2]};
-  unit_msg.accelero = {accelero[0], accelero[1], accelero[2]};
+  unit_msg.gyro = {static_cast<float>(gyro[0]), static_cast<float>(gyro[1]),
+    static_cast<float>(gyro[2])};
+  unit_msg.accelero = {static_cast<float>(accelero[0]), static_cast<float>(accelero[1]),
+    static_cast<float>(accelero[2])};
 
   unit_publisher->publish(unit_msg);
 }

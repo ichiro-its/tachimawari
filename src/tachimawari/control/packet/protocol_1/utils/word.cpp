@@ -30,7 +30,7 @@ namespace control
 
 namespace packet
 {
-  
+
 namespace protocol_1
 {
 
@@ -50,7 +50,7 @@ uint8_t Word::get_high_byte(int word)
 
 int Word::make_word(int lowbyte, int highbyte)
 {
-	unsigned short word;
+  uint8_t word;
 
   word = highbyte;
   word = word << 8;

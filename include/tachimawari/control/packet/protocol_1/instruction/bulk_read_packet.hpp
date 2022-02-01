@@ -21,6 +21,8 @@
 #ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__BULK_READ_PACKET_HPP_
 #define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__BULK_READ_PACKET_HPP_
 
+#include <vector>
+
 #include "tachimawari/control/packet/protocol_1/model/packet.hpp"
 #include "tachimawari/joint/model/joint.hpp"
 
@@ -41,13 +43,14 @@ class BulkReadPacket : public Packet
 public:
   BulkReadPacket();
 
-  const int & get_expected_length() const override;
+  int get_expected_length() const override;
 
-  const int & get_data_number() const;
+  int get_data_number() const;
 
   bool is_parameters_filled();
 
-  void add(const uint8_t & id, const uint8_t & starting_address,
+  void add(
+    const uint8_t & id, const uint8_t & starting_address,
     const uint8_t & data_length);
 
   void add(const std::vector<tachimawari::joint::Joint> & joints);

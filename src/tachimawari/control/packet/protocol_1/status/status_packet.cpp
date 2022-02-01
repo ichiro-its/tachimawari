@@ -25,7 +25,7 @@
 #include "tachimawari/control/packet/protocol_1/status/status_packet.hpp"
 
 #include "tachimawari/control/packet/protocol_1/model/packet_index.hpp"
-#include "tachimawari/control/packet/protocol_1/instruction/insctruction.hpp"
+#include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
 #include "tachimawari/control/packet/protocol_1/utils/word.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
@@ -37,11 +37,12 @@ namespace control
 
 namespace packet
 {
-  
+
 namespace protocol_1
 {
 
-int StatusPacket::validate(std::shared_ptr<std::vector<uint8_t>> rxpacket,
+int StatusPacket::validate(
+  std::shared_ptr<std::vector<uint8_t>> rxpacket,
   const int & packet_length)
 {
   int header_place = 0;
@@ -70,7 +71,9 @@ int StatusPacket::validate(std::shared_ptr<std::vector<uint8_t>> rxpacket,
   }
 }
 
-StatusPacket::StatusPacket(std::shared_ptr<std::vector<uint8_t>> rxpacket, const int & packet_length)
+StatusPacket::StatusPacket(
+  std::shared_ptr<std::vector<uint8_t>> rxpacket,
+  const int & packet_length)
 : Packet(rxpacket->at(PacketIndex::ID), rxpacket->at(PacketIndex::ERROR)),
   rxpacket_length(packet_length), rxpacket(rxpacket)
 {
@@ -86,7 +89,7 @@ bool StatusPacket::is_valid()
   return checksum == rxpacket->at(rxpacket_length - 1);
 }
 
-const uint8_t & StatusPacket::get_data_length() const
+uint8_t StatusPacket::get_data_length() const
 {
   return rxpacket->at(PacketIndex::LENGTH);
 }

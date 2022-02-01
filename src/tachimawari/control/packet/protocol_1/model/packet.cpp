@@ -24,7 +24,7 @@
 #include "tachimawari/control/packet/protocol_1/model/packet.hpp"
 
 #include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
-#include "tachimawari/control/packet/protocol_1/instruction/insctruction.hpp"
+#include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
 
 namespace tachimawari
 {
@@ -34,13 +34,15 @@ namespace control
 
 namespace packet
 {
-  
+
 namespace protocol_1
 {
 
-Packet::Packet(const uint8_t & pakcet_id, const uint8_t & instruction)
-: packet_id(packet_id), info(instruction), checksum(0x00)
+Packet::Packet(uint8_t pakcet_id, uint8_t instruction)
+: info(instruction), checksum(0x00)
 {
+  this->packet_id = packet_id;
+
   packet.push_back(0xFF);
   packet.push_back(0xFF);
 }
@@ -55,12 +57,12 @@ const uint8_t & Packet::get_info() const
   return info;
 }
 
-const uint8_t & Packet::get_data_length() const
+uint8_t Packet::get_data_length() const
 {
   return static_cast<uint8_t>(parameters.size() + 2);
 }
 
-const int & Packet::get_expected_length() const
+int Packet::get_expected_length() const
 {
   if (info == Instruction::READ) {
     return parameters[1] + 6;
@@ -86,7 +88,7 @@ const std::vector<uint8_t> & Packet::get_parameters() const
 std::vector<uint8_t> Packet::get_packet()
 {
   packet.push_back(packet_id);
-  
+
   packet.push_back(get_data_length());
 
   packet.push_back(info);

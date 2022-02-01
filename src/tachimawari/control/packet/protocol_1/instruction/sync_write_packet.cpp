@@ -24,7 +24,7 @@
 #include "tachimawari/control/packet/protocol_1/instruction/sync_write_packet.hpp"
 
 #include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
-#include "tachimawari/control/packet/protocol_1/instruction/insctruction.hpp"
+#include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
 #include "tachimawari/control/packet/protocol_1/utils/word.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
@@ -36,7 +36,7 @@ namespace control
 
 namespace packet
 {
-  
+
 namespace protocol_1
 {
 
@@ -45,12 +45,13 @@ SyncWritePacket::SyncWritePacket()
 {
 }
 
-void SyncWritePacket::create(const std::vector<tachimawari::joint::Joint> & joints,
-    const uint8_t & starting_address)
+void SyncWritePacket::create(
+  const std::vector<tachimawari::joint::Joint> & joints,
+  const uint8_t & starting_address)
 {
   parameters.push_back(starting_address);
-  
-  bool is_include_pid = starting_address == tachimawari::joint::protocol_1::MX28Address::D_GAIN;  
+
+  bool is_include_pid = starting_address == tachimawari::joint::protocol_1::MX28Address::D_GAIN;
   parameters.push_back(static_cast<uint8_t>((is_include_pid) ? 6 : 2));
 
   for (auto & joint : joints) {

@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -39,7 +40,7 @@ namespace tachimawari
 {
 
 Linux::Linux()
-: port_name(port_name), baudrate(baudrate), socket_fd(-1)
+: port_name(""), baudrate(1000000), socket_fd(-1)
 {
 }
 
@@ -107,7 +108,8 @@ int Linux::write_port(const std::vector<uint8_t> & packet)
   return write(socket_fd, packet.data(), packet.size());
 }
 
-int Linux::read_port(std::shared_ptr<std::vector<uint8_t>> packet, const int & packet_length,
+int Linux::read_port(
+  std::shared_ptr<std::vector<uint8_t>> packet, const int & packet_length,
   const int & packet_index)
 {
   unsigned char * txpacket = packet->data();

@@ -23,6 +23,7 @@
 
 #include <memory>
 
+#include "keisan/keisan.hpp"
 #include "tachimawari/control/manager/control_manager.hpp"
 
 namespace tachimawari
@@ -34,10 +35,10 @@ namespace imu
 class ImuProvider
 {
 public:
-  ImuProvider(std::shared_ptr<tachimawari::control::ControlManager> control_manager);
+  explicit ImuProvider(std::shared_ptr<tachimawari::control::ControlManager> control_manager);
 
-  float * get_gyro() const;
-  float * get_accelero() const;
+  keisan::Vector<3> get_gyro() const;
+  keisan::Vector<3> get_accelero() const;
 
 private:
   std::shared_ptr<tachimawari::control::ControlManager> control_manager;

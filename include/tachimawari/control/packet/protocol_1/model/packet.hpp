@@ -25,7 +25,7 @@
 #include <vector>
 
 #include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
-#include "tachimawari/control/packet/protocol_1/instruction/insctruction.hpp"
+#include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
 
 namespace tachimawari
 {
@@ -42,18 +42,18 @@ namespace protocol_1
 class Packet
 {
 public:
-  Packet(const uint8_t & pakcet_id, const uint8_t & instruction);
+  Packet(uint8_t pakcet_id, uint8_t instruction);
 
   const uint8_t & get_packet_id() const;
 
   const uint8_t & get_info() const;
 
-  virtual const uint8_t & get_data_length() const;
+  virtual uint8_t get_data_length() const;
 
-  virtual const int & get_expected_length() const;
+  virtual int get_expected_length() const;
 
   const std::vector<uint8_t> & get_parameters() const;
-  
+
   std::vector<uint8_t> get_packet();
 
 protected:

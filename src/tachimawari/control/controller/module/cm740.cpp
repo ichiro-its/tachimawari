@@ -27,7 +27,7 @@
 
 #include "tachimawari/control/controller/module/cm740_address.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/bulk_read_packet.hpp"
-#include "tachimawari/control/packet/protocol_1/instruction/insctruction.hpp"
+#include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/sync_write_packet.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/write_packet.hpp"
 #include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
@@ -53,8 +53,9 @@ namespace tachimawari
 namespace control
 {
 
-CM740::CM740(const std::string & port_name, const int & baudrate,
-    const float & protocol_version)
+CM740::CM740(
+  const std::string & port_name, const int & baudrate,
+  const float & protocol_version)
 : ControlManager(port_name, protocol_version, baudrate), byte_transfer_time(0.0),
   platform(std::make_shared<Linux>()),
   bulk_data(std::make_shared<std::map<uint8_t, packet::protocol_1::BulkReadData>>())
@@ -86,7 +87,7 @@ bool CM740::dxl_power_on()
 packet::protocol_1::StatusPacket CM740::send_packet(packet::protocol_1::Packet packet)
 {
   {
-    using namespace packet::protocol_1;
+    using StatusPacket = packet::protocol_1::StatusPacket;
 
     std::vector<uint8_t> txpacket = packet.get_packet();
 
@@ -129,13 +130,13 @@ packet::protocol_1::StatusPacket CM740::send_packet(packet::protocol_1::Packet p
 bool CM740::send_bulk_read_packet(packet::protocol_1::BulkReadPacket packet)
 {
   {
-    using namespace packet::protocol_1;
+    using BulkReadData = packet::protocol_1::BulkReadData;
 
     std::vector<uint8_t> txpacket = packet.get_packet();
-    
+
     if (platform->write_port(txpacket) == txpacket.size()) {
       int data_number = packet.get_data_number();
-      BulkReadData::insert_all(bulk_data, packet);        
+      BulkReadData::insert_all(bulk_data, packet);
 
       // set packet timeout;
       int get_length = 0;
@@ -180,20 +181,17 @@ bool CM740::send_bulk_read_packet(packet::protocol_1::BulkReadPacket packet)
 bool CM740::ping(const uint8_t & id)
 {
   if (protocol_version == 1.0) {
-    {
-      using namespace packet::protocol_1;
+    packet::protocol_1::Packet instruction_packet(id, packet::protocol_1::Instruction::PING);
+    auto status_packet = send_packet(instruction_packet);
 
-      Packet instruction_packet(id, Instruction::PING);
-      auto status_packet = send_packet(instruction_packet);
-
-      return status_packet.is_success();
-    }
+    return status_packet.is_success();
   }
 
   return false;
 }
 
-bool CM740::write_packet(const uint8_t & address, const int & value,
+bool CM740::write_packet(
+  const uint8_t & address, const int & value,
   const int & data_length)
 {
   if (protocol_version == 1.0) {
@@ -212,7 +210,8 @@ bool CM740::write_packet(const uint8_t & address, const int & value,
   return false;
 }
 
-bool CM740::write_packet(const uint8_t & id, const uint8_t & address, const int & value,
+bool CM740::write_packet(
+  const uint8_t & id, const uint8_t & address, const int & value,
   const int & data_length)
 {
   if (protocol_version == 1.0) {
@@ -252,21 +251,18 @@ bool CM740::sync_write_packet(const std::vector<joint::Joint> & joints, const bo
 bool CM740::bulk_read_packet()
 {
   if (protocol_version == 1.0) {
-    {
-      using namespace packet::protocol_1;
+    packet::protocol_1::BulkReadPacket instruction_packet;
 
-      BulkReadPacket instruction_packet;
+    if (ping(packet::protocol_1::PacketId::CONTROLLER)) {
+      instruction_packet.add(
+        packet::protocol_1::PacketId::CONTROLLER, CM740Address::DXL_POWER,
+        static_cast<uint8_t>(30));
+    }
 
-      if (ping(PacketId::CONTROLLER)) {
-        instruction_packet.add(PacketId::CONTROLLER, CM740Address::DXL_POWER,
-          static_cast<uint8_t>(30));
-      }
-
-      if (instruction_packet.is_parameters_filled()) {
-        return send_bulk_read_packet(instruction_packet);
-      } else {
-        return false;
-      }
+    if (instruction_packet.is_parameters_filled()) {
+      return send_bulk_read_packet(instruction_packet);
+    } else {
+      return false;
     }
   }
 
@@ -292,7 +288,8 @@ bool CM740::bulk_read_packet(const std::vector<joint::Joint> & joints)
   return false;
 }
 
-int CM740::get_bulk_data(const uint8_t & id, const uint8_t & address,
+int CM740::get_bulk_data(
+  const uint8_t & id, const uint8_t & address,
   const int & data_length)
 {
   if (bulk_data->find(id) != bulk_data->end()) {

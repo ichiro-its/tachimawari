@@ -23,6 +23,7 @@
 
 #include "tachimawari/imu/node/imu_provider.hpp"
 
+#include "keisan/keisan.hpp"
 #include "tachimawari/control/manager/control_manager.hpp"
 #include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
 #include "tachimawari/control/controller/module/cm740_address.hpp"
@@ -38,52 +39,62 @@ ImuProvider::ImuProvider(std::shared_ptr<tachimawari::control::ControlManager> c
 {
 }
 
-float * ImuProvider::get_gyro() const
+keisan::Vector<3> ImuProvider::get_gyro() const
 {
   float gyro[3] = {0, 0, 0};
 
   if (control_manager->get_protocol_version() == 1.0) {
     {
-      using namespace tachimawari::control;
+      using CM740Address = tachimawari::control::CM740Address;
+      using PacketId = tachimawari::control::packet::protocol_1::PacketId;
 
-      int gyro_x = control_manager->get_bulk_data(packet::protocol_1::PacketId::CONTROLLER,
+      int gyro_x = control_manager->get_bulk_data(
+        PacketId::CONTROLLER,
         CM740Address::GYRO_X_L, 2);
-      int gyro_y = control_manager->get_bulk_data(packet::protocol_1::PacketId::CONTROLLER,
+      int gyro_y = control_manager->get_bulk_data(
+        PacketId::CONTROLLER,
         CM740Address::GYRO_Y_L, 2);
-      int gyro_z = control_manager->get_bulk_data(packet::protocol_1::PacketId::CONTROLLER,
+      int gyro_z = control_manager->get_bulk_data(
+        PacketId::CONTROLLER,
         CM740Address::GYRO_Z_L, 2);
-      
-      gyro[0] = gyro_x == -1 ? 0 : static_cast<double>(gyro_x);
-      gyro[1] = gyro_y == -1 ? 0 : static_cast<double>(gyro_y);
-      gyro[2] = gyro_z == -1 ? 0 : static_cast<double>(gyro_z);
+
+      keisan::Vector<3>(
+        gyro_x == -1 ? 0 : static_cast<double>(gyro_x),
+        gyro_y == -1 ? 0 : static_cast<double>(gyro_y),
+        gyro_z == -1 ? 0 : static_cast<double>(gyro_z)
+      );
     }
   }
 
-  return gyro;
+  return keisan::Vector<3>::zero();
 }
 
-float * ImuProvider::get_accelero() const
+keisan::Vector<3> ImuProvider::get_accelero() const
 {
-  float accel[3] = {0, 0, 0};
-
   if (control_manager->get_protocol_version() == 1.0) {
     {
-      using namespace tachimawari::control;
+      using CM740Address = tachimawari::control::CM740Address;
+      using PacketId = tachimawari::control::packet::protocol_1::PacketId;
 
-      int accel_x = control_manager->get_bulk_data(packet::protocol_1::PacketId::CONTROLLER,
+      int accel_x = control_manager->get_bulk_data(
+        PacketId::CONTROLLER,
         CM740Address::ACCEL_X_L, 2);
-      int accel_y = control_manager->get_bulk_data(packet::protocol_1::PacketId::CONTROLLER,
+      int accel_y = control_manager->get_bulk_data(
+        PacketId::CONTROLLER,
         CM740Address::ACCEL_Y_L, 2);
-      int accel_z = control_manager->get_bulk_data(packet::protocol_1::PacketId::CONTROLLER,
+      int accel_z = control_manager->get_bulk_data(
+        PacketId::CONTROLLER,
         CM740Address::ACCEL_Z_L, 2);
-      
-      accel[0] = accel_x == -1 ? 0 : static_cast<float>(accel_x);
-      accel[1] = accel_y == -1 ? 0 : static_cast<float>(accel_y);
-      accel[2] = accel_z == -1 ? 0 : static_cast<float>(accel_z);
+
+      keisan::Vector<3>(
+        accel_x == -1 ? 0 : static_cast<float>(accel_x),
+        accel_y == -1 ? 0 : static_cast<float>(accel_y),
+        accel_z == -1 ? 0 : static_cast<float>(accel_z)
+      );
     }
   }
 
-  return accel;
+  return keisan::Vector<3>::zero();
 }
 
 }  // namespace imu

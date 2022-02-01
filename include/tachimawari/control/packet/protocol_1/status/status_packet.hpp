@@ -18,8 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__STATUS_PACKET_HPP_
-#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__STATUS_PACKET_HPP_
+#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__STATUS__STATUS_PACKET_HPP_
+#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__STATUS__STATUS_PACKET_HPP_
 
 #include <memory>
 #include <string>
@@ -44,7 +44,8 @@ namespace protocol_1
 class StatusPacket : public Packet
 {
 public:
-  static int validate(std::shared_ptr<std::vector<uint8_t>> rxpacket,
+  static int validate(
+    std::shared_ptr<std::vector<uint8_t>> rxpacket,
     const int & packet_length);
 
   StatusPacket(std::shared_ptr<std::vector<uint8_t>> rxpacket, const int & packet_length);
@@ -55,11 +56,11 @@ public:
 
   std::shared_ptr<std::vector<uint8_t>> get_raw_packet();
 
-  const uint8_t & get_data_length() const override;
+  uint8_t get_data_length() const override;
 
 private:
   std::shared_ptr<std::vector<uint8_t>> rxpacket;
-  
+
   int rxpacket_length;
 };
 
@@ -71,4 +72,4 @@ private:
 
 }  // namespace tachimawari
 
-#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__STATUS_PACKET_HPP_
+#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__STATUS__STATUS_PACKET_HPP_

@@ -24,7 +24,7 @@
 #include "tachimawari/control/packet/protocol_1/instruction/bulk_read_packet.hpp"
 
 #include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
-#include "tachimawari/control/packet/protocol_1/instruction/insctruction.hpp"
+#include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
 #include "tachimawari/control/packet/protocol_1/utils/word.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
@@ -36,7 +36,7 @@ namespace control
 
 namespace packet
 {
-  
+
 namespace protocol_1
 {
 
@@ -51,7 +51,7 @@ bool BulkReadPacket::is_parameters_filled()
   return parameters.size() > 1;
 }
 
-const int & BulkReadPacket::get_expected_length() const
+int BulkReadPacket::get_expected_length() const
 {
   int length = 0;
   for (int i = 1; i < parameters.size(); i += 3) {
@@ -61,13 +61,14 @@ const int & BulkReadPacket::get_expected_length() const
   return length;
 }
 
-const int & BulkReadPacket::get_data_number() const
+int BulkReadPacket::get_data_number() const
 {
   int data_number = parameters.size() - 1;
   return data_number / 3;  // divided by instruction packet structure of its parameters
 }
 
-void BulkReadPacket::add(const uint8_t & id, const uint8_t & starting_address,
+void BulkReadPacket::add(
+  const uint8_t & id, const uint8_t & starting_address,
   const uint8_t & data_length)
 {
   parameters.push_back(data_length);

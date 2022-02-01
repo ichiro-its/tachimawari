@@ -18,8 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__BULK_READ_DATA_HPP_
-#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__BULK_READ_DATA_HPP_
+#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__STATUS__BULK_READ_DATA_HPP_
+#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__STATUS__BULK_READ_DATA_HPP_
 
 #include <map>
 #include <memory>
@@ -45,16 +45,20 @@ namespace protocol_1
 class BulkReadData : public Packet
 {
 public:
-  static void insert_all(std::shared_ptr<std::map<uint8_t, BulkReadData>> bulk_data,
+  static void insert_all(
+    std::shared_ptr<std::map<uint8_t, BulkReadData>> bulk_data,
     const BulkReadPacket & bulk_read_packet);
 
-  static int validate(std::shared_ptr<std::vector<uint8_t>> rxpacket,
+  static int validate(
+    std::shared_ptr<std::vector<uint8_t>> rxpacket,
     const int & packet_length);
 
-  static int update_all(std::shared_ptr<std::map<uint8_t, BulkReadData>> bulk_data,
+  static int update_all(
+    std::shared_ptr<std::map<uint8_t, BulkReadData>> bulk_data,
     std::shared_ptr<std::vector<uint8_t>> rxpacket, int packet_length, int data_number);
 
-  BulkReadData(const uint8_t & id, const uint8_t & starting_address,
+  BulkReadData(
+    const uint8_t & id, const uint8_t & starting_address,
     const uint8_t & data_length);
 
   bool is_valid(const std::vector<uint8_t> & rxpacket);
@@ -78,4 +82,4 @@ private:
 
 }  // namespace tachimawari
 
-#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__BULK_READ_DATA_HPP_
+#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__STATUS__BULK_READ_DATA_HPP_

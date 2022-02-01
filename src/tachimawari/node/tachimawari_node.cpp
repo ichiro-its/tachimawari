@@ -42,7 +42,6 @@ TachimawariNode::TachimawariNode(rclcpp::Node::SharedPtr node)
     8ms,
     [this]() {
       if (control_manager) {
-
         if (imu_node != nullptr) {
           control_manager->bulk_read_packet();
 
@@ -56,14 +55,16 @@ TachimawariNode::TachimawariNode(rclcpp::Node::SharedPtr node)
 void TachimawariNode::set_joint_manager(
   std::shared_ptr<control::ControlManager> control_manager)
 {
-  joint_node = std::make_shared<joint::JointNode>(node,
+  joint_node = std::make_shared<joint::JointNode>(
+    node,
     std::make_shared<joint::JointManager>(control_manager));
 }
 
 void TachimawariNode::set_imu_provider(
   std::shared_ptr<control::ControlManager> control_manager)
 {
-  imu_node = std::make_shared<imu::ImuNode>(node,
+  imu_node = std::make_shared<imu::ImuNode>(
+    node,
     std::make_shared<imu::ImuProvider>(control_manager));
 }
 

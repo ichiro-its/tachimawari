@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -26,7 +27,7 @@
 
 #include "tachimawari/control/packet/protocol_1/model/packet_index.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/bulk_read_packet.hpp"
-#include "tachimawari/control/packet/protocol_1/instruction/insctruction.hpp"
+#include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
 #include "tachimawari/control/packet/protocol_1/utils/word.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
@@ -38,24 +39,28 @@ namespace control
 
 namespace packet
 {
-  
+
 namespace protocol_1
 {
 
-void BulkReadData::insert_all(std::shared_ptr<std::map<uint8_t, BulkReadData>> bulk_data,
+void BulkReadData::insert_all(
+  std::shared_ptr<std::map<uint8_t, BulkReadData>> bulk_data,
   const BulkReadPacket & bulk_read_packet)
 {
   auto parameters = bulk_read_packet.get_parameters();
 
   for (int i = 1; i < parameters.size(); i += 3) {
     if (bulk_data->find(parameters[i + 1]) != bulk_data->end()) {
-      bulk_data->insert({parameters[i + 1], BulkReadData(parameters[i + 1], parameters[i],
-        parameters[i + 2])});
+      bulk_data->insert(
+        {parameters[i + 1], BulkReadData(
+            parameters[i + 1], parameters[i],
+            parameters[i + 2])});
     }
   }
 }
 
-int BulkReadData::validate(std::shared_ptr<std::vector<uint8_t>> rxpacket,
+int BulkReadData::validate(
+  std::shared_ptr<std::vector<uint8_t>> rxpacket,
   const int & packet_length)
 {
   int header_place = 0;
@@ -78,10 +83,11 @@ int BulkReadData::validate(std::shared_ptr<std::vector<uint8_t>> rxpacket,
   }
 }
 
-int BulkReadData::update_all(std::shared_ptr<std::map<uint8_t, BulkReadData>> bulk_data,
+int BulkReadData::update_all(
+  std::shared_ptr<std::map<uint8_t, BulkReadData>> bulk_data,
   std::shared_ptr<std::vector<uint8_t>> rxpacket, int packet_length, int data_number)
 {
-  while  (true) {
+  while (true) {
     int header_place = 0;
     for (header_place = 0; header_place < (packet_length - 1); header_place++) {
       if (rxpacket->at(header_place) == 0xFF && rxpacket->at(header_place + 1) == 0xFF) {
@@ -94,8 +100,8 @@ int BulkReadData::update_all(std::shared_ptr<std::map<uint8_t, BulkReadData>> bu
 
       if (bulk_data->find(packet_id) != bulk_data->end()) {
         int length = rxpacket->at(PacketIndex::LENGTH) + 4;
-        
-        if (bulk_data->at(packet_id).is_valid(* rxpacket.get())) {
+
+        if (bulk_data->at(packet_id).is_valid(*rxpacket.get())) {
           int bulk_data_length = rxpacket->at(PacketIndex::LENGTH) + 4;
 
           for (int i = 0; i < packet_length - bulk_data_length; i++) {
@@ -127,7 +133,8 @@ int BulkReadData::update_all(std::shared_ptr<std::map<uint8_t, BulkReadData>> bu
   }
 }
 
-BulkReadData::BulkReadData(const uint8_t & id, const uint8_t & starting_address,
+BulkReadData::BulkReadData(
+  const uint8_t & id, const uint8_t & starting_address,
   const uint8_t & data_length)
 : Packet(id, 0xFF), start_address(starting_address), data_length(data_length)
 {
