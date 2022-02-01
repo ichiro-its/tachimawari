@@ -41,6 +41,8 @@ public:
   static uint8_t get_low_byte(int word);
   static uint8_t get_high_byte(int word);
 
+  static int make_word(int lowbyte, int highbyte);
+
   static int make_color(int red, int green, int blue);
 };
 

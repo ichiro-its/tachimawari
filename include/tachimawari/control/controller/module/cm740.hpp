@@ -73,6 +73,9 @@ public:
 
   bool bulk_read_packet(const std::vector<joint::Joint> & joints) override;
 
+  int get_bulk_data(const uint8_t & id, const uint8_t & address,
+    const int & data_length = 1) override;
+
 private:
   bool dxl_power_on();
 

@@ -35,6 +35,11 @@ ControlManager::ControlManager(
 {
 }
 
+const float & ControlManager::get_protocol_version() const
+{
+  return protocol_version;
+}
+
 }  // namespace control
 
 }  // namespace tachimawari

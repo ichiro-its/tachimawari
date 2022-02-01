@@ -39,6 +39,8 @@ public:
     const std::string & port_name, const float & protocol_version, const int & baudrate);
   virtual ~ControlManager() {}
 
+  const float & get_protocol_version() const; 
+
   virtual bool connect();
   virtual void disconnect();
 
@@ -56,6 +58,9 @@ public:
   virtual bool bulk_read_packet();
 
   virtual bool bulk_read_packet(const std::vector<joint::Joint> & joints);
+
+  virtual int get_bulk_data(const uint8_t & id, const uint8_t & address,
+    const int & data_length = 1);
 
 protected:
   std::string port_name;

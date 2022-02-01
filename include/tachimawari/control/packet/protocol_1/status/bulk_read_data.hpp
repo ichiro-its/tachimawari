@@ -60,6 +60,9 @@ public:
 
   bool is_filled();
 
+  int get(const uint8_t & address);
+  int get(const uint16_t & address);
+
 private:
   int start_address;
 

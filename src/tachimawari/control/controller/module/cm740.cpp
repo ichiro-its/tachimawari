@@ -292,6 +292,22 @@ bool CM740::bulk_read_packet(const std::vector<joint::Joint> & joints)
   return false;
 }
 
+int CM740::get_bulk_data(const uint8_t & id, const uint8_t & address,
+  const int & data_length = 1)
+{
+  if (bulk_data->find(id) != bulk_data->end()) {
+    if (data_length == 1) {
+      return bulk_data->at(id).get(static_cast<uint8_t>(address));
+    } else if (data_length == 2) {
+      return bulk_data->at(id).get(static_cast<uint16_t>(address));
+    }
+  } else {
+    return -1;
+  }
+
+  return -1;
+}
+
 }  // namespace control
 
 }  // namespace tachimawari

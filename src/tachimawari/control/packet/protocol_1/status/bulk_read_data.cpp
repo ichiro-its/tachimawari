@@ -159,6 +159,28 @@ bool BulkReadData::is_filled()
   return parameters.size() != 0;
 }
 
+int BulkReadData::get(const uint8_t & address)
+{
+  int index = static_cast<int>(address) - start_address;
+
+  if (index < 0 || index == data_length) {
+    return -1;
+  } else {
+    return parameters[index];
+  }
+}
+
+int BulkReadData::get(const uint16_t & address)
+{
+  int index = static_cast<int>(address) - start_address;
+
+  if (index < 0 || index == data_length - 1) {
+    return -1;
+  } else {
+    return Word::make_word(parameters[index], parameters[index + 1]);
+  }
+}
+
 }  // namespace protocol_1
 
 }  // namespace packet

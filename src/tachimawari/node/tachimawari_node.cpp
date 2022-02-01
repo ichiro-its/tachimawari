@@ -40,6 +40,7 @@ TachimawariNode::TachimawariNode(rclcpp::Node::SharedPtr node)
     8ms,
     [this]() {
       if (control_manager) {
+        control_manager->bulk_read_packet();
       }
     }
   );

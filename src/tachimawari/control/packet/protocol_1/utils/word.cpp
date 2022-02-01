@@ -48,6 +48,17 @@ uint8_t Word::get_high_byte(int word)
   return static_cast<uint8_t>((temp >> 8));
 }
 
+int Word::make_word(int lowbyte, int highbyte)
+{
+	unsigned short word;
+
+  word = highbyte;
+  word = word << 8;
+  word = word + lowbyte;
+
+  return static_cast<int>(word);
+}
+
 int Word::make_color(int red, int green, int blue)
 {
   int r = (red & 0xFF) >> 3;
