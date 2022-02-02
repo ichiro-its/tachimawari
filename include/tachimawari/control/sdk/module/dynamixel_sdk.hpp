@@ -21,12 +21,14 @@
 #ifndef TACHIMAWARI__CONTROL__SDK__MODULE__CONTROL_SDK_HPP_
 #define TACHIMAWARI__CONTROL__SDK__MODULE__CONTROL_SDK_HPP_
 
+#include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
-#include "dynamixel_sdk/dynamixel_sdk.h"
-
 #include "tachimawari/control/manager/control_manager.hpp"
+
+#include "dynamixel_sdk/dynamixel_sdk.h"
 
 namespace tachimawari
 {
@@ -64,8 +66,12 @@ public:
     const int & data_length = 1) override;
 
 private:
+  bool send_bulk_read_packet(sdk::protocol_1::GroupBulkRead packet);
+
   dynamixel::PortHandler * port_handler;
   dynamixel::PacketHandler * packet_handler;
+
+  std::shared_ptr<std::map<uint8_t, sdk::protocol_1::GroupBulkRead>> bulk_data;
 };
 
 }  // namespace control

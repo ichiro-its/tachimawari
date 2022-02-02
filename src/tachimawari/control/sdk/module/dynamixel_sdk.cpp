@@ -26,27 +26,14 @@
 #include "tachimawari/control/sdk/module/dynamixel_sdk.hpp"
 
 #include "tachimawari/control/controller/module/cm740_address.hpp"
-#include "tachimawari/control/packet/protocol_1/instruction/bulk_read_packet.hpp"
-#include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
-#include "tachimawari/control/packet/protocol_1/instruction/sync_write_packet.hpp"
-#include "tachimawari/control/packet/protocol_1/instruction/write_packet.hpp"
 #include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
-#include "tachimawari/control/packet/protocol_1/status/bulk_read_data.hpp"
-#include "tachimawari/control/packet/protocol_1/status/status_packet.hpp"
 #include "tachimawari/control/packet/protocol_1/utils/word.hpp"
+#include "tachimawari/control/sdk/utils/protocol_1/group_bulk_read.hpp"
 #include "tachimawari/control/sdk/utils/protocol_1/group_sync_write.hpp"
 #include "tachimawari/joint/model/joint.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
-#include "errno.h"  // NOLINT
-#include "fcntl.h"  // NOLINT
-#include "stdio.h"  // NOLINT
-#include "string.h"  // NOLINT
-#include "termios.h"  // NOLINT
-#include "unistd.h"  // NOLINT
-#include "linux/serial.h"
-#include "sys/ioctl.h"
-#include "sys/time.h"
+#include "dynamixel_sdk/dynamixel_sdk.h"
 
 namespace tachimawari
 {
@@ -59,7 +46,8 @@ DynamixelSDK::DynamixelSDK(
   const float & protocol_version)
 : ControlManager(port_name, protocol_version, baudrate),
   port_handler(dynamixel::PortHandler::getPortHandler(port_name.c_str())),
-  packet_handler(dynamixel::PacketHandler::getPacketHandler(protocol_version))
+  packet_handler(dynamixel::PacketHandler::getPacketHandler(protocol_version)),
+  bulk_data(std::make_shared<std::map<uint8_t, sdk::protocol_1::GroupBulkRead>>())
 {
 }
 
@@ -80,6 +68,20 @@ bool DynamixelSDK::connect()
   }
 
   return true;
+}
+
+bool DynamixelSDK::send_bulk_read_packet(sdk::protocol_1::GroupBulkRead group_bulk_read)
+{
+  int result = COMM_TX_FAIL;
+
+  result = group_bulk_read.send();
+  if (result == COMM_SUCCESS) {
+    sdk::protocol_1::GroupBulkRead::insert_all(bulk_data, group_bulk_read);
+  } else {
+    // packet_handler->getTxRxResult(result);
+  }
+
+  return result == COMM_SUCCESS;
 }
 
 bool DynamixelSDK::ping(const uint8_t & id)
@@ -166,16 +168,16 @@ bool DynamixelSDK::sync_write_packet(const std::vector<joint::Joint> & joints, c
 bool DynamixelSDK::bulk_read_packet()
 {
   if (protocol_version == 1.0) {
-    packet::protocol_1::BulkReadPacket instruction_packet;
+    sdk::protocol_1::GroupBulkRead group_bulk_read(port_handler, packet_handler);
 
     if (ping(packet::protocol_1::PacketId::CONTROLLER)) {
-      instruction_packet.add(
+      group_bulk_read.add(
         packet::protocol_1::PacketId::CONTROLLER, CM740Address::DXL_POWER,
         static_cast<uint8_t>(30));
     }
 
-    if (instruction_packet.is_parameters_filled()) {
-      return send_bulk_read_packet(instruction_packet);
+    if (group_bulk_read.is_parameters_filled()) {
+      return send_bulk_read_packet(group_bulk_read);
     } else {
       return false;
     }
@@ -187,14 +189,14 @@ bool DynamixelSDK::bulk_read_packet()
 bool DynamixelSDK::bulk_read_packet(const std::vector<joint::Joint> & joints)
 {
   if (protocol_version == 1.0) {
-    packet::protocol_1::BulkReadPacket instruction_packet;
+    sdk::protocol_1::GroupBulkRead group_bulk_read(port_handler, packet_handler);
 
-    if (joints.size()) {
-      instruction_packet.add(joints);
+    if (ping(packet::protocol_1::PacketId::CONTROLLER)) {
+      group_bulk_read.add(joints);
     }
 
-    if (instruction_packet.is_parameters_filled()) {
-      return send_bulk_read_packet(instruction_packet);
+    if (group_bulk_read.is_parameters_filled()) {
+      return send_bulk_read_packet(group_bulk_read);
     } else {
       return false;
     }
@@ -208,11 +210,7 @@ int DynamixelSDK::get_bulk_data(
   const int & data_length)
 {
   if (bulk_data->find(id) != bulk_data->end()) {
-    if (data_length == 1) {
-      return bulk_data->at(id).get(static_cast<uint8_t>(address));
-    } else if (data_length == 2) {
-      return bulk_data->at(id).get(static_cast<uint16_t>(address));
-    }
+    return bulk_data->at(id).get(id, address, data_length);
   } else {
     return -1;
   }

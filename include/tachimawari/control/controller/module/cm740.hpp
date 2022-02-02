@@ -50,7 +50,6 @@ public:
   explicit CM740(
     const std::string & port_name, const int & baudrate = 1000000,
     const float & protocol_version = 1.0);
-
   ~CM740();
 
   // will be used if there is another option

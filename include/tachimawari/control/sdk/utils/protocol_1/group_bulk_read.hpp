@@ -21,6 +21,8 @@
 #ifndef TACHIMAWARI__CONTROL__SDK__UTILS__PROTOCOL_1__GROUP_BULK_READ_HPP_
 #define TACHIMAWARI__CONTROL__SDK__UTILS__PROTOCOL_1__GROUP_BULK_READ_HPP_
 
+#include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -44,17 +46,34 @@ namespace protocol_1
 class GroupBulkRead
 {
 public:
+  static void insert_all(
+    std::shared_ptr<std::map<uint8_t, GroupBulkRead>> bulk_data,
+    GroupBulkRead group_bulk_read);
+ 
   GroupBulkRead(dynamixel::PortHandler * port_handler,
     dynamixel::PacketHandler * packet_handler);
+  ~GroupBulkRead();
 
-  dynamixel::GroupBulkRead create(
-    const std::vector<tachimawari::joint::Joint> & joints,
-    const uint8_t & starting_address =
-    tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
+  void add(
+    const uint8_t & id, const uint16_t & starting_address,
+    const uint16_t & data_length);
+
+  void add(
+    const std::vector<tachimawari::joint::Joint> & joints);
+
+  int send();
+
+  int get(const uint8_t & id, const uint8_t & address,
+    const int & data_length);
+
+  std::vector<uint8_t> get_parameters_id() const;
+  
+  bool is_parameters_filled() const;
 
 private:
-  dynamixel::PortHandler * port_handler;
-  dynamixel::PacketHandler * packet_handler;
+  dynamixel::GroupBulkRead group_bulk_read;
+
+  std::vector<uint8_t> parameters_id;
 };
 
 }  // namespace protocol_1
