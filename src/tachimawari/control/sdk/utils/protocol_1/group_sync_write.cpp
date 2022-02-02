@@ -21,12 +21,14 @@
 #include <string>
 #include <vector>
 
-#include "tachimawari/control/packet/protocol_1/instruction/sync_write_packet.hpp"
+#include "tachimawari/control/sdk/utils/protocol_1/group_sync_write.hpp"
 
 #include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
 #include "tachimawari/control/packet/protocol_1/utils/word.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
+
+#include "dynamixel_sdk/dynamixel_sdk.h"
 
 namespace tachimawari
 {
@@ -34,45 +36,53 @@ namespace tachimawari
 namespace control
 {
 
-namespace packet
+namespace sdk
 {
 
 namespace protocol_1
 {
 
-SyncWritePacket::SyncWritePacket()
-: Packet(PacketId::BROADCAST, Instruction::SYNC_WRITE)
+GroupSyncWrite::GroupSyncWrite(dynamixel::PortHandler * port_handler,
+  dynamixel::PacketHandler * packet_handler)
+: port_handler(port_handler), packet_handler(packet_handler)
 {
 }
 
-void SyncWritePacket::create(
+dynamixel::GroupSyncWrite GroupSyncWrite::create(
   const std::vector<tachimawari::joint::Joint> & joints,
   const uint8_t & starting_address)
 {
-  parameters.push_back(starting_address);
-
   // check does the request need pid to be included 
   bool is_include_pid = starting_address == tachimawari::joint::protocol_1::MX28Address::D_GAIN;
-  parameters.push_back(static_cast<uint8_t>((is_include_pid) ? 6 : 2));  // set the data lenngth
+  int data_length = is_include_pid ? 6 : 2;
+
+  dynamixel::GroupSyncWrite group_sync_write(port_handler, packet_handler,
+    starting_address, data_length);
+  
+  std::vector<uint8_t> param_data;
 
   for (auto & joint : joints) {
-    parameters.push_back(joint.get_id());
-
     if (is_include_pid) {
-      parameters.push_back(static_cast<uint8_t>(joint.get_pid_gain()[2]));
-      parameters.push_back(static_cast<uint8_t>(joint.get_pid_gain()[1]));
-      parameters.push_back(static_cast<uint8_t>(joint.get_pid_gain()[0]));
-      parameters.push_back(0x00);
+      param_data.push_back(static_cast<uint8_t>(joint.get_pid_gain()[2]));
+      param_data.push_back(static_cast<uint8_t>(joint.get_pid_gain()[1]));
+      param_data.push_back(static_cast<uint8_t>(joint.get_pid_gain()[0]));
+      param_data.push_back(0x00);
     }
 
-    parameters.push_back(Word::get_low_byte(static_cast<int>(joint.get_position())));
-    parameters.push_back(Word::get_high_byte(static_cast<int>(joint.get_position())));
+    param_data.push_back(DXL_LOBYTE(static_cast<int>(joint.get_position())));
+    param_data.push_back(DXL_HIBYTE(static_cast<int>(joint.get_position())));
+
+    if (!group_sync_write.addParam(joint.get_id(), param_data.data())) {
+      // addparam failed
+    }
   }
+
+  return group_sync_write;
 }
 
 }  // namespace protocol_1
 
-}  // namespace packet
+}  // namespace sdk
 
 }  // namespace control
 

@@ -76,7 +76,9 @@ bool CM740::connect()
 bool CM740::dxl_power_on()
 {
   if (write_packet(CM740Address::DXL_POWER, 1)) {
-    write_packet(CM740Address::LED_HEAD_L, packet::protocol_1::Word::make_color(255, 128, 0), 2);
+    if (protocol_version == 1.0) {
+      write_packet(CM740Address::LED_HEAD_L, packet::protocol_1::Word::make_color(255, 128, 0), 2);
+    }
 
     return true;
   }
@@ -235,11 +237,9 @@ bool CM740::sync_write_packet(const std::vector<joint::Joint> & joints, const bo
   if (protocol_version == 1.0) {
     packet::protocol_1::SyncWritePacket instruction_packet;
 
-    if (with_pid) {
-      instruction_packet.create(joints, tachimawari::joint::protocol_1::MX28Address::D_GAIN);
-    } else {
-      instruction_packet.create(joints);
-    }
+    instruction_packet.create(joints, with_pid ?
+      tachimawari::joint::protocol_1::MX28Address::D_GAIN :
+      tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
 
     std::vector<uint8_t> txpacket = instruction_packet.get_packet();
     return platform->write_port(txpacket) == txpacket.size();
@@ -307,7 +307,9 @@ int CM740::get_bulk_data(
 
 void CM740::disconnect()
 {
-  write_packet(CM740Address::LED_HEAD_L, packet::protocol_1::Word::make_color(0, 255, 0), 2);
+  if (protocol_version == 1.0) {
+    write_packet(CM740Address::LED_HEAD_L, packet::protocol_1::Word::make_color(0, 255, 0), 2);
+  }
 
   platform->close_port();
 }

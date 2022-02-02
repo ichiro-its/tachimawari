@@ -1,0 +1,237 @@
+// Copyright (c) 2021 Ichiro ITS
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+// THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "tachimawari/control/sdk/module/dynamixel_sdk.hpp"
+
+#include "tachimawari/control/controller/module/cm740_address.hpp"
+#include "tachimawari/control/packet/protocol_1/instruction/bulk_read_packet.hpp"
+#include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
+#include "tachimawari/control/packet/protocol_1/instruction/sync_write_packet.hpp"
+#include "tachimawari/control/packet/protocol_1/instruction/write_packet.hpp"
+#include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
+#include "tachimawari/control/packet/protocol_1/status/bulk_read_data.hpp"
+#include "tachimawari/control/packet/protocol_1/status/status_packet.hpp"
+#include "tachimawari/control/packet/protocol_1/utils/word.hpp"
+#include "tachimawari/control/sdk/utils/protocol_1/group_sync_write.hpp"
+#include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari/joint/protocol_1/mx28_address.hpp"
+
+#include "errno.h"  // NOLINT
+#include "fcntl.h"  // NOLINT
+#include "stdio.h"  // NOLINT
+#include "string.h"  // NOLINT
+#include "termios.h"  // NOLINT
+#include "unistd.h"  // NOLINT
+#include "linux/serial.h"
+#include "sys/ioctl.h"
+#include "sys/time.h"
+
+namespace tachimawari
+{
+
+namespace control
+{
+
+DynamixelSDK::DynamixelSDK(
+  const std::string & port_name, const int & baudrate,
+  const float & protocol_version)
+: ControlManager(port_name, protocol_version, baudrate),
+  port_handler(dynamixel::PortHandler::getPortHandler(port_name.c_str())),
+  packet_handler(dynamixel::PacketHandler::getPacketHandler(protocol_version))
+{
+}
+
+bool DynamixelSDK::connect()
+{
+  if (!port_handler->openPort()) {
+    return false;
+  }
+
+  if (!port_handler->setBaudRate(baudrate)) {
+    disconnect();
+
+    return false;
+  }
+
+  if (protocol_version == 1.0) {
+    write_packet(CM740Address::LED_HEAD_L, packet::protocol_1::Word::make_color(255, 128, 0), 2);
+  }
+
+  return true;
+}
+
+bool DynamixelSDK::ping(const uint8_t & id)
+{
+  if (protocol_version == 1.0) {
+    uint8_t error = 0;
+    uint16_t model_number;
+    int result = packet_handler->ping(port_handler, id, &model_number, &error);
+
+    if (result != COMM_SUCCESS) {
+      // packet_handler->getTxRxResult(result);
+    } else if (error != 0) {
+      // packet_handler->getRxPacketError(error);
+    }
+
+    return result == COMM_SUCCESS;
+  }
+
+  return false;
+}
+
+bool DynamixelSDK::write_packet(
+  const uint8_t & address, const int & value,
+  const int & data_length)
+{
+  if (protocol_version == 1.0) {
+    return write_packet(packet::protocol_1::PacketId::CONTROLLER, address,
+      value, data_length);
+  }
+
+  return false;
+}
+
+bool DynamixelSDK::write_packet(
+  const uint8_t & id, const uint8_t & address, const int & value,
+  const int & data_length)
+{
+  if (protocol_version == 1.0) {
+    uint8_t error = 0;
+    uint16_t model_number;
+    int result = COMM_TX_FAIL;
+    
+    if (data_length == 1) {
+      result = packet_handler->write1ByteTxRx(port_handler, id, address,
+        static_cast<uint8_t>(value), &error);
+    } else if (data_length == 2) {
+      result = packet_handler->write2ByteTxRx(port_handler, id, address,
+        static_cast<uint16_t>(value), &error);
+    }
+
+    if (result != COMM_SUCCESS) {
+      // packet_handler->getTxRxResult(result);
+    } else if (error != 0) {
+      // packet_handler->getRxPacketError(error);
+    }
+
+    return result == COMM_SUCCESS;
+  }
+
+  return false;
+}
+
+bool DynamixelSDK::sync_write_packet(const std::vector<joint::Joint> & joints, const bool & with_pid)
+{
+  if (protocol_version == 1.0) {
+    auto group_sync_write = sdk::protocol_1::GroupSyncWrite(port_handler, packet_handler).create(
+      joints, with_pid ? tachimawari::joint::protocol_1::MX28Address::D_GAIN :
+      tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
+
+    int result = COMM_TX_FAIL;
+
+    result = group_sync_write.txPacket();
+    if (result != COMM_SUCCESS) {
+      // packet_handler->getTxRxResult(result);
+    }
+    group_sync_write.clearParam();
+
+    return result == COMM_SUCCESS;
+  }
+
+  return false;
+}
+
+bool DynamixelSDK::bulk_read_packet()
+{
+  if (protocol_version == 1.0) {
+    packet::protocol_1::BulkReadPacket instruction_packet;
+
+    if (ping(packet::protocol_1::PacketId::CONTROLLER)) {
+      instruction_packet.add(
+        packet::protocol_1::PacketId::CONTROLLER, CM740Address::DXL_POWER,
+        static_cast<uint8_t>(30));
+    }
+
+    if (instruction_packet.is_parameters_filled()) {
+      return send_bulk_read_packet(instruction_packet);
+    } else {
+      return false;
+    }
+  }
+
+  return false;
+}
+
+bool DynamixelSDK::bulk_read_packet(const std::vector<joint::Joint> & joints)
+{
+  if (protocol_version == 1.0) {
+    packet::protocol_1::BulkReadPacket instruction_packet;
+
+    if (joints.size()) {
+      instruction_packet.add(joints);
+    }
+
+    if (instruction_packet.is_parameters_filled()) {
+      return send_bulk_read_packet(instruction_packet);
+    } else {
+      return false;
+    }
+  }
+
+  return false;
+}
+
+int DynamixelSDK::get_bulk_data(
+  const uint8_t & id, const uint8_t & address,
+  const int & data_length)
+{
+  if (bulk_data->find(id) != bulk_data->end()) {
+    if (data_length == 1) {
+      return bulk_data->at(id).get(static_cast<uint8_t>(address));
+    } else if (data_length == 2) {
+      return bulk_data->at(id).get(static_cast<uint16_t>(address));
+    }
+  } else {
+    return -1;
+  }
+
+  return -1;
+}
+
+void DynamixelSDK::disconnect()
+{
+  write_packet(CM740Address::LED_HEAD_L, packet::protocol_1::Word::make_color(0, 255, 0), 2);
+
+  port_handler->closePort();
+}
+
+DynamixelSDK::~DynamixelSDK()
+{
+  disconnect();
+}
+
+}  // namespace control
+
+}  // namespace tachimawari
