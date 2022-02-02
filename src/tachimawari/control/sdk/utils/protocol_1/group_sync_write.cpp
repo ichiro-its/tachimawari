@@ -39,7 +39,8 @@ namespace sdk
 namespace protocol_1
 {
 
-GroupSyncWrite::GroupSyncWrite(dynamixel::PortHandler * port_handler,
+GroupSyncWrite::GroupSyncWrite(
+  dynamixel::PortHandler * port_handler,
   dynamixel::PacketHandler * packet_handler)
 : port_handler(port_handler), packet_handler(packet_handler)
 {
@@ -49,13 +50,13 @@ dynamixel::GroupSyncWrite GroupSyncWrite::create(
   const std::vector<tachimawari::joint::Joint> & joints,
   const uint8_t & starting_address)
 {
-  // check does the request need pid to be included 
+  // check does the request need pid to be included
   bool is_include_pid = starting_address == tachimawari::joint::protocol_1::MX28Address::D_GAIN;
   int data_length = is_include_pid ? 6 : 2;
 
   dynamixel::GroupSyncWrite group_sync_write(port_handler, packet_handler,
     starting_address, data_length);
-  
+
   std::vector<uint8_t> param_data;
 
   for (auto & joint : joints) {

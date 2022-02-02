@@ -237,7 +237,8 @@ bool CM740::sync_write_packet(const std::vector<joint::Joint> & joints, const bo
   if (protocol_version == 1.0) {
     packet::protocol_1::SyncWritePacket instruction_packet;
 
-    instruction_packet.create(joints, with_pid ?
+    instruction_packet.create(
+      joints, with_pid ?
       tachimawari::joint::protocol_1::MX28Address::D_GAIN :
       tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
 

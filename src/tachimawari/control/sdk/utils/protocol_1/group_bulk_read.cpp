@@ -18,6 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -50,7 +52,8 @@ void GroupBulkRead::insert_all(
   }
 }
 
-GroupBulkRead::GroupBulkRead(dynamixel::PortHandler * port_handler,
+GroupBulkRead::GroupBulkRead(
+  dynamixel::PortHandler * port_handler,
   dynamixel::PacketHandler * packet_handler)
 : group_bulk_read(port_handler, packet_handler), parameters_id({})
 {
@@ -71,10 +74,12 @@ void GroupBulkRead::add(
   const std::vector<tachimawari::joint::Joint> & joints)
 {
   for (auto & joint : joints) {
-    if (group_bulk_read.addParam(joint.get_id(),
-      tachimawari::joint::protocol_1::GOAL_POSITION_L,
-      static_cast<uint16_t>(2))) {
-    parameters_id.push_back(joint.get_id());
+    if (group_bulk_read.addParam(
+        joint.get_id(),
+        tachimawari::joint::protocol_1::GOAL_POSITION_L,
+        static_cast<uint16_t>(2)))
+    {
+      parameters_id.push_back(joint.get_id());
     } else {
       // addparam failed
     }
@@ -86,7 +91,8 @@ int GroupBulkRead::send()
   return group_bulk_read.txRxPacket();
 }
 
-int GroupBulkRead::get(const uint8_t & id, const uint8_t & address,
+int GroupBulkRead::get(
+  const uint8_t & id, const uint8_t & address,
   const int & data_length)
 {
   bool is_available = group_bulk_read.isAvailable(

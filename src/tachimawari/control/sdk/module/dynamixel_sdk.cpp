@@ -108,7 +108,8 @@ bool DynamixelSDK::write_packet(
   const int & data_length)
 {
   if (protocol_version == 1.0) {
-    return write_packet(packet::protocol_1::PacketId::CONTROLLER, address,
+    return write_packet(
+      packet::protocol_1::PacketId::CONTROLLER, address,
       value, data_length);
   }
 
@@ -123,12 +124,14 @@ bool DynamixelSDK::write_packet(
     uint8_t error = 0;
     uint16_t model_number;
     int result = COMM_TX_FAIL;
-    
+
     if (data_length == 1) {
-      result = packet_handler->write1ByteTxRx(port_handler, id, address,
+      result = packet_handler->write1ByteTxRx(
+        port_handler, id, address,
         static_cast<uint8_t>(value), &error);
     } else if (data_length == 2) {
-      result = packet_handler->write2ByteTxRx(port_handler, id, address,
+      result = packet_handler->write2ByteTxRx(
+        port_handler, id, address,
         static_cast<uint16_t>(value), &error);
     }
 
@@ -144,7 +147,9 @@ bool DynamixelSDK::write_packet(
   return false;
 }
 
-bool DynamixelSDK::sync_write_packet(const std::vector<joint::Joint> & joints, const bool & with_pid)
+bool DynamixelSDK::sync_write_packet(
+  const std::vector<joint::Joint> & joints,
+  const bool & with_pid)
 {
   if (protocol_version == 1.0) {
     auto group_sync_write = sdk::protocol_1::GroupSyncWrite(port_handler, packet_handler).create(

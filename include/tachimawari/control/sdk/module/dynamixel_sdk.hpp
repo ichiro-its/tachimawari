@@ -18,8 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__SDK__MODULE__CONTROL_SDK_HPP_
-#define TACHIMAWARI__CONTROL__SDK__MODULE__CONTROL_SDK_HPP_
+#ifndef TACHIMAWARI__CONTROL__SDK__MODULE__DYNAMIXEL_SDK_HPP_
+#define TACHIMAWARI__CONTROL__SDK__MODULE__DYNAMIXEL_SDK_HPP_
 
 #include <map>
 #include <memory>
@@ -51,20 +51,24 @@ public:
 
   bool ping(const uint8_t & id) override;
 
-  bool write_packet(const uint8_t & address, const int & value,
+  bool write_packet(
+    const uint8_t & address, const int & value,
     const int & data_length = 1) override;
 
-  bool write_packet(const uint8_t & id, const uint8_t & address, const int & value,
+  bool write_packet(
+    const uint8_t & id, const uint8_t & address, const int & value,
     const int & data_length = 1) override;
 
-  bool sync_write_packet(const std::vector<joint::Joint> & joints,
+  bool sync_write_packet(
+    const std::vector<joint::Joint> & joints,
     const bool & with_pid = false) override;
 
   bool bulk_read_packet() override;
 
   bool bulk_read_packet(const std::vector<joint::Joint> & joints) override;
 
-  int get_bulk_data(const uint8_t & id, const uint8_t & address,
+  int get_bulk_data(
+    const uint8_t & id, const uint8_t & address,
     const int & data_length = 1) override;
 
 private:
@@ -80,4 +84,4 @@ private:
 
 }  // namespace tachimawari
 
-#endif  // TACHIMAWARI__CONTROL__SDK__MODULE__CONTROL_SDK_HPP_
+#endif  // TACHIMAWARI__CONTROL__SDK__MODULE__DYNAMIXEL_SDK_HPP_

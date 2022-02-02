@@ -44,7 +44,8 @@ namespace protocol_1
 class GroupSyncWrite
 {
 public:
-  GroupSyncWrite(dynamixel::PortHandler * port_handler,
+  GroupSyncWrite(
+    dynamixel::PortHandler * port_handler,
     dynamixel::PacketHandler * packet_handler);
 
   dynamixel::GroupSyncWrite create(

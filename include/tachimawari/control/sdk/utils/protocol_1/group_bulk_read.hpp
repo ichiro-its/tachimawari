@@ -49,8 +49,9 @@ public:
   static void insert_all(
     std::shared_ptr<std::map<uint8_t, GroupBulkRead>> bulk_data,
     GroupBulkRead group_bulk_read);
- 
-  GroupBulkRead(dynamixel::PortHandler * port_handler,
+
+  GroupBulkRead(
+    dynamixel::PortHandler * port_handler,
     dynamixel::PacketHandler * packet_handler);
   ~GroupBulkRead();
 
@@ -63,11 +64,12 @@ public:
 
   int send();
 
-  int get(const uint8_t & id, const uint8_t & address,
+  int get(
+    const uint8_t & id, const uint8_t & address,
     const int & data_length);
 
   std::vector<uint8_t> get_parameters_id() const;
-  
+
   bool is_parameters_filled() const;
 
 private:

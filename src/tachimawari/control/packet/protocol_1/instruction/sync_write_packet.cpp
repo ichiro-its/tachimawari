@@ -51,7 +51,7 @@ void SyncWritePacket::create(
 {
   parameters.push_back(starting_address);
 
-  // check does the request need pid to be included 
+  // check does the request need pid to be included
   bool is_include_pid = starting_address == tachimawari::joint::protocol_1::MX28Address::D_GAIN;
   parameters.push_back(static_cast<uint8_t>((is_include_pid) ? 6 : 2));  // set the data lenngth
 
