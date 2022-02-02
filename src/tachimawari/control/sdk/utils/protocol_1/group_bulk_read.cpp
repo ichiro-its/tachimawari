@@ -23,9 +23,6 @@
 
 #include "tachimawari/control/sdk/utils/protocol_1/group_bulk_read.hpp"
 
-#include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
-#include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
-#include "tachimawari/control/packet/protocol_1/utils/word.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
 #include "dynamixel_sdk/dynamixel_sdk.h"
@@ -42,7 +39,7 @@ namespace sdk
 namespace protocol_1
 {
 
-void insert_all(
+void GroupBulkRead::insert_all(
   std::shared_ptr<std::map<uint8_t, GroupBulkRead>> bulk_data,
   GroupBulkRead group_bulk_read)
 {

@@ -27,6 +27,8 @@
 #include <vector>
 
 #include "tachimawari/control/manager/control_manager.hpp"
+#include "tachimawari/control/sdk/utils/protocol_1/group_bulk_read.hpp"
+#include "tachimawari/control/sdk/utils/protocol_1/group_sync_write.hpp"
 
 #include "dynamixel_sdk/dynamixel_sdk.h"
 
