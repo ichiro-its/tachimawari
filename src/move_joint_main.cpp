@@ -21,7 +21,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <array>
 
 #include "tachimawari/joint/model/joint.hpp"
 #include "dynamixel_sdk/dynamixel_sdk.h"

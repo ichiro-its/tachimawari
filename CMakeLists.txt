@@ -16,6 +16,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(dynamixel_sdk REQUIRED)
 find_package(kansei_interfaces REQUIRED)
+find_package(keisan REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(tachimawari_interfaces REQUIRED)
 
@@ -47,6 +48,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 ament_target_dependencies(${PROJECT_NAME}
   dynamixel_sdk
   kansei_interfaces
+  keisan
   rclcpp
   tachimawari_interfaces)
 
@@ -83,6 +85,7 @@ endif()
 ament_export_dependencies(
   dynamixel_sdk
   kansei_interfaces
+  keisan
   rclcpp
   tachimawari_interfaces)
 ament_export_include_directories("include")
