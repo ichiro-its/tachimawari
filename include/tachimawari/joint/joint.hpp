@@ -18,10 +18,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__IMU__IMU_HPP_
-#define TACHIMAWARI__IMU__IMU_HPP_
+#ifndef TACHIMAWARI__JOINT__JOINT_HPP_
+#define TACHIMAWARI__JOINT__JOINT_HPP_
 
-#include "tachimawari/imu/node/imu_node.hpp"
-#include "tachimawari/imu/node/imu_provider.hpp"
+#include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari/joint/model/joint_id.hpp"
+#include "tachimawari/joint/node/joint_manager.hpp"
+#include "tachimawari/joint/node/joint_node.hpp"
+#include "tachimawari/joint/protocol_1/mx28_address.hpp"
+#include "tachimawari/joint/protocol_2/mx28_address.hpp"
 
-#endif  // TACHIMAWARI__IMU__IMU_HPP_
+#endif  // TACHIMAWARI__JOINT__JOINT_HPP_

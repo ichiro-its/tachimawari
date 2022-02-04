@@ -72,9 +72,16 @@ target_include_directories(move_joint PUBLIC
   $<INSTALL_INTERFACE:include>)
 target_link_libraries(move_joint ${PROJECT_NAME})
 
+add_executable(tachimawari_main "src/tachimawari_main.cpp")
+target_include_directories(tachimawari_main PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+target_link_libraries(tachimawari_main ${PROJECT_NAME})
+
 install(TARGETS
   check_joints
   move_joint
+  tachimawari_main
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
