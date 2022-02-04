@@ -40,7 +40,7 @@ JointManager::JointManager(std::shared_ptr<tachimawari::control::ControlManager>
 
 bool JointManager::torque_enable(const bool & enable)
 {
-  control_manager->write_packet(
+  return control_manager->write_packet(
     tachimawari::control::packet::protocol_1::PacketId::CONTROLLER,
     protocol_1::MX28Address::TORQUE_ENABLE, static_cast<int>(enable));
 }
@@ -49,18 +49,22 @@ bool JointManager::torque_enable(const std::vector<Joint> & joints, const bool &
 {
   if (joints.size()) {
     for (auto & joint : joints) {
-      control_manager->write_packet(
+      return control_manager->write_packet(
         joint.get_id(), protocol_1::MX28Address::TORQUE_ENABLE,
         static_cast<int>(enable));
     }
   }
+
+  return false;
 }
 
 bool JointManager::set_joints(const std::vector<Joint> & joints)
 {
   if (joints.size()) {
-    control_manager->sync_write_packet(joints);
+    return control_manager->sync_write_packet(joints);
   }
+
+  return false;
 }
 
 }  // namespace joint
