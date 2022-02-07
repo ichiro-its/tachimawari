@@ -25,7 +25,7 @@
 #include "tachimawari/joint/model/joint.hpp"
 #include "dynamixel_sdk/dynamixel_sdk.h"
 
-using Joint = tachimawari::joint::Joint;
+using tachimawari::joint::Joint;
 
 int main(int argc, char * argv[])
 {

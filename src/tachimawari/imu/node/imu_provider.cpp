@@ -41,8 +41,6 @@ ImuProvider::ImuProvider(std::shared_ptr<tachimawari::control::ControlManager> c
 
 keisan::Vector<3> ImuProvider::get_gyro() const
 {
-  float gyro[3] = {0, 0, 0};
-
   if (control_manager->get_protocol_version() == 1.0) {
     {
       using CM740Address = tachimawari::control::CM740Address;
@@ -58,10 +56,10 @@ keisan::Vector<3> ImuProvider::get_gyro() const
         PacketId::CONTROLLER,
         CM740Address::GYRO_Z_L, 2);
 
-      keisan::Vector<3>(
-        gyro_x == -1 ? 0 : static_cast<double>(gyro_x),
-        gyro_y == -1 ? 0 : static_cast<double>(gyro_y),
-        gyro_z == -1 ? 0 : static_cast<double>(gyro_z)
+      return keisan::Vector<3>(
+        (gyro_x == -1) ? 0 : gyro_x,
+        (gyro_y == -1) ? 0 : gyro_y,
+        (gyro_z == -1) ? 0 : gyro_z
       );
     }
   }
@@ -86,10 +84,10 @@ keisan::Vector<3> ImuProvider::get_accelero() const
         PacketId::CONTROLLER,
         CM740Address::ACCEL_Z_L, 2);
 
-      keisan::Vector<3>(
-        accel_x == -1 ? 0 : static_cast<float>(accel_x),
-        accel_y == -1 ? 0 : static_cast<float>(accel_y),
-        accel_z == -1 ? 0 : static_cast<float>(accel_z)
+      return keisan::Vector<3>(
+        (accel_x == -1) ? 0 : accel_x,
+        (accel_y == -1) ? 0 : accel_y,
+        (accel_z == -1) ? 0 : accel_z
       );
     }
   }
