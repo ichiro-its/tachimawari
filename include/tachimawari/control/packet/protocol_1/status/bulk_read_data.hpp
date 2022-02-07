@@ -30,16 +30,7 @@
 #include "tachimawari/control/packet/protocol_1/model/packet.hpp"
 #include "tachimawari/joint/model/joint.hpp"
 
-namespace tachimawari
-{
-
-namespace control
-{
-
-namespace packet
-{
-
-namespace protocol_1
+namespace tachimawari::control::packet::protocol_1
 {
 
 class BulkReadData : public Packet
@@ -74,12 +65,6 @@ private:
   int data_length;
 };
 
-}  // namespace protocol_1
-
-}  // namespace packet
-
-}  // namespace control
-
-}  // namespace tachimawari
+}  // namespace tachimawari::control::packet::protocol_1
 
 #endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__STATUS__BULK_READ_DATA_HPP_

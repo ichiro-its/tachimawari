@@ -47,10 +47,7 @@
 #include "sys/ioctl.h"
 #include "sys/time.h"
 
-namespace tachimawari
-{
-
-namespace control
+namespace tachimawari::control
 {
 
 CM740::CM740(
@@ -320,6 +317,4 @@ CM740::~CM740()
   disconnect();
 }
 
-}  // namespace control
-
-}  // namespace tachimawari
+}  // namespace tachimawari::control

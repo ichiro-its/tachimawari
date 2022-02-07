@@ -22,16 +22,7 @@
 
 #include "tachimawari/control/packet/protocol_1/utils/word.hpp"
 
-namespace tachimawari
-{
-
-namespace control
-{
-
-namespace packet
-{
-
-namespace protocol_1
+namespace tachimawari::control::packet::protocol_1
 {
 
 uint8_t Word::get_low_byte(int word)
@@ -68,10 +59,4 @@ int Word::make_color(int red, int green, int blue)
   return static_cast<int>(((b << 10) | (g << 5) | r));
 }
 
-}  // namespace protocol_1
-
-}  // namespace packet
-
-}  // namespace control
-
-}  // namespace tachimawari
+}  // namespace tachimawari::control::packet::protocol_1

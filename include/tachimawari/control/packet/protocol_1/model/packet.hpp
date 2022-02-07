@@ -27,22 +27,13 @@
 #include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
 
-namespace tachimawari
-{
-
-namespace control
-{
-
-namespace packet
-{
-
-namespace protocol_1
+namespace tachimawari::control::packet::protocol_1
 {
 
 class Packet
 {
 public:
-  Packet(uint8_t pakcet_id, uint8_t instruction);
+  Packet(uint8_t packet_id, uint8_t instruction);
 
   const uint8_t & get_packet_id() const;
 
@@ -69,12 +60,6 @@ protected:
   uint8_t checksum;
 };
 
-}  // namespace protocol_1
-
-}  // namespace packet
-
-}  // namespace control
-
-}  // namespace tachimawari
+}  // namespace tachimawari::control::packet::protocol_1
 
 #endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__MODEL__PACKET_HPP_

@@ -36,7 +36,7 @@
 #include "sys/ioctl.h"
 #include "sys/time.h"
 
-namespace tachimawari
+namespace tachimawari::control
 {
 
 Linux::Linux()
@@ -125,4 +125,4 @@ int Linux::read_port(
   return result_length;
 }
 
-}  // namespace tachimawari
+}  // namespace tachimawari::control

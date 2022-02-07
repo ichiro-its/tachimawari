@@ -33,10 +33,7 @@
 #include "tachimawari/control/packet/protocol_1/status/status_packet.hpp"
 #include "tachimawari/joint/model/joint.hpp"
 
-namespace tachimawari
-{
-
-namespace control
+namespace tachimawari::control
 {
 
 class CM740 : public ControlManager
@@ -95,8 +92,6 @@ private:
   std::shared_ptr<std::map<uint8_t, packet::protocol_1::BulkReadData>> bulk_data;
 };
 
-}  // namespace control
-
-}  // namespace tachimawari
+}  // namespace tachimawari::control
 
 #endif  // TACHIMAWARI__CONTROL__CONTROLLER__MODULE__CM740_HPP_

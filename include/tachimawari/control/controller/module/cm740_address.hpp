@@ -23,10 +23,7 @@
 
 #include <string>
 
-namespace tachimawari
-{
-
-namespace control
+namespace tachimawari::control
 {
 
 enum CM740Address : uint8_t
@@ -91,8 +88,6 @@ enum CM740Address : uint8_t
   MAXNUM_ADDRESS
 };
 
-}  // namespace control
-
-}  // namespace tachimawari
+}  // namespace tachimawari::control
 
 #endif  // TACHIMAWARI__CONTROL__CONTROLLER__MODULE__CM740_ADDRESS_HPP_

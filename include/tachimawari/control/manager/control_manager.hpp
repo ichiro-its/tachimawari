@@ -26,10 +26,7 @@
 
 #include "tachimawari/joint/model/joint.hpp"
 
-namespace tachimawari
-{
-
-namespace control
+namespace tachimawari::control
 {
 
 class ControlManager
@@ -72,8 +69,6 @@ protected:
   int baudrate;
 };
 
-}  // namespace control
-
-}  // namespace tachimawari
+}  // namespace tachimawari::control
 
 #endif  // TACHIMAWARI__CONTROL__MANAGER__CONTROL_MANAGER_HPP_

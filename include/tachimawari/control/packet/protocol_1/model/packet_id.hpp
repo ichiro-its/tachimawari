@@ -23,16 +23,7 @@
 
 #include <string>
 
-namespace tachimawari
-{
-
-namespace control
-{
-
-namespace packet
-{
-
-namespace protocol_1
+namespace tachimawari::control::packet::protocol_1
 {
 
 enum PacketId : uint8_t
@@ -41,12 +32,6 @@ enum PacketId : uint8_t
   BROADCAST = 254,
 };
 
-}  // namespace protocol_1
-
-}  // namespace packet
-
-}  // namespace control
-
-}  // namespace tachimawari
+}  // namespace tachimawari::control::packet::protocol_1
 
 #endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__MODEL__PACKET_ID_HPP_

@@ -28,7 +28,7 @@
 #include "tachimawari/control/manager/control_manager.hpp"
 #include "tachimawari/joint/model/joint.hpp"
 
-namespace tachimawari
+namespace tachimawari::control
 {
 
 class Linux
@@ -51,6 +51,6 @@ private:
   int baudrate;
 };
 
-}  // namespace tachimawari
+}  // namespace tachimawari::control
 
 #endif  // TACHIMAWARI__CONTROL__CONTROLLER__PLATFORM__LINUX_HPP_

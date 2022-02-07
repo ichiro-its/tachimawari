@@ -26,19 +26,10 @@
 #include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
 
-namespace tachimawari
+namespace tachimawari::control::packet::protocol_1
 {
 
-namespace control
-{
-
-namespace packet
-{
-
-namespace protocol_1
-{
-
-Packet::Packet(uint8_t pakcet_id, uint8_t instruction)
+Packet::Packet(uint8_t packet_id, uint8_t instruction)
 : info(instruction), checksum(0x00)
 {
   this->packet_id = packet_id;
@@ -100,10 +91,4 @@ std::vector<uint8_t> Packet::get_packet()
   return packet;
 }
 
-}  // namespace protocol_1
-
-}  // namespace packet
-
-}  // namespace control
-
-}  // namespace tachimawari
+}  // namespace tachimawari::control::packet::protocol_1

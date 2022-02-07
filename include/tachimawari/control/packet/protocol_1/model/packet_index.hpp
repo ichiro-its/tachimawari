@@ -21,16 +21,7 @@
 #ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__MODEL__PACKET_INDEX_HPP_
 #define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__MODEL__PACKET_INDEX_HPP_
 
-namespace tachimawari
-{
-
-namespace control
-{
-
-namespace packet
-{
-
-namespace protocol_1
+namespace tachimawari::control::packet::protocol_1
 {
 
 enum PacketIndex
@@ -42,12 +33,6 @@ enum PacketIndex
   PARAMETER = 5
 };
 
-}  // namespace protocol_1
-
-}  // namespace packet
-
-}  // namespace control
-
-}  // namespace tachimawari
+}  // namespace tachimawari::control::packet::protocol_1
 
 #endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__MODEL__PACKET_INDEX_HPP_

@@ -23,10 +23,7 @@
 
 #include "tachimawari/control/manager/control_manager.hpp"
 
-namespace tachimawari
-{
-
-namespace control
+namespace tachimawari::control
 {
 
 ControlManager::ControlManager(
@@ -40,6 +37,4 @@ const float & ControlManager::get_protocol_version() const
   return protocol_version;
 }
 
-}  // namespace control
-
-}  // namespace tachimawari
+}  // namespace tachimawari::control
