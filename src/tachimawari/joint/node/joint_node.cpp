@@ -28,6 +28,7 @@
 #include "tachimawari/joint/node/joint_manager.hpp"
 #include "tachimawari_interfaces/msg/joint.hpp"
 #include "tachimawari_interfaces/msg/set_joints.hpp"
+#include "tachimawari_interfaces/srv/get_joints.hpp"
 
 namespace tachimawari::joint
 {
@@ -47,6 +48,17 @@ JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager>
       this->joint_manager->set_joints(joints);
     }
   );
+
+  {
+    using tachimawari_interfaces::srv::GetJoints;
+
+    get_joints_server = node->create_service<tachimawari_interfaces::srv::GetJoints>(
+      get_node_prefix() + "/get_joints",
+      [this](std::shared_ptr<GetJoints::Request> request,
+      std::shared_ptr<GetJoints::Response> response) {
+      }
+    );
+  }
 }
 
 std::string JointNode::get_node_prefix() const

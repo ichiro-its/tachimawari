@@ -86,7 +86,7 @@ bool CM740::dxl_power_on()
 packet::protocol_1::StatusPacket CM740::send_packet(packet::protocol_1::Packet packet)
 {
   {
-    using StatusPacket = packet::protocol_1::StatusPacket;
+    using packet::protocol_1::StatusPacket;
 
     std::vector<uint8_t> txpacket = packet.get_packet();
 
@@ -129,7 +129,7 @@ packet::protocol_1::StatusPacket CM740::send_packet(packet::protocol_1::Packet p
 bool CM740::send_bulk_read_packet(packet::protocol_1::BulkReadPacket packet)
 {
   {
-    using BulkReadData = packet::protocol_1::BulkReadData;
+    using packet::protocol_1::BulkReadData;
 
     std::vector<uint8_t> txpacket = packet.get_packet();
 

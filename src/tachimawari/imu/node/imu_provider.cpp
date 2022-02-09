@@ -40,8 +40,8 @@ keisan::Vector<3> ImuProvider::get_gyro() const
 {
   if (control_manager->get_protocol_version() == 1.0) {
     {
-      using CM740Address = tachimawari::control::CM740Address;
-      using PacketId = tachimawari::control::packet::protocol_1::PacketId;
+      using tachimawari::control::CM740Address;
+      using tachimawari::control::packet::protocol_1::PacketId;
 
       int gyro_x = control_manager->get_bulk_data(
         PacketId::CONTROLLER,
@@ -68,8 +68,8 @@ keisan::Vector<3> ImuProvider::get_accelero() const
 {
   if (control_manager->get_protocol_version() == 1.0) {
     {
-      using CM740Address = tachimawari::control::CM740Address;
-      using PacketId = tachimawari::control::packet::protocol_1::PacketId;
+      using tachimawari::control::CM740Address;
+      using tachimawari::control::packet::protocol_1::PacketId;
 
       int accel_x = control_manager->get_bulk_data(
         PacketId::CONTROLLER,
