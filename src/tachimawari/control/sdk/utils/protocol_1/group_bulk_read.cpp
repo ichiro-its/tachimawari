@@ -66,9 +66,7 @@ void GroupBulkRead::add(
 {
   for (auto & joint : joints) {
     if (group_bulk_read.addParam(
-        joint.get_id(),
-        tachimawari::joint::protocol_1::GOAL_POSITION_L,
-        static_cast<uint16_t>(2)))
+        joint.get_id(), tachimawari::joint::protocol_1::GOAL_POSITION_L, 2u))
     {
       parameters_id.push_back(joint.get_id());
     } else {
@@ -87,10 +85,11 @@ int GroupBulkRead::get(
   const int & data_length)
 {
   bool is_available = group_bulk_read.isAvailable(
-    id, static_cast<uint16_t>(address), static_cast<uint16_t>(data_length));
+    id, static_cast<uint16_t>(address), data_length);
+
   if (is_available) {
     uint32_t result = group_bulk_read.getData(
-      id, static_cast<uint16_t>(address), static_cast<uint16_t>(data_length));
+      id, static_cast<uint16_t>(address), data_length);
 
     return static_cast<int>(result);
   } else {

@@ -174,8 +174,7 @@ bool DynamixelSDK::bulk_read_packet()
 
     if (ping(packet::protocol_1::PacketId::CONTROLLER)) {
       group_bulk_read.add(
-        packet::protocol_1::PacketId::CONTROLLER, CM740Address::DXL_POWER,
-        static_cast<uint8_t>(30));
+        packet::protocol_1::PacketId::CONTROLLER, CM740Address::DXL_POWER, 30u);
     }
 
     if (group_bulk_read.is_parameters_filled()) {
@@ -214,7 +213,7 @@ int DynamixelSDK::get_bulk_data(
   if (bulk_data->find(id) != bulk_data->end()) {
     return bulk_data->at(id).get(id, address, data_length);
   } else {
-    return -1;
+    // data is not found
   }
 
   return -1;

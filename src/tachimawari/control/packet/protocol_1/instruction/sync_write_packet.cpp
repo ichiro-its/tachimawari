@@ -44,20 +44,20 @@ void SyncWritePacket::create(
 
   // check does the request need pid to be included
   bool is_include_pid = starting_address == tachimawari::joint::protocol_1::MX28Address::D_GAIN;
-  parameters.push_back(static_cast<uint8_t>((is_include_pid) ? 6 : 2));  // set the data lenngth
+  parameters.push_back((is_include_pid) ? 6 : 2);  // set the data lenngth
 
   for (auto & joint : joints) {
     parameters.push_back(joint.get_id());
 
     if (is_include_pid) {
-      parameters.push_back(static_cast<uint8_t>(joint.get_pid_gain()[2]));
-      parameters.push_back(static_cast<uint8_t>(joint.get_pid_gain()[1]));
-      parameters.push_back(static_cast<uint8_t>(joint.get_pid_gain()[0]));
+      parameters.push_back(joint.get_pid_gain()[2]);
+      parameters.push_back(joint.get_pid_gain()[1]);
+      parameters.push_back(joint.get_pid_gain()[0]);
       parameters.push_back(0x00);
     }
 
-    parameters.push_back(Word::get_low_byte(static_cast<int>(joint.get_position())));
-    parameters.push_back(Word::get_high_byte(static_cast<int>(joint.get_position())));
+    parameters.push_back(Word::get_low_byte(joint.get_position()));
+    parameters.push_back(Word::get_high_byte(joint.get_position()));
   }
 }
 

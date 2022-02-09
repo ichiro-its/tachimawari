@@ -39,7 +39,7 @@ bool JointManager::torque_enable(const bool & enable)
 {
   return control_manager->write_packet(
     tachimawari::control::packet::protocol_1::PacketId::CONTROLLER,
-    protocol_1::MX28Address::TORQUE_ENABLE, static_cast<int>(enable));
+    protocol_1::MX28Address::TORQUE_ENABLE, enable);
 }
 
 bool JointManager::torque_enable(const std::vector<Joint> & joints, const bool & enable)
@@ -47,8 +47,7 @@ bool JointManager::torque_enable(const std::vector<Joint> & joints, const bool &
   if (joints.size()) {
     for (auto & joint : joints) {
       return control_manager->write_packet(
-        joint.get_id(), protocol_1::MX28Address::TORQUE_ENABLE,
-        static_cast<int>(enable));
+        joint.get_id(), protocol_1::MX28Address::TORQUE_ENABLE, enable);
     }
   }
 

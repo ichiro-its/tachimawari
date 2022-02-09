@@ -52,14 +52,14 @@ dynamixel::GroupSyncWrite GroupSyncWrite::create(
 
   for (auto & joint : joints) {
     if (is_include_pid) {
-      param_data.push_back(static_cast<uint8_t>(joint.get_pid_gain()[2]));
-      param_data.push_back(static_cast<uint8_t>(joint.get_pid_gain()[1]));
-      param_data.push_back(static_cast<uint8_t>(joint.get_pid_gain()[0]));
+      param_data.push_back(joint.get_pid_gain()[2]);
+      param_data.push_back(joint.get_pid_gain()[1]);
+      param_data.push_back(joint.get_pid_gain()[0]);
       param_data.push_back(0x00);
     }
 
-    param_data.push_back(DXL_LOBYTE(static_cast<int>(joint.get_position())));
-    param_data.push_back(DXL_HIBYTE(static_cast<int>(joint.get_position())));
+    param_data.push_back(DXL_LOBYTE(joint.get_position()));
+    param_data.push_back(DXL_HIBYTE(joint.get_position()));
 
     if (!group_sync_write.addParam(joint.get_id(), param_data.data())) {
       // addparam failed
