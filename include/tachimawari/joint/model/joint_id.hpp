@@ -21,42 +21,49 @@
 #ifndef TACHIMAWARI__JOINT__MODEL__JOINT_ID_HPP_
 #define TACHIMAWARI__JOINT__MODEL__JOINT_ID_HPP_
 
+#include <array>
 #include <string>
 
 namespace tachimawari::joint
 {
 
-enum JointId : uint8_t
+class JointId
 {
-  // head motors
-  NECK_YAW = 19,
-  NECK_PITCH = 20,
+public:
+  enum : uint8_t
+  {
+    // head motors
+    NECK_YAW = 19,
+    NECK_PITCH = 20,
 
-  // left arm motors
-  LEFT_SHOULDER_PITCH = 2,
-  LEFT_SHOULDER_ROLL = 4,
-  LEFT_ELBOW = 6,
+    // left arm motors
+    LEFT_SHOULDER_PITCH = 2,
+    LEFT_SHOULDER_ROLL = 4,
+    LEFT_ELBOW = 6,
 
-  // right arm motors
-  RIGHT_SHOULDER_PITCH = 1,
-  RIGHT_SHOULDER_ROLL = 3,
-  RIGHT_ELBOW = 5,
+    // right arm motors
+    RIGHT_SHOULDER_PITCH = 1,
+    RIGHT_SHOULDER_ROLL = 3,
+    RIGHT_ELBOW = 5,
 
-  // left leg motors
-  LEFT_HIP_YAW = 8,
-  LEFT_HIP_ROLL = 10,
-  LEFT_HIP_PITCH = 12,
-  LEFT_KNEE = 14,
-  LEFT_ANKLE_ROLL = 16,
-  LEFT_ANKLE_PITCH = 18,
+    // left leg motors
+    LEFT_HIP_YAW = 8,
+    LEFT_HIP_ROLL = 10,
+    LEFT_HIP_PITCH = 12,
+    LEFT_KNEE = 14,
+    LEFT_ANKLE_ROLL = 16,
+    LEFT_ANKLE_PITCH = 18,
 
-  // right leg motors
-  RIGHT_HIP_YAW = 7,
-  RIGHT_HIP_ROLL = 9,
-  RIGHT_HIP_PITCH = 11,
-  RIGHT_KNEE = 13,
-  RIGHT_ANKLE_ROLL = 15,
-  RIGHT_ANKLE_PITCH = 17,
+    // right leg motors
+    RIGHT_HIP_YAW = 7,
+    RIGHT_HIP_ROLL = 9,
+    RIGHT_HIP_PITCH = 11,
+    RIGHT_KNEE = 13,
+    RIGHT_ANKLE_ROLL = 15,
+    RIGHT_ANKLE_PITCH = 17,
+  };
+
+  static const std::array<uint8_t, 21> list;
 };
 
 }  // namespace tachimawari::joint
