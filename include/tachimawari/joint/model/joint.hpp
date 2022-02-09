@@ -34,13 +34,12 @@ class Joint
 public:
   explicit Joint(uint8_t joint_id, const float & position = 0.0);
 
-  void set_position(const float & position);
-
-  void set_pid_gain(const float & p, const float & i, const float & d);
-
   uint8_t get_id() const;
 
+  void set_position(const float & position);
   const float & get_position() const;
+
+  void set_pid_gain(const float & p, const float & i, const float & d);
   std::vector<float> get_pid_gain() const;
 
 private:
