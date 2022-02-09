@@ -41,8 +41,8 @@ public:
   bool is_parameters_filled();
 
   void add(
-    const uint8_t & id, const uint8_t & starting_address,
-    const uint8_t & data_length);
+    uint8_t id, uint8_t starting_address,
+    uint8_t data_length);
 
   void add(const std::vector<tachimawari::joint::Joint> & joints);
 };

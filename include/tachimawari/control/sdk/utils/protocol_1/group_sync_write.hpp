@@ -41,7 +41,7 @@ public:
 
   dynamixel::GroupSyncWrite create(
     const std::vector<tachimawari::joint::Joint> & joints,
-    const uint8_t & starting_address =
+    uint8_t starting_address =
     tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
 
 private:

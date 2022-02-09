@@ -51,8 +51,8 @@ GroupBulkRead::GroupBulkRead(
 }
 
 void GroupBulkRead::add(
-  const uint8_t & id, const uint16_t & starting_address,
-  const uint16_t & data_length)
+  uint8_t id, uint16_t starting_address,
+  uint16_t data_length)
 {
   if (group_bulk_read.addParam(id, starting_address, data_length)) {
     parameters_id.push_back(id);
@@ -61,8 +61,7 @@ void GroupBulkRead::add(
   }
 }
 
-void GroupBulkRead::add(
-  const std::vector<tachimawari::joint::Joint> & joints)
+void GroupBulkRead::add(const std::vector<tachimawari::joint::Joint> & joints)
 {
   for (auto & joint : joints) {
     if (group_bulk_read.addParam(
@@ -81,7 +80,7 @@ int GroupBulkRead::send()
 }
 
 int GroupBulkRead::get(
-  const uint8_t & id, const uint8_t & address,
+  uint8_t id, uint8_t address,
   const int & data_length)
 {
   bool is_available = group_bulk_read.isAvailable(

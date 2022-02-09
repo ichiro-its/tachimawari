@@ -41,14 +41,14 @@ public:
   virtual bool connect() {}
   virtual void disconnect() {}
 
-  virtual bool ping(const uint8_t & id) {}
+  virtual bool ping(uint8_t id) {}
 
   virtual bool write_packet(
-    const uint8_t & address, const int & value,
+    uint8_t address, const int & value,
     const int & data_length = 1) {}
 
   virtual bool write_packet(
-    const uint8_t & id, const uint8_t & address, const int & value,
+    uint8_t id, uint8_t address, const int & value,
     const int & data_length = 1) {}
 
   virtual bool sync_write_packet(
@@ -60,7 +60,7 @@ public:
   virtual bool bulk_read_packet(const std::vector<joint::Joint> & joints) {}
 
   virtual int get_bulk_data(
-    const uint8_t & id, const uint8_t & address,
+    uint8_t id, uint8_t address,
     const int & data_length = 1) {}
 
 protected:

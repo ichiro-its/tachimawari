@@ -49,15 +49,15 @@ public:
     std::shared_ptr<std::vector<uint8_t>> rxpacket, int packet_length, int data_number);
 
   BulkReadData(
-    const uint8_t & id, const uint8_t & starting_address,
-    const uint8_t & data_length);
+    uint8_t id, uint8_t starting_address,
+    uint8_t data_length);
 
-  bool is_valid(const std::vector<uint8_t> & rxpacket);
+  bool is_valid(std::vector<uint8_t> rxpacket);
 
   bool is_filled();
 
-  int get(const uint8_t & address);
-  int get(const uint16_t & address);
+  int get(uint8_t address);
+  int get(uint16_t address);
 
 private:
   int start_address;

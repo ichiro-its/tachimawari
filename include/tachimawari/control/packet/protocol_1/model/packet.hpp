@@ -35,15 +35,15 @@ class Packet
 public:
   Packet(uint8_t packet_id, uint8_t instruction);
 
-  const uint8_t & get_packet_id() const;
+  uint8_t get_packet_id() const;
 
-  const uint8_t & get_info() const;
+  uint8_t get_info() const;
 
   virtual uint8_t get_data_length() const;
 
   virtual int get_expected_length() const;
 
-  const std::vector<uint8_t> & get_parameters() const;
+  std::vector<uint8_t> get_parameters() const;
 
   std::vector<uint8_t> get_packet();
 

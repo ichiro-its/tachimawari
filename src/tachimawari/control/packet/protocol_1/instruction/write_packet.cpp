@@ -36,26 +36,26 @@ WritePacket::WritePacket()
 {
 }
 
-void WritePacket::create(const uint8_t & address, const uint8_t & value)
+void WritePacket::create(uint8_t address, uint8_t value)
 {
   parameters.push_back(address);
   parameters.push_back(value);
 }
 
-void WritePacket::create(const uint8_t & address, const uint16_t & value)
+void WritePacket::create(uint8_t address, uint16_t value)
 {
   parameters.push_back(address);
   parameters.push_back(Word::get_low_byte(value));
   parameters.push_back(Word::get_high_byte(value));
 }
 
-void WritePacket::create(const uint8_t & id, const uint8_t & address, const uint8_t & value)
+void WritePacket::create(uint8_t id, uint8_t address, uint8_t value)
 {
   packet_id = id;
   create(address, value);
 }
 
-void WritePacket::create(const uint8_t & id, const uint8_t & address, const uint16_t & value)
+void WritePacket::create(uint8_t id, uint8_t address, uint16_t value)
 {
   packet_id = id;
   create(address, value);

@@ -38,7 +38,7 @@ SyncWritePacket::SyncWritePacket()
 
 void SyncWritePacket::create(
   const std::vector<tachimawari::joint::Joint> & joints,
-  const uint8_t & starting_address)
+  uint8_t starting_address)
 {
   parameters.push_back(starting_address);
 

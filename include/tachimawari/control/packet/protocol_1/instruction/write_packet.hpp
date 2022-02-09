@@ -36,13 +36,13 @@ class WritePacket : public Packet
 public:
   WritePacket();
 
-  void create(const uint8_t & address, const uint8_t & value);
+  void create(uint8_t address, uint8_t value);
 
-  void create(const uint8_t & address, const uint16_t & value);
+  void create(uint8_t address, uint16_t value);
 
-  void create(const uint8_t & id, const uint8_t & address, const uint8_t & value);
+  void create(uint8_t id, uint8_t address, uint8_t value);
 
-  void create(const uint8_t & id, const uint8_t & address, const uint16_t & value);
+  void create(uint8_t id, uint8_t address, uint16_t value);
 };
 
 }  // namespace tachimawari::control::packet::protocol_1

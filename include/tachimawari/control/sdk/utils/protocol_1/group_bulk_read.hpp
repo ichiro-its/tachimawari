@@ -47,8 +47,8 @@ public:
   ~GroupBulkRead();
 
   void add(
-    const uint8_t & id, const uint16_t & starting_address,
-    const uint16_t & data_length);
+    uint8_t id, uint16_t starting_address,
+    uint16_t data_length);
 
   void add(
     const std::vector<tachimawari::joint::Joint> & joints);
@@ -56,7 +56,7 @@ public:
   int send();
 
   int get(
-    const uint8_t & id, const uint8_t & address,
+    uint8_t id, uint8_t address,
     const int & data_length);
 
   std::vector<uint8_t> get_parameters_id() const;

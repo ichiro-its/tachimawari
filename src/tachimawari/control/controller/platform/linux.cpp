@@ -101,7 +101,7 @@ void Linux::clear_port()
   tcflush(socket_fd, TCIFLUSH);
 }
 
-int Linux::write_port(const std::vector<uint8_t> & packet)
+int Linux::write_port(std::vector<uint8_t> packet)
 {
   clear_port();
 

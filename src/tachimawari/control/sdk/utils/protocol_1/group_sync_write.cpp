@@ -39,7 +39,7 @@ GroupSyncWrite::GroupSyncWrite(
 
 dynamixel::GroupSyncWrite GroupSyncWrite::create(
   const std::vector<tachimawari::joint::Joint> & joints,
-  const uint8_t & starting_address)
+  uint8_t starting_address)
 {
   // check does the request need pid to be included
   bool is_include_pid = starting_address == tachimawari::joint::protocol_1::MX28Address::D_GAIN;

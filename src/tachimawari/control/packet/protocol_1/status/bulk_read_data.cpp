@@ -125,13 +125,13 @@ int BulkReadData::update_all(
 }
 
 BulkReadData::BulkReadData(
-  const uint8_t & id, const uint8_t & starting_address,
-  const uint8_t & data_length)
+  uint8_t id, uint8_t starting_address,
+  uint8_t data_length)
 : Packet(id, 0xFF), start_address(starting_address), data_length(data_length)
 {
 }
 
-bool BulkReadData::is_valid(const std::vector<uint8_t> & rxpacket)
+bool BulkReadData::is_valid(std::vector<uint8_t> rxpacket)
 {
   info = rxpacket[PacketIndex::ERROR];
 
@@ -157,7 +157,7 @@ bool BulkReadData::is_filled()
   return parameters.size() != 0;
 }
 
-int BulkReadData::get(const uint8_t & address)
+int BulkReadData::get(uint8_t address)
 {
   int index = static_cast<int>(address) - start_address;
 
@@ -168,7 +168,7 @@ int BulkReadData::get(const uint8_t & address)
   }
 }
 
-int BulkReadData::get(const uint16_t & address)
+int BulkReadData::get(uint16_t address)
 {
   int index = static_cast<int>(address) - start_address;
 

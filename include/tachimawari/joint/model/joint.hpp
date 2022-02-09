@@ -32,13 +32,13 @@ namespace tachimawari::joint
 class Joint
 {
 public:
-  explicit Joint(const uint8_t & joint_id, const float & position = 0.0);
+  explicit Joint(uint8_t joint_id, const float & position = 0.0);
 
   void set_position(const float & position);
 
   void set_pid_gain(const float & p, const float & i, const float & d);
 
-  const uint8_t & get_id() const;
+  uint8_t get_id() const;
 
   const float & get_position() const;
   std::vector<float> get_pid_gain() const;

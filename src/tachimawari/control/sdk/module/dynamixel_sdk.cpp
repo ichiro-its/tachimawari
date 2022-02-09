@@ -81,7 +81,7 @@ bool DynamixelSDK::send_bulk_read_packet(sdk::protocol_1::GroupBulkRead group_bu
   return result == COMM_SUCCESS;
 }
 
-bool DynamixelSDK::ping(const uint8_t & id)
+bool DynamixelSDK::ping(uint8_t id)
 {
   if (protocol_version == 1.0) {
     uint8_t error = 0;
@@ -101,7 +101,7 @@ bool DynamixelSDK::ping(const uint8_t & id)
 }
 
 bool DynamixelSDK::write_packet(
-  const uint8_t & address, const int & value,
+  uint8_t address, const int & value,
   const int & data_length)
 {
   if (protocol_version == 1.0) {
@@ -114,7 +114,7 @@ bool DynamixelSDK::write_packet(
 }
 
 bool DynamixelSDK::write_packet(
-  const uint8_t & id, const uint8_t & address, const int & value,
+  uint8_t id, uint8_t address, const int & value,
   const int & data_length)
 {
   if (protocol_version == 1.0) {
@@ -207,7 +207,7 @@ bool DynamixelSDK::bulk_read_packet(const std::vector<joint::Joint> & joints)
 }
 
 int DynamixelSDK::get_bulk_data(
-  const uint8_t & id, const uint8_t & address,
+  uint8_t id, uint8_t address,
   const int & data_length)
 {
   if (bulk_data->find(id) != bulk_data->end()) {

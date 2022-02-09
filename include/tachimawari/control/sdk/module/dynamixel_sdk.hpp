@@ -46,14 +46,14 @@ public:
   bool connect() override;
   void disconnect() override;
 
-  bool ping(const uint8_t & id) override;
+  bool ping(uint8_t id) override;
 
   bool write_packet(
-    const uint8_t & address, const int & value,
+    uint8_t address, const int & value,
     const int & data_length = 1) override;
 
   bool write_packet(
-    const uint8_t & id, const uint8_t & address, const int & value,
+    uint8_t id, uint8_t address, const int & value,
     const int & data_length = 1) override;
 
   bool sync_write_packet(
@@ -65,7 +65,7 @@ public:
   bool bulk_read_packet(const std::vector<joint::Joint> & joints) override;
 
   int get_bulk_data(
-    const uint8_t & id, const uint8_t & address,
+    uint8_t id, uint8_t address,
     const int & data_length = 1) override;
 
 private:

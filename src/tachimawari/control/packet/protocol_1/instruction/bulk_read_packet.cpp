@@ -54,13 +54,13 @@ int BulkReadPacket::get_expected_length() const
 
 int BulkReadPacket::get_data_number() const
 {
-  int data_number = parameters.size() - 1;
-  return data_number / 3;  // divided by instruction packet structure of its parameters
+  // divided by instruction packet structure of its parameters
+  return (parameters.size() - 1) / 3;
 }
 
 void BulkReadPacket::add(
-  const uint8_t & id, const uint8_t & starting_address,
-  const uint8_t & data_length)
+  uint8_t id, uint8_t starting_address,
+  uint8_t data_length)
 {
   parameters.push_back(data_length);
   parameters.push_back(id);

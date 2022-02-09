@@ -38,12 +38,12 @@ Packet::Packet(uint8_t packet_id, uint8_t instruction)
   packet.push_back(0xFF);
 }
 
-const uint8_t & Packet::get_packet_id() const
+uint8_t Packet::get_packet_id() const
 {
   return packet_id;
 }
 
-const uint8_t & Packet::get_info() const
+uint8_t Packet::get_info() const
 {
   return info;
 }
@@ -71,7 +71,7 @@ void Packet::calculate_checksum()
   checksum = ~checksum;
 }
 
-const std::vector<uint8_t> & Packet::get_parameters() const
+std::vector<uint8_t> Packet::get_parameters() const
 {
   return parameters;
 }
