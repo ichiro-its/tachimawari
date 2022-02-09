@@ -42,14 +42,13 @@ public:
 
   static int validate(
     std::shared_ptr<std::vector<uint8_t>> rxpacket,
-    const int & packet_length);
+    int packet_length);
 
   static int update_all(
     std::shared_ptr<std::map<uint8_t, BulkReadData>> bulk_data,
     std::shared_ptr<std::vector<uint8_t>> rxpacket, int packet_length, int data_number);
 
-  BulkReadData(
-    uint8_t id, uint8_t starting_address,
+  BulkReadData(uint8_t id, uint8_t starting_address,
     uint8_t data_length);
 
   bool is_valid(std::vector<uint8_t> rxpacket);

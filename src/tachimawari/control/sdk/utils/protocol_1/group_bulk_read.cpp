@@ -79,16 +79,12 @@ int GroupBulkRead::send()
   return group_bulk_read.txRxPacket();
 }
 
-int GroupBulkRead::get(
-  uint8_t id, uint8_t address,
-  const int & data_length)
+int GroupBulkRead::get(uint8_t id, uint16_t address, uint16_t data_length)
 {
-  bool is_available = group_bulk_read.isAvailable(
-    id, static_cast<uint16_t>(address), data_length);
+  bool is_available = group_bulk_read.isAvailable(id, address, data_length);
 
   if (is_available) {
-    uint32_t result = group_bulk_read.getData(
-      id, static_cast<uint16_t>(address), data_length);
+    uint32_t result = group_bulk_read.getData(id, address, data_length);
 
     return static_cast<int>(result);
   } else {

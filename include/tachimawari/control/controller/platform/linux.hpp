@@ -36,14 +36,13 @@ class Linux
 public:
   Linux();
 
-  bool open_port(const std::string & port_name, const int & baudrate = 1000000);
+  bool open_port(const std::string & port_name, int baudrate = 1000000);
   void close_port();
   void clear_port();
 
   int write_port(std::vector<uint8_t> packet);
-  int read_port(
-    std::shared_ptr<std::vector<uint8_t>> packet, const int & packet_length,
-    const int & packet_index);
+  int read_port(std::shared_ptr<std::vector<uint8_t>> packet, int packet_length,
+    int packet_index);
 
 private:
   int socket_fd;

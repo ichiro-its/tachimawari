@@ -39,8 +39,8 @@ namespace tachimawari::control
 {
 
 DynamixelSDK::DynamixelSDK(
-  const std::string & port_name, const int & baudrate,
-  const float & protocol_version)
+  const std::string & port_name, int baudrate,
+  float protocol_version)
 : ControlManager(port_name, protocol_version, baudrate),
   port_handler(dynamixel::PortHandler::getPortHandler(port_name.c_str())),
   packet_handler(dynamixel::PacketHandler::getPacketHandler(protocol_version)),
@@ -69,16 +69,16 @@ bool DynamixelSDK::connect()
 
 bool DynamixelSDK::send_bulk_read_packet(sdk::protocol_1::GroupBulkRead group_bulk_read)
 {
-  int result = COMM_TX_FAIL;
-
-  result = group_bulk_read.send();
-  if (result == COMM_SUCCESS) {
+  if (group_bulk_read.send() == SUCCESS) {
     sdk::protocol_1::GroupBulkRead::insert_all(bulk_data, group_bulk_read);
   } else {
+    // TODO: will be used for logging
     // packet_handler->getTxRxResult(result);
+
+    return false;
   }
 
-  return result == COMM_SUCCESS;
+  return true;
 }
 
 bool DynamixelSDK::ping(uint8_t id)
@@ -86,23 +86,26 @@ bool DynamixelSDK::ping(uint8_t id)
   if (protocol_version == 1.0) {
     uint8_t error = 0;
     uint16_t model_number;
-    int result = packet_handler->ping(port_handler, id, &model_number, &error);
 
-    if (result != COMM_SUCCESS) {
+    if (packet_handler->ping(port_handler, id, &model_number, &error) != SUCCESS) {
+      // TODO: will be used for logging
       // packet_handler->getTxRxResult(result);
-    } else if (error != 0) {
-      // packet_handler->getRxPacketError(error);
-    }
 
-    return result == COMM_SUCCESS;
+      return false;
+    } else if (error != 0) {
+      // TODO: will be used for logging
+      // packet_handler->getRxPacketError(error);
+
+      return false;
+    }
   }
 
-  return false;
+  return true;
 }
 
 bool DynamixelSDK::write_packet(
-  uint8_t address, const int & value,
-  const int & data_length)
+  uint8_t address, int value,
+  int data_length)
 {
   if (protocol_version == 1.0) {
     return write_packet(
@@ -114,13 +117,13 @@ bool DynamixelSDK::write_packet(
 }
 
 bool DynamixelSDK::write_packet(
-  uint8_t id, uint8_t address, const int & value,
-  const int & data_length)
+  uint8_t id, uint8_t address, int value,
+  int data_length)
 {
   if (protocol_version == 1.0) {
     uint8_t error = 0;
     uint16_t model_number;
-    int result = COMM_TX_FAIL;
+    int result = TX_FAIL;
 
     if (data_length == 1) {
       result = packet_handler->write1ByteTxRx(
@@ -132,31 +135,34 @@ bool DynamixelSDK::write_packet(
         static_cast<uint16_t>(value), &error);
     }
 
-    if (result != COMM_SUCCESS) {
+    if (result != SUCCESS) {
+      // TODO: will be used for logging
       // packet_handler->getTxRxResult(result);
-    } else if (error != 0) {
-      // packet_handler->getRxPacketError(error);
-    }
 
-    return result == COMM_SUCCESS;
+      return false;
+    } else if (error != 0) {
+      // TODO: will be used for logging
+      // packet_handler->getRxPacketError(error);
+
+      return false;
+    }
   }
 
-  return false;
+  return true;
 }
 
 bool DynamixelSDK::sync_write_packet(
   const std::vector<joint::Joint> & joints,
-  const bool & with_pid)
+  bool with_pid)
 {
   if (protocol_version == 1.0) {
     auto group_sync_write = sdk::protocol_1::GroupSyncWrite(port_handler, packet_handler).create(
       joints, with_pid ? tachimawari::joint::protocol_1::MX28Address::D_GAIN :
       tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
 
-    int result = COMM_TX_FAIL;
-
-    result = group_sync_write.txPacket();
+    int result = group_sync_write.txPacket();
     if (result != COMM_SUCCESS) {
+      // TODO: will be used for logging
       // packet_handler->getTxRxResult(result);
     }
     group_sync_write.clearParam();
@@ -208,7 +214,7 @@ bool DynamixelSDK::bulk_read_packet(const std::vector<joint::Joint> & joints)
 
 int DynamixelSDK::get_bulk_data(
   uint8_t id, uint8_t address,
-  const int & data_length)
+  int data_length)
 {
   if (bulk_data->find(id) != bulk_data->end()) {
     return bulk_data->at(id).get(id, address, data_length);

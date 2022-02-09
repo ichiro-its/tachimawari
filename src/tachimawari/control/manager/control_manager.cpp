@@ -27,12 +27,12 @@ namespace tachimawari::control
 {
 
 ControlManager::ControlManager(
-  const std::string & port_name, const float & protocol_version, const int & baudrate)
+  const std::string & port_name, float protocol_version, int baudrate)
 : port_name(port_name), protocol_version(protocol_version), baudrate(baudrate)
 {
 }
 
-const float & ControlManager::get_protocol_version() const
+float ControlManager::get_protocol_version() const
 {
   return protocol_version;
 }

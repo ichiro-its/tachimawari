@@ -46,7 +46,7 @@ void SyncWritePacket::create(
   bool is_include_pid = starting_address == tachimawari::joint::protocol_1::MX28Address::D_GAIN;
   parameters.push_back((is_include_pid) ? 6 : 2);  // set the data lenngth
 
-  for (auto & joint : joints) {
+  for (const auto & joint : joints) {
     parameters.push_back(joint.get_id());
 
     if (is_include_pid) {

@@ -51,8 +51,8 @@ namespace tachimawari::control
 {
 
 CM740::CM740(
-  const std::string & port_name, const int & baudrate,
-  const float & protocol_version)
+  const std::string & port_name, int baudrate,
+  float protocol_version)
 : ControlManager(port_name, protocol_version, baudrate), byte_transfer_time(0.0),
   platform(std::make_shared<Linux>()),
   bulk_data(std::make_shared<std::map<uint8_t, packet::protocol_1::BulkReadData>>())
@@ -190,8 +190,8 @@ bool CM740::ping(uint8_t id)
 }
 
 bool CM740::write_packet(
-  uint8_t address, const int & value,
-  const int & data_length)
+  uint8_t address, int value,
+  int data_length)
 {
   if (protocol_version == 1.0) {
     packet::protocol_1::WritePacket instruction_packet;
@@ -210,8 +210,8 @@ bool CM740::write_packet(
 }
 
 bool CM740::write_packet(
-  uint8_t id, uint8_t address, const int & value,
-  const int & data_length)
+  uint8_t id, uint8_t address, int value,
+  int data_length)
 {
   if (protocol_version == 1.0) {
     packet::protocol_1::WritePacket instruction_packet;
@@ -229,7 +229,7 @@ bool CM740::write_packet(
   return false;
 }
 
-bool CM740::sync_write_packet(const std::vector<joint::Joint> & joints, const bool & with_pid)
+bool CM740::sync_write_packet(const std::vector<joint::Joint> & joints, bool with_pid)
 {
   if (protocol_version == 1.0) {
     packet::protocol_1::SyncWritePacket instruction_packet;
@@ -287,7 +287,7 @@ bool CM740::bulk_read_packet(const std::vector<joint::Joint> & joints)
 
 int CM740::get_bulk_data(
   uint8_t id, uint8_t address,
-  const int & data_length)
+  int data_length)
 {
   if (bulk_data->find(id) != bulk_data->end()) {
     if (data_length == 1) {

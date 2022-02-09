@@ -40,7 +40,7 @@ void BulkReadData::insert_all(
 {
   auto parameters = bulk_read_packet.get_parameters();
 
-  for (int i = 1; i < parameters.size(); i += 3) {
+  for (size_t i = 1; i < parameters.size(); i += 3) {
     if (bulk_data->find(parameters[i + 1]) != bulk_data->end()) {
       bulk_data->insert(
         {parameters[i + 1], BulkReadData(
@@ -52,10 +52,10 @@ void BulkReadData::insert_all(
 
 int BulkReadData::validate(
   std::shared_ptr<std::vector<uint8_t>> rxpacket,
-  const int & packet_length)
+  int packet_length)
 {
   int header_place = 0;
-  for (header_place = 0; header_place < (packet_length - 1); header_place++) {
+  for (header_place = 0; header_place < (packet_length - 1); ++header_place) {
     if (rxpacket->at(header_place) == 0xFF && rxpacket->at(header_place + 1) == 0xFF) {
       break;
     } else if (header_place == (packet_length - 2) && rxpacket->at(packet_length - 1) == 0xFF) {
@@ -66,7 +66,7 @@ int BulkReadData::validate(
   if (header_place == 0) {
     return packet_length;
   } else {
-    for (int i = 0; i < (packet_length - header_place); i++) {
+    for (int i = 0; i < (packet_length - header_place); ++i) {
       rxpacket->at(i) = rxpacket->at(i + header_place);
     }
 
@@ -80,7 +80,7 @@ int BulkReadData::update_all(
 {
   while (true) {
     int header_place = 0;
-    for (header_place = 0; header_place < (packet_length - 1); header_place++) {
+    for (header_place = 0; header_place < (packet_length - 1); ++header_place) {
       if (rxpacket->at(header_place) == 0xFF && rxpacket->at(header_place + 1) == 0xFF) {
         break;
       }
@@ -95,7 +95,7 @@ int BulkReadData::update_all(
         if (bulk_data->at(packet_id).is_valid(*rxpacket.get())) {
           int bulk_data_length = rxpacket->at(PacketIndex::LENGTH) + 4;
 
-          for (int i = 0; i < packet_length - bulk_data_length; i++) {
+          for (int i = 0; i < packet_length - bulk_data_length; ++i) {
             rxpacket->at(i) = rxpacket->at(i + bulk_data_length);
           }
 
@@ -103,7 +103,7 @@ int BulkReadData::update_all(
           packet_length -= bulk_data_length;
         } else {
           // so RX_CORRUPT
-          for (int i = 0; i < packet_length - 2; i++) {
+          for (int i = 0; i < packet_length - 2; ++i) {
             rxpacket->at(i) = rxpacket->at(i + 2);
           }
 
@@ -115,7 +115,7 @@ int BulkReadData::update_all(
         return data_number;
       }
     } else {
-      for (int i = 0; i < (packet_length - header_place); i++) {
+      for (int i = 0; i < (packet_length - header_place); ++i) {
         rxpacket->at(i) = rxpacket->at(i + header_place);
       }
 
@@ -136,7 +136,7 @@ bool BulkReadData::is_valid(std::vector<uint8_t> rxpacket)
   info = rxpacket[PacketIndex::ERROR];
 
   int packet_length = rxpacket[PacketIndex::LENGTH] + 4;
-  for (int i = PacketIndex::PARAMETER; i < packet_length - 1; i++) {
+  for (int i = PacketIndex::PARAMETER; i < packet_length - 1; ++i) {
     parameters.push_back(rxpacket[i]);
   }
 

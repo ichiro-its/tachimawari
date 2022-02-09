@@ -32,9 +32,9 @@ public:
   static uint8_t get_low_byte(int word);
   static uint8_t get_high_byte(int word);
 
-  static int make_word(int lowbyte, int highbyte);
+  static uint16_t make_word(uint8_t lowbyte, uint8_t highbyte);
 
-  static int make_color(int red, int green, int blue);
+  static uint16_t make_color(uint8_t red, uint8_t green, uint8_t blue);
 };
 
 }  // namespace tachimawari::control::packet::protocol_1

@@ -37,7 +37,7 @@ BulkReadPacket::BulkReadPacket()
   parameters.push_back(0x00);
 }
 
-bool BulkReadPacket::is_parameters_filled()
+bool BulkReadPacket::is_parameters_filled() const
 {
   return parameters.size() > 1;
 }

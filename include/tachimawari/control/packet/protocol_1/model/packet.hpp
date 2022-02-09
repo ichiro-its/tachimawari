@@ -43,9 +43,9 @@ public:
 
   virtual int get_expected_length() const;
 
-  std::vector<uint8_t> get_parameters() const;
+  const std::vector<uint8_t> & get_parameters() const;
 
-  std::vector<uint8_t> get_packet();
+  const std::vector<uint8_t> & get_packet();
 
 protected:
   void calculate_checksum();

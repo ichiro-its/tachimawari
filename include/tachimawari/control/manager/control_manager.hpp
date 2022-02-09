@@ -33,35 +33,31 @@ class ControlManager
 {
 public:
   explicit ControlManager(
-    const std::string & port_name, const float & protocol_version, const int & baudrate);
+    const std::string & port_name, float protocol_version, int baudrate);
   virtual ~ControlManager() {}
 
-  const float & get_protocol_version() const;
+  float get_protocol_version() const;
 
   virtual bool connect() {}
   virtual void disconnect() {}
 
   virtual bool ping(uint8_t id) {}
 
-  virtual bool write_packet(
-    uint8_t address, const int & value,
-    const int & data_length = 1) {}
+  virtual bool write_packet(uint8_t address, int value,
+    int data_length = 1) {}
 
-  virtual bool write_packet(
-    uint8_t id, uint8_t address, const int & value,
-    const int & data_length = 1) {}
+  virtual bool write_packet(uint8_t id, uint8_t address, int value,
+    int data_length = 1) {}
 
-  virtual bool sync_write_packet(
-    const std::vector<joint::Joint> & joints,
-    const bool & with_pid = false) {}
+  virtual bool sync_write_packet(const std::vector<joint::Joint> & joints,
+    bool with_pid = false) {}
 
   virtual bool bulk_read_packet() {}
 
   virtual bool bulk_read_packet(const std::vector<joint::Joint> & joints) {}
 
-  virtual int get_bulk_data(
-    uint8_t id, uint8_t address,
-    const int & data_length = 1) {}
+  virtual int get_bulk_data(uint8_t id, uint8_t address,
+    int data_length = 1) {}
 
 protected:
   std::string port_name;

@@ -34,10 +34,10 @@ namespace tachimawari::control::packet::protocol_1
 
 int StatusPacket::validate(
   std::shared_ptr<std::vector<uint8_t>> rxpacket,
-  const int & packet_length)
+  int packet_length)
 {
   int header_place = 0;
-  for (header_place = 0; header_place < (packet_length - 1); header_place++) {
+  for (header_place = 0; header_place < (packet_length - 1); ++header_place) {
     if (rxpacket->at(header_place) == 0xFF && rxpacket->at(header_place + 1) == 0xFF) {
       break;
     } else if (header_place == (packet_length - 2) && rxpacket->at(packet_length - 1) == 0xFF) {
@@ -54,7 +54,7 @@ int StatusPacket::validate(
       return 0;
     }
   } else {
-    for (int i = 0; i < (packet_length - header_place); i++) {
+    for (int i = 0; i < (packet_length - header_place); ++i) {
       rxpacket->at(i) = rxpacket->at(i + header_place);
     }
 
@@ -64,7 +64,7 @@ int StatusPacket::validate(
 
 StatusPacket::StatusPacket(
   std::shared_ptr<std::vector<uint8_t>> rxpacket,
-  const int & packet_length)
+  int packet_length)
 : Packet(rxpacket->at(PacketIndex::ID), rxpacket->at(PacketIndex::ERROR)),
   rxpacket_length(packet_length), rxpacket(rxpacket)
 {
@@ -72,7 +72,7 @@ StatusPacket::StatusPacket(
 
 bool StatusPacket::is_valid()
 {
-  for (int i = PacketIndex::PARAMETER; i < rxpacket_length - 1; i++) {
+  for (int i = PacketIndex::PARAMETER; i < rxpacket_length - 1; ++i) {
     parameters.push_back(rxpacket->at(i));
   }
 

@@ -37,9 +37,9 @@ class StatusPacket : public Packet
 public:
   static int validate(
     std::shared_ptr<std::vector<uint8_t>> rxpacket,
-    const int & packet_length);
+    int packet_length);
 
-  StatusPacket(std::shared_ptr<std::vector<uint8_t>> rxpacket, const int & packet_length);
+  StatusPacket(std::shared_ptr<std::vector<uint8_t>> rxpacket, int packet_length);
 
   bool is_valid();
 

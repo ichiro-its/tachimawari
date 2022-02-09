@@ -71,12 +71,12 @@ void Packet::calculate_checksum()
   checksum = ~checksum;
 }
 
-std::vector<uint8_t> Packet::get_parameters() const
+const std::vector<uint8_t> & Packet::get_parameters() const
 {
   return parameters;
 }
 
-std::vector<uint8_t> Packet::get_packet()
+const std::vector<uint8_t> & Packet::get_packet()
 {
   packet.push_back(packet_id);
 

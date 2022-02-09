@@ -27,19 +27,15 @@ namespace tachimawari::control::packet::protocol_1
 
 uint8_t Word::get_low_byte(int word)
 {
-  uint16_t temp;
-  temp = word & 0x00FF;
-  return static_cast<uint8_t>(temp);
+  return static_cast<uint8_t>(word & 0x00FF);
 }
 
 uint8_t Word::get_high_byte(int word)
 {
-  uint16_t temp;
-  temp = word & 0xFF00;
-  return static_cast<uint8_t>((temp >> 8));
+  return static_cast<uint8_t>(((word & 0xFF00) >> 8));
 }
 
-int Word::make_word(int lowbyte, int highbyte)
+uint16_t Word::make_word(uint8_t lowbyte, uint8_t highbyte)
 {
   uint8_t word;
 
@@ -47,16 +43,16 @@ int Word::make_word(int lowbyte, int highbyte)
   word = word << 8;
   word = word + lowbyte;
 
-  return static_cast<int>(word);
+  return static_cast<uint16_t>(word);
 }
 
-int Word::make_color(int red, int green, int blue)
+uint16_t Word::make_color(uint8_t red, uint8_t green, uint8_t blue)
 {
   int r = (red & 0xFF) >> 3;
   int g = (green & 0xFF) >> 3;
   int b = (blue & 0xFF) >> 3;
 
-  return static_cast<int>(((b << 10) | (g << 5) | r));
+  return static_cast<uint16_t>(((b << 10) | (g << 5) | r));
 }
 
 }  // namespace tachimawari::control::packet::protocol_1

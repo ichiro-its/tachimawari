@@ -26,17 +26,17 @@
 namespace tachimawari::joint
 {
 
-Joint::Joint(uint8_t joint_id, const float & position)
+Joint::Joint(uint8_t joint_id, float position)
 : id(joint_id), position(position), p_gain(30.0), i_gain(30.0), d_gain(30.0)
 {
 }
 
-void Joint::set_position(const float & position)
+void Joint::set_position(float position)
 {
   this->position = position;
 }
 
-void Joint::set_pid_gain(const float & p, const float & i, const float & d)
+void Joint::set_pid_gain(float p, float i, float d)
 {
   p_gain = p;
   i_gain = i;
@@ -48,7 +48,7 @@ uint8_t Joint::get_id() const
   return id;
 }
 
-const float & Joint::get_position() const
+float Joint::get_position() const
 {
   return position;
 }

@@ -46,8 +46,7 @@ public:
     dynamixel::PacketHandler * packet_handler);
   ~GroupBulkRead();
 
-  void add(
-    uint8_t id, uint16_t starting_address,
+  void add(uint8_t id, uint16_t starting_address,
     uint16_t data_length);
 
   void add(
@@ -55,9 +54,7 @@ public:
 
   int send();
 
-  int get(
-    uint8_t id, uint8_t address,
-    const int & data_length);
+  int get(uint8_t id, uint16_t address, uint16_t data_length);
 
   std::vector<uint8_t> get_parameters_id() const;
 

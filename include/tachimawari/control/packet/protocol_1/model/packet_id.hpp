@@ -29,7 +29,7 @@ namespace tachimawari::control::packet::protocol_1
 enum PacketId : uint8_t
 {
   CONTROLLER = 200,
-  BROADCAST = 254,
+  BROADCAST = 254
 };
 
 }  // namespace tachimawari::control::packet::protocol_1

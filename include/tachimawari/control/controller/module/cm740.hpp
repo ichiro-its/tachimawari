@@ -45,8 +45,8 @@ public:
   };
 
   explicit CM740(
-    const std::string & port_name, const int & baudrate = 1000000,
-    const float & protocol_version = 1.0);
+    const std::string & port_name, int baudrate = 1000000,
+    float protocol_version = 1.0);
   ~CM740();
 
   // will be used if there is another option
@@ -59,24 +59,21 @@ public:
   bool ping(uint8_t id) override;
 
   bool write_packet(
-    uint8_t address, const int & value,
-    const int & data_length = 1) override;
+    uint8_t address, int value,
+    int data_length = 1) override;
 
-  bool write_packet(
-    uint8_t id, uint8_t address, const int & value,
-    const int & data_length = 1) override;
+  bool write_packet(uint8_t id, uint8_t address, int value,
+    int data_length = 1) override;
 
-  bool sync_write_packet(
-    const std::vector<joint::Joint> & joints,
-    const bool & with_pid = false) override;
+  bool sync_write_packet(const std::vector<joint::Joint> & joints,
+    bool with_pid = false) override;
 
   bool bulk_read_packet() override;
 
   bool bulk_read_packet(const std::vector<joint::Joint> & joints) override;
 
-  int get_bulk_data(
-    uint8_t id, uint8_t address,
-    const int & data_length = 1) override;
+  int get_bulk_data(uint8_t id, uint8_t address,
+    int data_length = 1) override;
 
 private:
   bool dxl_power_on();
