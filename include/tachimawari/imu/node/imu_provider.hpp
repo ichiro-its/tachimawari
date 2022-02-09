@@ -25,11 +25,7 @@
 
 #include "keisan/keisan.hpp"
 #include "tachimawari/control/manager/control_manager.hpp"
-
-namespace tachimawari
-{
-
-namespace imu
+namespace tachimawari::imu
 {
 
 class ImuProvider
@@ -44,8 +40,6 @@ private:
   std::shared_ptr<tachimawari::control::ControlManager> control_manager;
 };
 
-}  // namespace imu
-
-}  // namespace tachimawari
+}  // namespace tachimawari::imu
 
 #endif  // TACHIMAWARI__IMU__NODE__IMU_PROVIDER_HPP_

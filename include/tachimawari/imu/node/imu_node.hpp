@@ -28,10 +28,7 @@
 #include "kansei_interfaces/msg/unit.hpp"
 #include "tachimawari/imu/node/imu_provider.hpp"
 
-namespace tachimawari
-{
-
-namespace imu
+namespace tachimawari::imu
 {
 
 class ImuNode
@@ -50,8 +47,6 @@ private:
     unit_publisher;
 };
 
-}  // namespace imu
-
-}  // namespace tachimawari
+}  // namespace tachimawari::imu
 
 #endif  // TACHIMAWARI__IMU__NODE__IMU_NODE_HPP_

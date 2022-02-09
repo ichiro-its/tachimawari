@@ -28,10 +28,7 @@
 #include "tachimawari/joint/node/joint_manager.hpp"
 #include "tachimawari_interfaces/msg/set_joints.hpp"
 
-namespace tachimawari
-{
-
-namespace joint
+namespace tachimawari::joint
 {
 
 class JointNode
@@ -48,8 +45,6 @@ private:
     set_joints_subscriber;
 };
 
-}  // namespace joint
-
-}  // namespace tachimawari
+}  // namespace tachimawari::joint
 
 #endif  // TACHIMAWARI__JOINT__NODE__JOINT_NODE_HPP_

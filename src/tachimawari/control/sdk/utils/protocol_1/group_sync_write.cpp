@@ -27,16 +27,7 @@
 
 #include "dynamixel_sdk/dynamixel_sdk.h"
 
-namespace tachimawari
-{
-
-namespace control
-{
-
-namespace sdk
-{
-
-namespace protocol_1
+namespace tachimawari::control::sdk::protocol_1
 {
 
 GroupSyncWrite::GroupSyncWrite(
@@ -78,10 +69,4 @@ dynamixel::GroupSyncWrite GroupSyncWrite::create(
   return group_sync_write;
 }
 
-}  // namespace protocol_1
-
-}  // namespace sdk
-
-}  // namespace control
-
-}  // namespace tachimawari
+}  // namespace tachimawari::control::sdk::protocol_1

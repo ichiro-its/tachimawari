@@ -26,10 +26,7 @@
 
 #include "tachimawari/joint/model/joint_id.hpp"
 
-namespace tachimawari
-{
-
-namespace joint
+namespace tachimawari::joint
 {
 
 class Joint
@@ -56,8 +53,6 @@ private:
   float position;
 };
 
-}  // namespace joint
-
-}  // namespace tachimawari
+}  // namespace tachimawari::joint
 
 #endif  // TACHIMAWARI__JOINT__MODEL__JOINT_HPP_

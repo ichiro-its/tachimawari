@@ -23,13 +23,7 @@
 
 #include <string>
 
-namespace tachimawari
-{
-
-namespace joint
-{
-
-namespace protocol_2
+namespace tachimawari::joint::protocol_2
 {
 
 enum MXP2Address : uint8_t
@@ -91,10 +85,6 @@ enum MXP2Address : uint8_t
   PRESENT_TEMPERATURE       = 146
 };
 
-}  // namespace protocol_2
-
-}  // namespace joint
-
-}  // namespace tachimawari
+}  // namespace tachimawari::joint::protocol_2
 
 #endif  // TACHIMAWARI__JOINT__PROTOCOL_2__MX28_ADDRESS_HPP_

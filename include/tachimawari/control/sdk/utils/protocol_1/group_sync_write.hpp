@@ -29,16 +29,7 @@
 
 #include "dynamixel_sdk/dynamixel_sdk.h"
 
-namespace tachimawari
-{
-
-namespace control
-{
-
-namespace sdk
-{
-
-namespace protocol_1
+namespace tachimawari::control::sdk::protocol_1
 {
 
 class GroupSyncWrite
@@ -58,12 +49,6 @@ private:
   dynamixel::PacketHandler * packet_handler;
 };
 
-}  // namespace protocol_1
-
-}  // namespace sdk
-
-}  // namespace control
-
-}  // namespace tachimawari
+}  // namespace tachimawari::control::sdk::protocol_1
 
 #endif  // TACHIMAWARI__CONTROL__SDK__UTILS__PROTOCOL_1__GROUP_SYNC_WRITE_HPP_

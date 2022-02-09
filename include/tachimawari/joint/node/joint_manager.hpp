@@ -27,10 +27,7 @@
 #include "tachimawari/control/manager/control_manager.hpp"
 #include "tachimawari/joint/model/joint.hpp"
 
-namespace tachimawari
-{
-
-namespace joint
+namespace tachimawari::joint
 {
 
 class JointManager
@@ -48,8 +45,6 @@ private:
   std::shared_ptr<tachimawari::control::ControlManager> control_manager;
 };
 
-}  // namespace joint
-
-}  // namespace tachimawari
+}  // namespace tachimawari::joint
 
 #endif  // TACHIMAWARI__JOINT__NODE__JOINT_MANAGER_HPP_

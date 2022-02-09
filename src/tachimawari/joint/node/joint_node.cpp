@@ -29,10 +29,7 @@
 #include "tachimawari_interfaces/msg/joint.hpp"
 #include "tachimawari_interfaces/msg/set_joints.hpp"
 
-namespace tachimawari
-{
-
-namespace joint
+namespace tachimawari::joint
 {
 
 JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager)
@@ -57,6 +54,4 @@ std::string JointNode::get_node_prefix() const
   return "joint";
 }
 
-}  // namespace joint
-
-}  // namespace tachimawari
+}  // namespace tachimawari::joint

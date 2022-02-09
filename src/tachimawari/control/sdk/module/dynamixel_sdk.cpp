@@ -35,10 +35,7 @@
 
 #include "dynamixel_sdk/dynamixel_sdk.h"
 
-namespace tachimawari
-{
-
-namespace control
+namespace tachimawari::control
 {
 
 DynamixelSDK::DynamixelSDK(
@@ -235,6 +232,4 @@ DynamixelSDK::~DynamixelSDK()
   disconnect();
 }
 
-}  // namespace control
-
-}  // namespace tachimawari
+}  // namespace tachimawari::control

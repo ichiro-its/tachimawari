@@ -23,13 +23,7 @@
 
 #include <string>
 
-namespace tachimawari
-{
-
-namespace joint
-{
-
-namespace protocol_1
+namespace tachimawari::joint::protocol_1
 {
 
 enum MX28Address : uint8_t
@@ -108,10 +102,6 @@ enum MX28Address : uint8_t
   MAXNUM_ADDRESS
 };
 
-}  // namespace protocol_1
-
-}  // namespace joint
-
-}  // namespace tachimawari
+}  // namespace tachimawari::joint::protocol_1
 
 #endif  // TACHIMAWARI__JOINT__PROTOCOL_1__MX28_ADDRESS_HPP_

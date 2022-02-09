@@ -26,10 +26,7 @@
 #include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
-namespace tachimawari
-{
-
-namespace joint
+namespace tachimawari::joint
 {
 
 JointManager::JointManager(std::shared_ptr<tachimawari::control::ControlManager> control_manager)
@@ -67,6 +64,4 @@ bool JointManager::set_joints(const std::vector<Joint> & joints)
   return false;
 }
 
-}  // namespace joint
-
-}  // namespace tachimawari
+}  // namespace tachimawari::joint

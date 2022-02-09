@@ -32,10 +32,7 @@
 
 #include "dynamixel_sdk/dynamixel_sdk.h"
 
-namespace tachimawari
-{
-
-namespace control
+namespace tachimawari::control
 {
 
 class DynamixelSDK : public ControlManager
@@ -80,8 +77,6 @@ private:
   std::shared_ptr<std::map<uint8_t, sdk::protocol_1::GroupBulkRead>> bulk_data;
 };
 
-}  // namespace control
-
-}  // namespace tachimawari
+}  // namespace tachimawari::control
 
 #endif  // TACHIMAWARI__CONTROL__SDK__MODULE__DYNAMIXEL_SDK_HPP_

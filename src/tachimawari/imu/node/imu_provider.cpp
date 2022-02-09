@@ -28,10 +28,7 @@
 #include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
 #include "tachimawari/control/controller/module/cm740_address.hpp"
 
-namespace tachimawari
-{
-
-namespace imu
+namespace tachimawari::imu
 {
 
 ImuProvider::ImuProvider(std::shared_ptr<tachimawari::control::ControlManager> control_manager)
@@ -95,6 +92,4 @@ keisan::Vector<3> ImuProvider::get_accelero() const
   return keisan::Vector<3>::zero();
 }
 
-}  // namespace imu
-
-}  // namespace tachimawari
+}  // namespace tachimawari::imu

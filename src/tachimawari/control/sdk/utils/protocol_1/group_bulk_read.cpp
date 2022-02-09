@@ -29,16 +29,7 @@
 
 #include "dynamixel_sdk/dynamixel_sdk.h"
 
-namespace tachimawari
-{
-
-namespace control
-{
-
-namespace sdk
-{
-
-namespace protocol_1
+namespace tachimawari::control::sdk::protocol_1
 {
 
 void GroupBulkRead::insert_all(
@@ -125,10 +116,4 @@ GroupBulkRead::~GroupBulkRead()
 }
 
 
-}  // namespace protocol_1
-
-}  // namespace sdk
-
-}  // namespace control
-
-}  // namespace tachimawari
+}  // namespace tachimawari::control::sdk::protocol_1

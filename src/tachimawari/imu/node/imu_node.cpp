@@ -29,10 +29,7 @@
 #include "keisan/keisan.hpp"
 #include "tachimawari/imu/node/imu_provider.hpp"
 
-namespace tachimawari
-{
-
-namespace imu
+namespace tachimawari::imu
 {
 
 ImuNode::ImuNode(rclcpp::Node::SharedPtr node, std::shared_ptr<ImuProvider> imu_provider)
@@ -62,6 +59,4 @@ std::string ImuNode::get_node_prefix() const
   return "imu";
 }
 
-}  // namespace imu
-
-}  // namespace tachimawari
+}  // namespace tachimawari::imu

@@ -23,10 +23,7 @@
 
 #include <string>
 
-namespace tachimawari
-{
-
-namespace joint
+namespace tachimawari::joint
 {
 
 enum JointId : uint8_t
@@ -62,8 +59,6 @@ enum JointId : uint8_t
   RIGHT_ANKLE_PITCH = 17,
 };
 
-}  // namespace joint
-
-}  // namespace tachimawari
+}  // namespace tachimawari::joint
 
 #endif  // TACHIMAWARI__JOINT__MODEL__JOINT_ID_HPP_

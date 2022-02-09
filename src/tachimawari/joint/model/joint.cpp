@@ -23,10 +23,7 @@
 
 #include "tachimawari/joint/model/joint.hpp"
 
-namespace tachimawari
-{
-
-namespace joint
+namespace tachimawari::joint
 {
 
 Joint::Joint(const uint8_t & joint_id, const float & position)
@@ -61,6 +58,4 @@ std::vector<float> Joint::get_pid_gain() const
   return {p_gain, i_gain, d_gain};
 }
 
-}  // namespace joint
-
-}  // namespace tachimawari
+}  // namespace tachimawari::joint
