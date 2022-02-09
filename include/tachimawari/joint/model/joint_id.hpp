@@ -22,6 +22,7 @@
 #define TACHIMAWARI__JOINT__MODEL__JOINT_ID_HPP_
 
 #include <array>
+#include <map>
 #include <string>
 
 namespace tachimawari::joint
@@ -64,6 +65,8 @@ public:
   };
 
   static const std::array<uint8_t, 21> list;
+
+  static const std::map<std::string, uint8_t> by_name;
 };
 
 }  // namespace tachimawari::joint
