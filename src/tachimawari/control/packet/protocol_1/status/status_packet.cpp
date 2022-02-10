@@ -54,7 +54,7 @@ int StatusPacket::validate(
       return 0;
     }
   } else {
-    for (int i = 0; i < (packet_length - header_place); ++i) {
+    for (size_t i = 0; i < (packet_length - header_place); ++i) {
       rxpacket->at(i) = rxpacket->at(i + header_place);
     }
 
@@ -72,7 +72,7 @@ StatusPacket::StatusPacket(
 
 bool StatusPacket::is_valid()
 {
-  for (int i = PacketIndex::PARAMETER; i < rxpacket_length - 1; ++i) {
+  for (size_t i = PacketIndex::PARAMETER; i < rxpacket_length - 1; ++i) {
     parameters.push_back(rxpacket->at(i));
   }
 
@@ -90,7 +90,7 @@ std::shared_ptr<std::vector<uint8_t>> StatusPacket::get_raw_packet()
   return rxpacket;
 }
 
-bool StatusPacket::is_success()
+bool StatusPacket::is_success() const
 {
   return rxpacket != nullptr;
 }

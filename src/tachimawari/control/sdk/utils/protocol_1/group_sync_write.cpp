@@ -50,7 +50,7 @@ dynamixel::GroupSyncWrite GroupSyncWrite::create(
 
   std::vector<uint8_t> param_data;
 
-  for (auto & joint : joints) {
+  for (const auto & joint : joints) {
     if (is_include_pid) {
       param_data.push_back(joint.get_pid_gain()[2]);
       param_data.push_back(joint.get_pid_gain()[1]);

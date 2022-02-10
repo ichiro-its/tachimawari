@@ -41,7 +41,7 @@ JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager>
     [this](const tachimawari_interfaces::msg::SetJoints::SharedPtr message) {
       std::vector<Joint> joints;
 
-      for (auto & joint : message->joints) {
+      for (const auto & joint : message->joints) {
         joints.push_back(Joint(joint.id, joint.position));
       }
 

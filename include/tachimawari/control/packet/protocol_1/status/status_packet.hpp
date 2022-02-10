@@ -43,7 +43,7 @@ public:
 
   bool is_valid();
 
-  bool is_success();
+  bool is_success() const;
 
   std::shared_ptr<std::vector<uint8_t>> get_raw_packet();
 

@@ -33,8 +33,8 @@ class ImuProvider
 public:
   explicit ImuProvider(std::shared_ptr<tachimawari::control::ControlManager> control_manager);
 
-  keisan::Vector<3> get_gyro() const;
-  keisan::Vector<3> get_accelero() const;
+  const keisan::Vector<3> & get_gyro() const;
+  const keisan::Vector<3> & get_accelero() const;
 
 private:
   std::shared_ptr<tachimawari::control::ControlManager> control_manager;

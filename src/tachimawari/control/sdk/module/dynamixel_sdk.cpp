@@ -72,7 +72,7 @@ bool DynamixelSDK::send_bulk_read_packet(sdk::protocol_1::GroupBulkRead group_bu
   if (group_bulk_read.send() == SUCCESS) {
     sdk::protocol_1::GroupBulkRead::insert_all(bulk_data, group_bulk_read);
   } else {
-    // TODO: will be used for logging
+    // TODO(maroqijalil): will be used for logging
     // packet_handler->getTxRxResult(result);
 
     return false;
@@ -88,12 +88,12 @@ bool DynamixelSDK::ping(uint8_t id)
     uint16_t model_number;
 
     if (packet_handler->ping(port_handler, id, &model_number, &error) != SUCCESS) {
-      // TODO: will be used for logging
+      // TODO(maroqijalil): will be used for logging
       // packet_handler->getTxRxResult(result);
 
       return false;
     } else if (error != 0) {
-      // TODO: will be used for logging
+      // TODO(maroqijalil): will be used for logging
       // packet_handler->getRxPacketError(error);
 
       return false;
@@ -136,12 +136,12 @@ bool DynamixelSDK::write_packet(
     }
 
     if (result != SUCCESS) {
-      // TODO: will be used for logging
+      // TODO(maroqijalil): will be used for logging
       // packet_handler->getTxRxResult(result);
 
       return false;
     } else if (error != 0) {
-      // TODO: will be used for logging
+      // TODO(maroqijalil): will be used for logging
       // packet_handler->getRxPacketError(error);
 
       return false;
@@ -162,7 +162,7 @@ bool DynamixelSDK::sync_write_packet(
 
     int result = group_sync_write.txPacket();
     if (result != COMM_SUCCESS) {
-      // TODO: will be used for logging
+      // TODO(maroqijalil): will be used for logging
       // packet_handler->getTxRxResult(result);
     }
     group_sync_write.clearParam();

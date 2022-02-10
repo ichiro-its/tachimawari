@@ -36,7 +36,7 @@ void GroupBulkRead::insert_all(
   std::shared_ptr<std::map<uint8_t, GroupBulkRead>> bulk_data,
   GroupBulkRead group_bulk_read)
 {
-  for (auto & id : group_bulk_read.get_parameters_id()) {
+  for (auto id : group_bulk_read.get_parameters_id()) {
     if (bulk_data->find(id) != bulk_data->end()) {
       bulk_data->insert({id, group_bulk_read});
     }
@@ -63,7 +63,7 @@ void GroupBulkRead::add(
 
 void GroupBulkRead::add(const std::vector<tachimawari::joint::Joint> & joints)
 {
-  for (auto & joint : joints) {
+  for (const auto & joint : joints) {
     if (group_bulk_read.addParam(
         joint.get_id(), tachimawari::joint::protocol_1::GOAL_POSITION_L, 2u))
     {

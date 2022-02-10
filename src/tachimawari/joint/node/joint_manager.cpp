@@ -45,7 +45,7 @@ bool JointManager::torque_enable(bool enable)
 bool JointManager::torque_enable(const std::vector<Joint> & joints, bool enable)
 {
   if (joints.size()) {
-    for (auto & joint : joints) {
+    for (const auto & joint : joints) {
       return control_manager->write_packet(
         joint.get_id(), protocol_1::MX28Address::TORQUE_ENABLE, enable);
     }

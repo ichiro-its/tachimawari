@@ -41,7 +41,7 @@ uint16_t Word::make_word(uint8_t lowbyte, uint8_t highbyte)
 
   word = highbyte;
   word = word << 8;
-  word = word + lowbyte;
+  word = word | lowbyte;
 
   return static_cast<uint16_t>(word);
 }

@@ -45,7 +45,7 @@ bool BulkReadPacket::is_parameters_filled() const
 int BulkReadPacket::get_expected_length() const
 {
   int length = 0;
-  for (int i = 1; i < parameters.size(); i += 3) {
+  for (size_t i = 1; i < parameters.size(); i += 3) {
     length += (parameters[i] + 6);  // added the size of packet
   }
 
@@ -69,7 +69,7 @@ void BulkReadPacket::add(
 
 void BulkReadPacket::add(const std::vector<tachimawari::joint::Joint> & joints)
 {
-  for (auto & joint : joints) {
+  for (const auto & joint : joints) {
     parameters.push_back(2);  // present position size
     parameters.push_back(joint.get_id());
     parameters.push_back(tachimawari::joint::protocol_1::MX28Address::PRESENT_POSITION_L);

@@ -66,7 +66,7 @@ int BulkReadData::validate(
   if (header_place == 0) {
     return packet_length;
   } else {
-    for (int i = 0; i < (packet_length - header_place); ++i) {
+    for (size_t i = 0; i < (packet_length - header_place); ++i) {
       rxpacket->at(i) = rxpacket->at(i + header_place);
     }
 
@@ -95,7 +95,7 @@ int BulkReadData::update_all(
         if (bulk_data->at(packet_id).is_valid(*rxpacket.get())) {
           int bulk_data_length = rxpacket->at(PacketIndex::LENGTH) + 4;
 
-          for (int i = 0; i < packet_length - bulk_data_length; ++i) {
+          for (size_t i = 0; i < packet_length - bulk_data_length; ++i) {
             rxpacket->at(i) = rxpacket->at(i + bulk_data_length);
           }
 
@@ -103,7 +103,7 @@ int BulkReadData::update_all(
           packet_length -= bulk_data_length;
         } else {
           // so RX_CORRUPT
-          for (int i = 0; i < packet_length - 2; ++i) {
+          for (size_t i = 0; i < packet_length - 2; ++i) {
             rxpacket->at(i) = rxpacket->at(i + 2);
           }
 
@@ -115,7 +115,7 @@ int BulkReadData::update_all(
         return data_number;
       }
     } else {
-      for (int i = 0; i < (packet_length - header_place); ++i) {
+      for (size_t i = 0; i < (packet_length - header_place); ++i) {
         rxpacket->at(i) = rxpacket->at(i + header_place);
       }
 
@@ -136,7 +136,7 @@ bool BulkReadData::is_valid(std::vector<uint8_t> rxpacket)
   info = rxpacket[PacketIndex::ERROR];
 
   int packet_length = rxpacket[PacketIndex::LENGTH] + 4;
-  for (int i = PacketIndex::PARAMETER; i < packet_length - 1; ++i) {
+  for (size_t i = PacketIndex::PARAMETER; i < packet_length - 1; ++i) {
     parameters.push_back(rxpacket[i]);
   }
 
@@ -152,31 +152,35 @@ bool BulkReadData::is_valid(std::vector<uint8_t> rxpacket)
   }
 }
 
-bool BulkReadData::is_filled()
+bool BulkReadData::is_filled() const
 {
   return parameters.size() != 0;
 }
 
-int BulkReadData::get(uint8_t address)
+int BulkReadData::get(uint8_t address) const
 {
-  int index = static_cast<int>(address) - start_address;
+  if (address >= start_address) {
+    size_t index = static_cast<size_t>(address - start_address);
 
-  if (index < 0 || index == data_length) {
-    return -1;
-  } else {
-    return parameters[index];
+    if (index < data_length) {
+      return parameters[index];
+    }
   }
+
+  return -1;
 }
 
-int BulkReadData::get(uint16_t address)
+int BulkReadData::get(uint16_t address) const
 {
-  int index = static_cast<int>(address) - start_address;
+  if (address >= start_address) {
+    size_t index = static_cast<size_t>(address - start_address);
 
-  if (index < 0 || index == data_length - 1) {
-    return -1;
-  } else {
-    return Word::make_word(parameters[index], parameters[index + 1]);
+    if (index < data_length - 1) {
+      return Word::make_word(parameters[index], parameters[index + 1]);
+    }
   }
+
+  return -1;
 }
 
 }  // namespace tachimawari::control::packet::protocol_1

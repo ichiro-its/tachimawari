@@ -65,7 +65,7 @@ int Packet::get_expected_length() const
 void Packet::calculate_checksum()
 {
   checksum = packet_id + get_data_length() + info;
-  for (auto & parameter : parameters) {
+  for (auto parameter : parameters) {
     checksum += parameter;
   }
   checksum = ~checksum;
