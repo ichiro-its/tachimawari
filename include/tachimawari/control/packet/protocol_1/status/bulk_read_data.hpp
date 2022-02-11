@@ -60,7 +60,7 @@ public:
   int get(uint16_t address) const;
 
 private:
-  int start_address;
+  uint8_t start_address;
 
   int data_length;
 };

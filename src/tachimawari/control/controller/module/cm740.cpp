@@ -105,13 +105,16 @@ packet::protocol_1::StatusPacket CM740::send_packet(packet::protocol_1::Packet p
           if (new_get_length == get_length) {
             return StatusPacket(rxpacket, get_length);
           } else if (new_get_length != 0) {
+            // TODO(maroqijalil): will be used for logging
             // is packet timeout ? so RX_TIMEOUT
             get_length = new_get_length;
           } else {
+            // TODO(maroqijalil): will be used for logging
             // so RX_CORRUPT
             return StatusPacket(nullptr, 0);
           }
         } else {
+          // TODO(maroqijalil): will be used for logging
           // is packet timeout ? so RX_TIMEOUT
           if (get_length > expected_length) {
             break;
@@ -119,6 +122,7 @@ packet::protocol_1::StatusPacket CM740::send_packet(packet::protocol_1::Packet p
         }
       }
     } else {
+      // TODO(maroqijalil): will be used for logging
       // so TX_FAIL
     }
 
@@ -154,15 +158,18 @@ bool CM740::send_bulk_read_packet(packet::protocol_1::BulkReadPacket packet)
             if (data_number == 0) {
               return true;
             } else {
+              // TODO(maroqijalil): will be used for logging
               // is packet timeout ? so RX_TIMEOUT
               // or RX_CORRUPT / data is inclompete if data number more than 0
               return false;
             }
           } else {
+            // TODO(maroqijalil): will be used for logging
             // is packet timeout ? so RX_TIMEOUT
             get_length = new_get_length;
           }
         } else {
+          // TODO(maroqijalil): will be used for logging
           // is packet timeout ? so RX_TIMEOUT
           if (get_length > expected_length) {
             break;
@@ -170,6 +177,7 @@ bool CM740::send_bulk_read_packet(packet::protocol_1::BulkReadPacket packet)
         }
       }
     } else {
+      // TODO(maroqijalil): will be used for logging
       // so TX_FAIL
     }
 

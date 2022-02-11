@@ -62,6 +62,7 @@ dynamixel::GroupSyncWrite GroupSyncWrite::create(
     param_data.push_back(DXL_HIBYTE(joint.get_position()));
 
     if (!group_sync_write.addParam(joint.get_id(), param_data.data())) {
+      // TODO(maroqijalil): will be used for logging
       // addparam failed
     }
   }

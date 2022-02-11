@@ -37,22 +37,22 @@ uint8_t Word::get_high_byte(int word)
 
 uint16_t Word::make_word(uint8_t lowbyte, uint8_t highbyte)
 {
-  uint8_t word;
+  uint16_t word;
 
   word = highbyte;
   word = word << 8;
   word = word | lowbyte;
 
-  return static_cast<uint16_t>(word);
+  return word;
 }
 
 uint16_t Word::make_color(uint8_t red, uint8_t green, uint8_t blue)
 {
-  int r = (red & 0xFF) >> 3;
-  int g = (green & 0xFF) >> 3;
-  int b = (blue & 0xFF) >> 3;
+  u_int16_t r = (red & 0xFF) >> 3;
+  u_int16_t g = (green & 0xFF) >> 3;
+  u_int16_t b = (blue & 0xFF) >> 3;
 
-  return static_cast<uint16_t>(((b << 10) | (g << 5) | r));
+  return (b << 10) | (g << 5) | r;
 }
 
 }  // namespace tachimawari::control::packet::protocol_1

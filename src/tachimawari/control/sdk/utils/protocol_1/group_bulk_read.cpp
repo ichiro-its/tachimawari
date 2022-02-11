@@ -57,6 +57,7 @@ void GroupBulkRead::add(
   if (group_bulk_read.addParam(id, starting_address, data_length)) {
     parameters_id.push_back(id);
   } else {
+    // TODO(maroqijalil): will be used for logging
     // add param failed
   }
 }
@@ -69,6 +70,7 @@ void GroupBulkRead::add(const std::vector<tachimawari::joint::Joint> & joints)
     {
       parameters_id.push_back(joint.get_id());
     } else {
+      // TODO(maroqijalil): will be used for logging
       // addparam failed
     }
   }
@@ -88,6 +90,7 @@ int GroupBulkRead::get(uint8_t id, uint16_t address, uint16_t data_length)
 
     return static_cast<int>(result);
   } else {
+    // TODO(maroqijalil): will be used for logging
     // data is not found
   }
 
