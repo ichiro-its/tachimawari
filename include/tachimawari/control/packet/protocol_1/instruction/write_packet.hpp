@@ -18,35 +18,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <rclcpp/rclcpp.hpp>
+#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__WRITE_PACKET_HPP_
+#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__WRITE_PACKET_HPP_
 
-#include <tachimawari/motion_manager.hpp>
-
-#include <iostream>
-#include <memory>
 #include <string>
+#include <vector>
 
-int main(int argc, char * argv[])
+#include "tachimawari/control/packet/protocol_1/model/packet.hpp"
+#include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari/joint/protocol_1/mx28_address.hpp"
+
+namespace tachimawari::control::packet::protocol_1
 {
-  rclcpp::init(argc, argv);
 
-  std::string port_name = "tty/ACM0";
+class WritePacket : public Packet
+{
+public:
+  WritePacket();
 
-  // change the port name
-  if (argc > 1) {
-    port_name = argv[1];
-  }
+  void create(uint8_t address, uint8_t value);
 
-  // init node
-  auto motion_manager = std::make_shared<tachimawari::MotionManager>("motion_manager", port_name);
+  void create(uint8_t address, uint16_t value);
 
-  // open the port
-  if (motion_manager->start()) {
-    rclcpp::spin(motion_manager);
-  }
+  void create(uint8_t id, uint8_t address, uint8_t value);
 
-  // close the port
-  motion_manager->stop();
+  void create(uint8_t id, uint8_t address, uint16_t value);
+};
 
-  rclcpp::shutdown();
-}
+}  // namespace tachimawari::control::packet::protocol_1
+
+#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__WRITE_PACKET_HPP_

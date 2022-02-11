@@ -18,13 +18,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <dynamixel_sdk/dynamixel_sdk.h>
-
 #include <iostream>
 #include <iomanip>
 #include <vector>
 #include <numeric>
 #include <string>
+
+#include "dynamixel_sdk/dynamixel_sdk.h"
 
 int main(int argc, char * argv[])
 {

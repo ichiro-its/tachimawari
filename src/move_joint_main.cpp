@@ -18,15 +18,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <tachimawari/joint.hpp>
-#include <dynamixel_sdk/dynamixel_sdk.h>
-
 #include <iostream>
 #include <string>
 #include <vector>
-#include <array>
 
-using Joint = tachimawari::Joint;
+#include "tachimawari/joint/model/joint.hpp"
+#include "dynamixel_sdk/dynamixel_sdk.h"
+
+using tachimawari::joint::Joint;
 
 int main(int argc, char * argv[])
 {
@@ -36,7 +35,7 @@ int main(int argc, char * argv[])
   int dxl_comm_result = COMM_TX_FAIL;
   uint8_t dxl_error = 0;
 
-  std::string joint_name = "right_shoulder_pitch";
+  uint8_t joint_id = 1;
 
   uint8_t addr_mx_torque_enable = 64;
   uint8_t addr_mx_goal_position = 116;
@@ -51,14 +50,14 @@ int main(int argc, char * argv[])
     port_name = argv[1];
   }
   if (argc > 2) {
-    joint_name = argv[2];
+    joint_id = atoi(argv[2]);
   }
 
   std::cout << "set the port name as " << port_name << "\n";
   dynamixel::PortHandler * port_handler = dynamixel::PortHandler::getPortHandler(port_name.c_str());
   dynamixel::PacketHandler * packet_handler = dynamixel::PacketHandler::getPacketHandler(2.0F);
 
-  Joint joint(joint_name);
+  Joint joint(joint_id);
 
   // Open port
   std::cout << "open the port\n";
@@ -97,7 +96,7 @@ int main(int argc, char * argv[])
   }
 
   // Write Goal Position
-  joint.set_target_position(90.0);
+  joint.set_position(90.0);
   dxl_comm_result = packet_handler->write4ByteTxRx(
     port_handler, joint.get_id(), addr_mx_goal_position, joint.get_position(), &dxl_error);
   if (dxl_comm_result != COMM_SUCCESS) {

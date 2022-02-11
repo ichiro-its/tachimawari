@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ichiro ITS
+// Copyright (c) 2021 ICHIRO ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,48 +18,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__JOINT_HPP_
-#define TACHIMAWARI__JOINT_HPP_
+#ifndef TACHIMAWARI__CONTROL__CONTROL_HPP_
+#define TACHIMAWARI__CONTROL__CONTROL_HPP_
 
-#include <map>
-#include <string>
-#include <vector>
+#include "tachimawari/control/controller/controller.hpp"
+#include "tachimawari/control/manager/control_manager.hpp"
+#include "tachimawari/control/packet/protocol_1/protocol_1.hpp"
+#include "tachimawari/control/sdk/sdk.hpp"
 
-namespace tachimawari
-{
-
-class Joint
-{
-public:
-  explicit Joint(const std::string & joint_name, const float & present_position = 30.0);
-
-  void set_target_position(const float & target_position, const float & speed = 1.0);
-  void set_present_position(const float & present_position);
-  void set_pid_gain(const float & p, const float & i, const float & d);
-
-  void interpolate();
-
-  const uint8_t & get_id() const;
-  const std::string & get_joint_name() const;
-  const float & get_position() const;
-  const float & get_goal_position() const;
-  std::vector<float> get_pid_gain() const;  // temporary
-
-private:
-  uint8_t id;
-  std::string name;
-
-  float p_gain = 850.0;
-  float i_gain = 0.0;
-  float d_gain = 0.0;
-
-  float goal_position;
-  float position;
-  float additional_position;
-
-  static const std::map<std::string, uint8_t> ids;
-};
-
-}  // namespace tachimawari
-
-#endif  // TACHIMAWARI__JOINT_HPP_
+#endif  // TACHIMAWARI__CONTROL__CONTROL_HPP_

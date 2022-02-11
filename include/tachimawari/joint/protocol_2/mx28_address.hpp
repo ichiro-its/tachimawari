@@ -7,36 +7,26 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-// THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
-#ifndef TACHIMAWARI__MOTION_MANAGER_HPP_
-#define TACHIMAWARI__MOTION_MANAGER_HPP_
+#ifndef TACHIMAWARI__JOINT__PROTOCOL_2__MX28_ADDRESS_HPP_
+#define TACHIMAWARI__JOINT__PROTOCOL_2__MX28_ADDRESS_HPP_
 
-#include <dynamixel_sdk/dynamixel_sdk.h>
-#include <rclcpp/rclcpp.hpp>
-
-#include <tachimawari_interfaces/srv/set_joints.hpp>
-
-#include <tachimawari/joint.hpp>
-
-#include <map>
-#include <memory>
 #include <string>
-#include <vector>
 
-namespace tachimawari
+namespace tachimawari::joint::protocol_2
 {
 
-enum class MXAddress : uint8_t
+enum MXP2Address : uint8_t
 {
   // EEPROM Area
   MODEL_NUMBER              = 0,
@@ -95,50 +85,6 @@ enum class MXAddress : uint8_t
   PRESENT_TEMPERATURE       = 146
 };
 
-class MotionManager : public rclcpp::Node
-{
-public:
-  explicit MotionManager(
-    std::string node_name, std::string port = "tty/ACM0", float protocol_version = 0);
-  ~MotionManager();
+}  // namespace tachimawari::joint::protocol_2
 
-  bool start();
-  void stop();
-
-private:
-  bool torque_enable(Joint joint);
-  bool torque_enable(std::vector<Joint> joints);
-
-  bool torque_disable(Joint joint);
-  bool torque_disable(std::vector<Joint> joints);
-
-  bool sync_write_joints(
-    std::vector<Joint> joints, MXAddress start_address = MXAddress::GOAL_POSITION,
-    int data_length = 4);
-  bool sync_read_joints(
-    std::vector<Joint> & joints, MXAddress start_address = MXAddress::PRESENT_POSITION,
-    int data_length = 4);
-  bool bulk_read_joints(
-    std::vector<Joint> & joints, MXAddress start_address = MXAddress::PRESENT_POSITION,
-    int data_length = 4);
-
-  bool move_joint(Joint joint);
-  bool move_joints(std::vector<Joint>);
-
-  bool init_joints_present_position(std::vector<Joint> joints);
-
-  dynamixel::PortHandler * port_handler;
-  dynamixel::PacketHandler * packet_handler;
-
-  std::shared_ptr<rclcpp::Service<tachimawari_interfaces::srv::SetJoints>>
-  set_joints_service;
-
-  std::vector<Joint> joints;
-
-  bool init_joints_state = false;
-  bool torque_enabled = false;
-};
-
-}  // namespace tachimawari
-
-#endif  // TACHIMAWARI__MOTION_MANAGER_HPP_
+#endif  // TACHIMAWARI__JOINT__PROTOCOL_2__MX28_ADDRESS_HPP_
