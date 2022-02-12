@@ -24,15 +24,56 @@
 #include "tachimawari/joint/node/joint_manager.hpp"
 
 #include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
+#include "tachimawari/joint/model/joint_id.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
 namespace tachimawari::joint
 {
 
 JointManager::JointManager(std::shared_ptr<tachimawari::control::ControlManager> control_manager)
-: control_manager(control_manager)
+: control_manager(control_manager), is_joints_uptodate(false)
 {
   torque_enable(true);
+
+  for (auto id : JointId::list) {
+    current_joints.push_back(Joint(id, 0.0));
+  }
+}
+
+void JointManager::update_current_joints(const std::vector<Joint> & joints)
+{
+  for (const auto & joint : joints) {
+    for (size_t index = 0; index < current_joints.size(); ++index) {
+      if (current_joints[index].get_id() == joint.get_id()) {
+        current_joints[index].set_position(joint.get_position());
+        current_joints[index].set_pid_gain(
+          joint.get_pid_gain()[0], joint.get_pid_gain()[1], joint.get_pid_gain()[2]);
+      }
+    }
+  }
+
+  is_joints_uptodate = true;
+}
+
+std::vector<Joint> JointManager::get_current_joints()
+{
+  if (!is_joints_uptodate) {
+    if (control_manager->bulk_read_packet(current_joints)) {
+      for (size_t index = 0; index < current_joints.size(); ++index) {
+        float position = 0.0;
+
+        if (control_manager->get_protocol_version() == 1.0) {
+          int current_position = control_manager->get_bulk_data(
+            current_joints[index].get_id(), protocol_1::MX28Address::PRESENT_POSITION_L, 2);
+          position = (current_position == -1) ? 0.0 : current_position;
+        }
+
+        current_joints[index].set_position(position);
+      }
+    }
+  }
+
+  return current_joints;
 }
 
 bool JointManager::torque_enable(bool enable)
@@ -57,6 +98,8 @@ bool JointManager::torque_enable(const std::vector<Joint> & joints, bool enable)
 bool JointManager::set_joints(const std::vector<Joint> & joints)
 {
   if (joints.size()) {
+    update_current_joints(joints);
+
     return control_manager->sync_write_packet(joints);
   }
 

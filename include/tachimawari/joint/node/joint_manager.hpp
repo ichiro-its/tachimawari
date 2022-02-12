@@ -36,13 +36,19 @@ public:
   explicit JointManager(std::shared_ptr<tachimawari::control::ControlManager> control_manager);
 
   bool torque_enable(bool enable);
-
   bool torque_enable(const std::vector<Joint> & joints, bool enable);
 
   bool set_joints(const std::vector<Joint> & joints);
 
+  std::vector<Joint> get_current_joints();
+
 private:
+  void update_current_joints(const std::vector<Joint> & joints);
+
   std::shared_ptr<tachimawari::control::ControlManager> control_manager;
+
+  std::vector<Joint> current_joints;
+  bool is_joints_uptodate;
 };
 
 }  // namespace tachimawari::joint
