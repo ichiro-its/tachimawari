@@ -36,6 +36,7 @@ add_library(${PROJECT_NAME} SHARED
   "src/${PROJECT_NAME}/control/sdk/utils/protocol_1/group_bulk_read.cpp"
   "src/${PROJECT_NAME}/imu/node/imu_node.cpp"
   "src/${PROJECT_NAME}/imu/node/imu_provider.cpp"
+  "src/${PROJECT_NAME}/joint/model/joint_id.cpp"
   "src/${PROJECT_NAME}/joint/model/joint.cpp"
   "src/${PROJECT_NAME}/joint/node/joint_manager.cpp"
   "src/${PROJECT_NAME}/joint/node/joint_node.cpp"

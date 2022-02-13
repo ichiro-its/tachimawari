@@ -56,6 +56,18 @@ JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager>
       get_node_prefix() + "/get_joints",
       [this](std::shared_ptr<GetJoints::Request> request,
       std::shared_ptr<GetJoints::Response> response) {
+        {
+          using tachimawari_interfaces::msg::Joint;
+
+          const auto & current_joints = this->joint_manager->get_current_joints();
+          auto & joints = response->joints;
+
+          joints.resize(current_joints.size());
+          for (size_t i = 0; i < joints.size() && i < current_joints.size(); ++i) {
+            joints[i].id = current_joints[i].get_id();
+            joints[i].position = current_joints[i].get_position();
+          }
+        }
       }
     );
   }
