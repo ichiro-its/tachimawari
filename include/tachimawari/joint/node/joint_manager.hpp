@@ -40,7 +40,7 @@ public:
 
   bool set_joints(const std::vector<Joint> & joints);
 
-  std::vector<Joint> get_current_joints();
+  const std::vector<Joint> & get_current_joints();
 
 private:
   void update_current_joints(const std::vector<Joint> & joints);
@@ -48,7 +48,7 @@ private:
   std::shared_ptr<tachimawari::control::ControlManager> control_manager;
 
   std::vector<Joint> current_joints;
-  bool is_joints_uptodate;
+  bool is_each_joint_updated;
 };
 
 }  // namespace tachimawari::joint

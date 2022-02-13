@@ -31,7 +31,7 @@ namespace tachimawari::joint
 {
 
 JointManager::JointManager(std::shared_ptr<tachimawari::control::ControlManager> control_manager)
-: control_manager(control_manager), is_joints_uptodate(false)
+: control_manager(control_manager), is_each_joint_updated(false)
 {
   torque_enable(true);
 
@@ -43,33 +43,31 @@ JointManager::JointManager(std::shared_ptr<tachimawari::control::ControlManager>
 void JointManager::update_current_joints(const std::vector<Joint> & joints)
 {
   for (const auto & joint : joints) {
-    for (size_t index = 0; index < current_joints.size(); ++index) {
-      if (current_joints[index].get_id() == joint.get_id()) {
-        current_joints[index].set_position(joint.get_position());
-        current_joints[index].set_pid_gain(
+    for (auto & current_joint : current_joints) {
+      if (current_joint.get_id() == joint.get_id()) {
+        current_joint.set_position(joint.get_position());
+        current_joint.set_pid_gain(
           joint.get_pid_gain()[0], joint.get_pid_gain()[1], joint.get_pid_gain()[2]);
       }
     }
   }
 
-  is_joints_uptodate = true;
+  is_each_joint_updated = true;
 }
 
-std::vector<Joint> JointManager::get_current_joints()
+const std::vector<Joint> & JointManager::get_current_joints()
 {
-  if (!is_joints_uptodate) {
-    if (control_manager->bulk_read_packet(current_joints)) {
-      for (size_t index = 0; index < current_joints.size(); ++index) {
-        float position = 0.0;
+  if (!is_each_joint_updated && control_manager->bulk_read_packet(current_joints)) {
+    for (auto & current_joint : current_joints) {
+      float position = 0.0;
 
-        if (control_manager->get_protocol_version() == 1.0) {
-          int current_position = control_manager->get_bulk_data(
-            current_joints[index].get_id(), protocol_1::MX28Address::PRESENT_POSITION_L, 2);
-          position = (current_position == -1) ? 0.0 : current_position;
-        }
-
-        current_joints[index].set_position(position);
+      if (control_manager->get_protocol_version() == 1.0) {
+        int current_position = control_manager->get_bulk_data(
+          current_joint.get_id(), protocol_1::MX28Address::PRESENT_POSITION_L, 2);
+        position = (current_position == -1) ? 0.0 : current_position;
       }
+
+      current_joint.set_position(position);
     }
   }
 
