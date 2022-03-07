@@ -28,6 +28,7 @@
 #include "tachimawari/joint/node/joint_manager.hpp"
 #include "tachimawari_interfaces/msg/joint.hpp"
 #include "tachimawari_interfaces/msg/set_joints.hpp"
+#include "tachimawari_interfaces/msg/set_torques.hpp"
 #include "tachimawari_interfaces/srv/get_joints.hpp"
 
 namespace tachimawari::joint
@@ -46,6 +47,18 @@ JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager>
       }
 
       this->joint_manager->set_joints(joints);
+    }
+  );
+
+  set_torques_subscriber = node->create_subscription<tachimawari_interfaces::msg::SetTorques>(
+    get_node_prefix() + "/set_torques", 10,
+    [this](const tachimawari_interfaces::msg::SetTorques::SharedPtr message) {
+      std::vector<Joint> joints;
+      std::transform(
+        message->ids.begin(), message->ids.end(),
+        std::back_inserter(joints), [](uint8_t id) -> Joint {return Joint(id, 0);});
+
+      this->joint_manager->torque_enable(joints, message->torque_enable);
     }
   );
 

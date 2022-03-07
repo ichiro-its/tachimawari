@@ -27,6 +27,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "tachimawari/joint/node/joint_manager.hpp"
 #include "tachimawari_interfaces/msg/set_joints.hpp"
+#include "tachimawari_interfaces/msg/set_torques.hpp"
 #include "tachimawari_interfaces/srv/get_joints.hpp"
 
 namespace tachimawari::joint
@@ -44,6 +45,9 @@ private:
 
   rclcpp::Subscription<tachimawari_interfaces::msg::SetJoints>::SharedPtr
     set_joints_subscriber;
+
+  rclcpp::Subscription<tachimawari_interfaces::msg::SetTorques>::SharedPtr
+    set_torques_subscriber;
 
   rclcpp::Service<tachimawari_interfaces::srv::GetJoints>::SharedPtr
     get_joints_server;

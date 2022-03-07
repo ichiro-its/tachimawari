@@ -44,6 +44,7 @@ public:
 
 private:
   void update_current_joints(const std::vector<Joint> & joints);
+  void update_current_joints_from_control_manager();
 
   std::shared_ptr<tachimawari::control::ControlManager> control_manager;
 

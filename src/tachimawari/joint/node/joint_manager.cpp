@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -55,20 +56,25 @@ void JointManager::update_current_joints(const std::vector<Joint> & joints)
   is_each_joint_updated = true;
 }
 
+void JointManager::update_current_joints_from_control_manager()
+{
+  for (auto & current_joint : current_joints) {
+    float position = 0.0;
+
+    if (control_manager->get_protocol_version() == 1.0) {
+      int current_position = control_manager->get_bulk_data(
+        current_joint.get_id(), protocol_1::MX28Address::PRESENT_POSITION_L, 2);
+      position = (current_position == -1) ? 0.0 : current_position;
+    }
+
+    current_joint.set_position(position);
+  }
+}
+
 const std::vector<Joint> & JointManager::get_current_joints()
 {
   if (!is_each_joint_updated && control_manager->bulk_read_packet(current_joints)) {
-    for (auto & current_joint : current_joints) {
-      float position = 0.0;
-
-      if (control_manager->get_protocol_version() == 1.0) {
-        int current_position = control_manager->get_bulk_data(
-          current_joint.get_id(), protocol_1::MX28Address::PRESENT_POSITION_L, 2);
-        position = (current_position == -1) ? 0.0 : current_position;
-      }
-
-      current_joint.set_position(position);
-    }
+    update_current_joints_from_control_manager();
   }
 
   return current_joints;
@@ -88,6 +94,10 @@ bool JointManager::torque_enable(const std::vector<Joint> & joints, bool enable)
       return control_manager->write_packet(
         joint.get_id(), protocol_1::MX28Address::TORQUE_ENABLE, enable);
     }
+  }
+
+  if (enable && control_manager->bulk_read_packet(current_joints)) {
+    update_current_joints_from_control_manager();
   }
 
   return false;
