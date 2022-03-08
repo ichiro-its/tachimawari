@@ -99,7 +99,7 @@ bool JointManager::torque_enable(const std::vector<Joint> & joints, bool enable)
 {
   if (std::any_of(
       joints.begin(), joints.end(), [&](Joint joint) {
-        return control_manager->write_packet(
+        return !control_manager->write_packet(
           joint.get_id(), protocol_1::MX28Address::TORQUE_ENABLE, enable);
       }))
   {
