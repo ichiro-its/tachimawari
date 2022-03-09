@@ -21,10 +21,21 @@
 #include <string>
 #include <vector>
 
+#include "keisan/angle/angle.hpp"
 #include "tachimawari/joint/model/joint.hpp"
 
 namespace tachimawari::joint
 {
+
+int Joint::angle_to_value(double angle)
+{
+  return angle * TO_VALUE_RATIO;
+}
+
+double Joint::value_to_angle(int value)
+{
+  return value * TO_ANGLE_RATIO;
+}
 
 Joint::Joint(uint8_t joint_id, float position)
 : id(joint_id), position(position), p_gain(30.0), i_gain(30.0), d_gain(30.0)
@@ -56,6 +67,18 @@ float Joint::get_position() const
 std::vector<float> Joint::get_pid_gain() const
 {
   return {p_gain, i_gain, d_gain};
+}
+
+void Joint::set_position_value(int value)
+{
+  // use 0.088 as the ratio of value to angle conversion
+  position = (value - CENTER_VALUE) * TO_ANGLE_RATIO;
+}
+
+int Joint::get_position_value() const
+{
+  // use 11.378 as the ratio of angle to value conversion
+  return (position * 11.TO_VALUE_RATIO) + CENTER_VALUE;
 }
 
 }  // namespace tachimawari::joint

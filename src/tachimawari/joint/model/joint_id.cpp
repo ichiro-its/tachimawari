@@ -27,7 +27,7 @@
 namespace tachimawari::joint
 {
 
-const std::array<uint8_t, 21> JointId::list = {
+const std::array<uint8_t, 20> JointId::list = {
   RIGHT_SHOULDER_PITCH,
   LEFT_SHOULDER_PITCH,
   RIGHT_SHOULDER_ROLL,

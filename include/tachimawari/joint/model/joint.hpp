@@ -24,6 +24,7 @@
 #include <string>
 #include <vector>
 
+#include "keisan/angle/angle.hpp"
 #include "tachimawari/joint/model/joint_id.hpp"
 
 namespace tachimawari::joint
@@ -32,9 +33,24 @@ namespace tachimawari::joint
 class Joint
 {
 public:
+  enum
+  {
+    CENTER_VALUE = 2048
+  };
+
+  static constexpr double TO_ANGLE_RATIO = 0.088; // 360 / 4096
+  static constexpr double TO_VALUE_RATIO = 11.378; // 4096 / 360
+
+  static int angle_to_value (double angle);
+  static double value_to_angle (int value);
+
+  explicit Joint(uint8_t joint_id, float position = 0.0);
   explicit Joint(uint8_t joint_id, float position = 0.0);
 
   uint8_t get_id() const;
+
+  void set_position_value(int value);
+  int get_position_value() const;
 
   void set_position(float position);
   float get_position() const;
@@ -49,7 +65,7 @@ private:
   float i_gain;
   float d_gain;
 
-  float position;
+  keisan::Angle<float> position;
 };
 
 }  // namespace tachimawari::joint
