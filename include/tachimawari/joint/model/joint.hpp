@@ -38,14 +38,16 @@ public:
     CENTER_VALUE = 2048
   };
 
-  static constexpr double TO_ANGLE_RATIO = 0.088; // 360 / 4096
-  static constexpr double TO_VALUE_RATIO = 11.378; // 4096 / 360
+  // (360 / 4096) as the ratio of value to angle conversion
+  static constexpr double TO_ANGLE_RATIO = 0.088;
+  // (4096 / 360) as the ratio of angle to value conversion
+  static constexpr double TO_VALUE_RATIO = 11.378;
 
   static int angle_to_value (double angle);
   static double value_to_angle (int value);
 
   explicit Joint(uint8_t joint_id, float position = 0.0);
-  explicit Joint(uint8_t joint_id, float position = 0.0);
+  explicit Joint(uint8_t joint_id, keisan::Angle<float> position);
 
   uint8_t get_id() const;
 
@@ -53,6 +55,7 @@ public:
   int get_position_value() const;
 
   void set_position(float position);
+  void set_position(keisan::Angle<float> position);
   float get_position() const;
 
   void set_pid_gain(float p, float i, float d);

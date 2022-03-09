@@ -64,7 +64,7 @@ public:
     RIGHT_ANKLE_PITCH = 17,
   };
 
-  static const std::array<uint8_t, 21> list;
+  static const std::array<uint8_t, 20> list;
 
   static const std::map<std::string, uint8_t> by_name;
 };
