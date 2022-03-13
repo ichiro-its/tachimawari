@@ -56,8 +56,8 @@ void SyncWritePacket::create(
       parameters.push_back(0x00);
     }
 
-    parameters.push_back(Word::get_low_byte(joint.get_position()));
-    parameters.push_back(Word::get_high_byte(joint.get_position()));
+    parameters.push_back(Word::get_low_byte(joint.get_position_value()));
+    parameters.push_back(Word::get_high_byte(joint.get_position_value()));
   }
 }
 
