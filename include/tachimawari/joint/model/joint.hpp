@@ -43,8 +43,8 @@ public:
   // (4096 / 360) as the ratio of angle to value conversion
   static constexpr double TO_VALUE_RATIO = 11.378;
 
-  static int angle_to_value (double angle);
-  static double value_to_angle (int value);
+  static int angle_to_value(double angle);
+  static double value_to_angle(int value);
 
   explicit Joint(uint8_t joint_id, float position = 0.0);
   explicit Joint(uint8_t joint_id, keisan::Angle<float> position);
