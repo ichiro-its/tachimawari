@@ -28,7 +28,7 @@
 #include "tachimawari/joint/model/joint.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
-namespace tachimawari::control::packet::protocol_1
+namespace tachimawari::control::protocol_1
 {
 
 class WritePacket : public Packet
@@ -45,6 +45,6 @@ public:
   void create(uint8_t id, uint8_t address, uint16_t value);
 };
 
-}  // namespace tachimawari::control::packet::protocol_1
+}  // namespace tachimawari::control::protocol_1
 
 #endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__WRITE_PACKET_HPP_

@@ -55,7 +55,7 @@ CM740::CM740(
   float protocol_version)
 : ControlManager(port_name, protocol_version, baudrate), byte_transfer_time(0.0),
   platform(std::make_shared<Linux>()),
-  bulk_data(std::make_shared<std::map<uint8_t, packet::protocol_1::BulkReadData>>())
+  bulk_data(std::make_shared<std::map<uint8_t, protocol_1::BulkReadData>>())
 {
 }
 
@@ -74,7 +74,7 @@ bool CM740::dxl_power_on()
 {
   if (write_packet(CM740Address::DXL_POWER, 1)) {
     if (protocol_version == 1.0) {
-      write_packet(CM740Address::LED_HEAD_L, packet::protocol_1::Word::make_color(255, 128, 0), 2);
+      write_packet(CM740Address::LED_HEAD_L, protocol_1::Word::make_color(255, 128, 0), 2);
     }
 
     return true;
@@ -83,10 +83,10 @@ bool CM740::dxl_power_on()
   return false;
 }
 
-packet::protocol_1::StatusPacket CM740::send_packet(packet::protocol_1::Packet packet)
+protocol_1::StatusPacket CM740::send_packet(protocol_1::Packet packet)
 {
   {
-    using packet::protocol_1::StatusPacket;
+    using protocol_1::StatusPacket;
 
     std::vector<uint8_t> txpacket = packet.get_packet();
 
@@ -130,10 +130,10 @@ packet::protocol_1::StatusPacket CM740::send_packet(packet::protocol_1::Packet p
   }
 }
 
-bool CM740::send_bulk_read_packet(packet::protocol_1::BulkReadPacket packet)
+bool CM740::send_bulk_read_packet(protocol_1::BulkReadPacket packet)
 {
   {
-    using packet::protocol_1::BulkReadData;
+    using protocol_1::BulkReadData;
 
     std::vector<uint8_t> txpacket = packet.get_packet();
 
@@ -188,7 +188,7 @@ bool CM740::send_bulk_read_packet(packet::protocol_1::BulkReadPacket packet)
 bool CM740::ping(uint8_t id)
 {
   if (protocol_version == 1.0) {
-    packet::protocol_1::Packet instruction_packet(id, packet::protocol_1::Instruction::PING);
+    protocol_1::Packet instruction_packet(id, protocol_1::Instruction::PING);
     auto status_packet = send_packet(instruction_packet);
 
     return status_packet.is_success();
@@ -202,7 +202,7 @@ bool CM740::write_packet(
   int data_length)
 {
   if (protocol_version == 1.0) {
-    packet::protocol_1::WritePacket instruction_packet;
+    protocol_1::WritePacket instruction_packet;
 
     if (data_length == 1) {
       instruction_packet.create(address, static_cast<uint8_t>(value));
@@ -222,7 +222,7 @@ bool CM740::write_packet(
   int data_length)
 {
   if (protocol_version == 1.0) {
-    packet::protocol_1::WritePacket instruction_packet;
+    protocol_1::WritePacket instruction_packet;
 
     if (data_length == 1) {
       instruction_packet.create(id, address, static_cast<uint8_t>(value));
@@ -240,7 +240,7 @@ bool CM740::write_packet(
 bool CM740::sync_write_packet(const std::vector<joint::Joint> & joints, bool with_pid)
 {
   if (protocol_version == 1.0) {
-    packet::protocol_1::SyncWritePacket instruction_packet;
+    protocol_1::SyncWritePacket instruction_packet;
 
     instruction_packet.create(
       joints, with_pid ?
@@ -257,11 +257,11 @@ bool CM740::sync_write_packet(const std::vector<joint::Joint> & joints, bool wit
 bool CM740::bulk_read_packet()
 {
   if (protocol_version == 1.0) {
-    packet::protocol_1::BulkReadPacket instruction_packet;
+    protocol_1::BulkReadPacket instruction_packet;
 
-    if (ping(packet::protocol_1::PacketId::CONTROLLER)) {
+    if (ping(protocol_1::PacketId::CONTROLLER)) {
       instruction_packet.add(
-        packet::protocol_1::PacketId::CONTROLLER, CM740Address::DXL_POWER, 30u);
+        protocol_1::PacketId::CONTROLLER, CM740Address::DXL_POWER, 30u);
     }
 
     if (instruction_packet.is_parameters_filled()) {
@@ -277,7 +277,7 @@ bool CM740::bulk_read_packet()
 bool CM740::bulk_read_packet(const std::vector<joint::Joint> & joints)
 {
   if (protocol_version == 1.0) {
-    packet::protocol_1::BulkReadPacket instruction_packet;
+    protocol_1::BulkReadPacket instruction_packet;
 
     if (joints.size()) {
       instruction_packet.add(joints);
@@ -313,7 +313,7 @@ int CM740::get_bulk_data(
 void CM740::disconnect()
 {
   if (protocol_version == 1.0) {
-    write_packet(CM740Address::LED_HEAD_L, packet::protocol_1::Word::make_color(0, 255, 0), 2);
+    write_packet(CM740Address::LED_HEAD_L, protocol_1::Word::make_color(0, 255, 0), 2);
   }
 
   platform->close_port();

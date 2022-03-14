@@ -22,7 +22,7 @@
 
 #include "tachimawari/control/packet/protocol_1/utils/word.hpp"
 
-namespace tachimawari::control::packet::protocol_1
+namespace tachimawari::control::protocol_1
 {
 
 uint8_t Word::get_low_byte(int word)
@@ -55,4 +55,4 @@ uint16_t Word::make_color(uint8_t red, uint8_t green, uint8_t blue)
   return (b << 10) | (g << 5) | r;
 }
 
-}  // namespace tachimawari::control::packet::protocol_1
+}  // namespace tachimawari::control::protocol_1

@@ -91,7 +91,7 @@ const std::vector<Joint> & JointManager::get_current_joints()
 bool JointManager::torque_enable(bool enable)
 {
   return control_manager->write_packet(
-    tachimawari::control::packet::protocol_1::PacketId::CONTROLLER,
+    tachimawari::control::protocol_1::PacketId::CONTROLLER,
     protocol_1::MX28Address::TORQUE_ENABLE, enable);
 }
 

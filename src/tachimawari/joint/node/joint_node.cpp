@@ -67,8 +67,7 @@ JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager>
 
     get_joints_server = node->create_service<tachimawari_interfaces::srv::GetJoints>(
       get_node_prefix() + "/get_joints",
-      [this](std::shared_ptr<GetJoints::Request> request,
-      std::shared_ptr<GetJoints::Response> response) {
+      [this](GetJoints::Request::SharedPtr request, GetJoints::Response::SharedPtr response) {
         {
           using tachimawari_interfaces::msg::Joint;
 

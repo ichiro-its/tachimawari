@@ -28,7 +28,7 @@
 #include "tachimawari/control/packet/protocol_1/utils/word.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
-namespace tachimawari::control::packet::protocol_1
+namespace tachimawari::control::protocol_1
 {
 
 SyncWritePacket::SyncWritePacket()
@@ -61,4 +61,4 @@ void SyncWritePacket::create(
   }
 }
 
-}  // namespace tachimawari::control::packet::protocol_1
+}  // namespace tachimawari::control::protocol_1

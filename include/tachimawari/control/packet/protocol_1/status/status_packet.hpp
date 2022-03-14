@@ -29,7 +29,7 @@
 #include "tachimawari/joint/model/joint.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
-namespace tachimawari::control::packet::protocol_1
+namespace tachimawari::control::protocol_1
 {
 
 class StatusPacket : public Packet
@@ -55,6 +55,6 @@ private:
   int rxpacket_length;
 };
 
-}  // namespace tachimawari::control::packet::protocol_1
+}  // namespace tachimawari::control::protocol_1
 
 #endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__STATUS__STATUS_PACKET_HPP_

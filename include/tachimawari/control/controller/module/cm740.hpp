@@ -81,15 +81,15 @@ public:
 private:
   bool dxl_power_on();
 
-  packet::protocol_1::StatusPacket send_packet(packet::protocol_1::Packet packet);
+  protocol_1::StatusPacket send_packet(protocol_1::Packet packet);
 
-  bool send_bulk_read_packet(packet::protocol_1::BulkReadPacket packet);
+  bool send_bulk_read_packet(protocol_1::BulkReadPacket packet);
 
   std::shared_ptr<Linux> platform;
 
   double byte_transfer_time;
 
-  std::shared_ptr<std::map<uint8_t, packet::protocol_1::BulkReadData>> bulk_data;
+  std::shared_ptr<std::map<uint8_t, protocol_1::BulkReadData>> bulk_data;
 };
 
 }  // namespace tachimawari::control
