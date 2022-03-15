@@ -41,7 +41,8 @@ public:
     DEFAULT,
     FOR_WALKING,
     FOR_HEAD,
-    FOR_ACTION
+    FOR_ACTION,
+    FORCE
   };
 
   Middleware(double time_limit = 0.5, std::chrono::milliseconds time_unit = 8ms);

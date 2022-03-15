@@ -91,7 +91,7 @@ void Middleware::set_rules(int control_type, const std::vector<uint8_t> & ids)
 
 bool Middleware::validate(int control_type)
 {
-  if (control_rule == DEFAULT) {
+  if (control_rule == DEFAULT && control_type != FORCE) {
     if (control_type == FOR_ACTION) {
       action_counter++;
     } else if (!is_action_controlling) {
@@ -110,7 +110,7 @@ bool Middleware::validate(int control_type)
 
 std::vector<Joint> Middleware::filter_joints(int control_type, const std::vector<tachimawari_interfaces::msg::Joint> & joints_message)
 {
-  if (control_rule == DEFAULT) {
+  if (control_rule == DEFAULT || control_type ==  FORCE) {
     std::vector<Joint> joints;
     std::transform(
       joints_message.begin(), joints_message.end(),
@@ -121,7 +121,7 @@ std::vector<Joint> Middleware::filter_joints(int control_type, const std::vector
 
     if (control_type == FOR_ACTION) {
       return joints;
-    } else if (!is_action_controlling) {
+    } else if (!is_action_controlling || control_type ==  FORCE) {
       return joints;
     }
   } else {

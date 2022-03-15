@@ -41,11 +41,15 @@ TachimawariNode::TachimawariNode(rclcpp::Node::SharedPtr node)
   node_timer = node->create_wall_timer(
     8ms,
     [this]() {
-      if (control_manager) {
-        if (imu_node != nullptr) {
-          control_manager->bulk_read_packet();
+      if (this->control_manager) {
+        if (this->imu_node) {
+          this->control_manager->bulk_read_packet();
 
-          imu_node->update_imu();
+          this->imu_node->update_imu();
+        }
+
+        if (this->joint_node) {
+          this->joint_node->update();
         }
       }
     }
