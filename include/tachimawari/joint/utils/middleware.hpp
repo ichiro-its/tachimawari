@@ -23,6 +23,10 @@
 
 #include <chrono>
 #include <string>
+#include <vector>
+
+#include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari_interfaces/msg/joint.hpp"
 
 using namespace std::chrono_literals;
 
@@ -42,11 +46,17 @@ public:
 
   Middleware(double time_limit = 0.5, std::chrono::milliseconds time_unit = 8ms);
 
+  void set_rules(int control_type, const std::vector<uint8_t> & ids = {});
+
   bool validate(int control_type);
+  std::vector<Joint> filter_joints(int control_type, const std::vector<tachimawari_interfaces::msg::Joint> & joints_message = {});
 
   void update();
 
 private:
+  void reset_ids();
+
+  int control_rule;
   double time_limit;
   double time_unit;
 
@@ -54,16 +64,19 @@ private:
   int action_value;
   int action_counter;
   double action_timer;
+  std::vector<uint8_t> action_ids;
 
   bool is_head_controlling;
   int head_value;
   int head_counter;
   double head_timer;
+  std::vector<uint8_t> head_ids;
 
   bool is_walking_controlling;
   int walking_value;
   int walking_counter;
   double walking_timer;
+  std::vector<uint8_t> walking_ids;
 };
 
 }  // namespace tachimawari::joint

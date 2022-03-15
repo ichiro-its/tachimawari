@@ -67,6 +67,9 @@ public:
   static const std::array<uint8_t, 20> list;
 
   static const std::map<std::string, uint8_t> by_name;
+
+  static const std::array<uint8_t, 2> head_ids;
+  static const std::array<uint8_t, 18> body_ids;
 };
 
 }  // namespace tachimawari::joint
