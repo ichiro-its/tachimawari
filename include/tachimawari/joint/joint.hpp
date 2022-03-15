@@ -27,5 +27,6 @@
 #include "tachimawari/joint/node/joint_node.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 #include "tachimawari/joint/protocol_2/mx28_address.hpp"
+#include "tachimawari/joint/utils/middleware.hpp"
 
 #endif  // TACHIMAWARI__JOINT__JOINT_HPP_
