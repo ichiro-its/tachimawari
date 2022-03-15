@@ -35,37 +35,45 @@ namespace tachimawari::joint
 {
 
 JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager)
-: joint_manager(joint_manager)
+: joint_manager(joint_manager), control_type(DEFAULT)
 {
-  set_joints_subscriber = node->create_subscription<tachimawari_interfaces::msg::SetJoints>(
-    get_node_prefix() + "/set_joints", 10,
-    [this](const tachimawari_interfaces::msg::SetJoints::SharedPtr message) {
-      std::vector<Joint> joints;
+  {
+    using tachimawari_interfaces::msg::SetJoints;
 
-      for (const auto & joint : message->joints) {
-        joints.push_back(Joint(joint.id, joint.position));
+    set_joints_subscriber = node->create_subscription<SetJoints>(
+      get_node_prefix() + "/set_joints", 10,
+      [this](const SetJoints::SharedPtr message) {
+        std::vector<Joint> joints;
+
+        for (const auto & joint : message->joints) {
+          joints.push_back(Joint(joint.id, joint.position));
+        }
+
+        this->joint_manager->set_joints(joints);
       }
+    );
+  }
 
-      this->joint_manager->set_joints(joints);
-    }
-  );
+  {
+    using tachimawari_interfaces::msg::SetTorques;
 
-  set_torques_subscriber = node->create_subscription<tachimawari_interfaces::msg::SetTorques>(
-    get_node_prefix() + "/set_torques", 10,
-    [this](const tachimawari_interfaces::msg::SetTorques::SharedPtr message) {
-      std::vector<Joint> joints;
-      std::transform(
-        message->ids.begin(), message->ids.end(),
-        std::back_inserter(joints), [](uint8_t id) -> Joint {return Joint(id, 0);});
+    set_torques_subscriber = node->create_subscription<SetTorques>(
+      get_node_prefix() + "/set_torques", 10,
+      [this](const SetTorques::SharedPtr message) {
+        std::vector<Joint> joints;
+        std::transform(
+          message->ids.begin(), message->ids.end(),
+          std::back_inserter(joints), [](uint8_t id) -> Joint {return Joint(id, 0);});
 
-      this->joint_manager->torque_enable(joints, message->torque_enable);
-    }
-  );
+        this->joint_manager->torque_enable(joints, message->torque_enable);
+      }
+    );
+  }
 
   {
     using tachimawari_interfaces::srv::GetJoints;
 
-    get_joints_server = node->create_service<tachimawari_interfaces::srv::GetJoints>(
+    get_joints_server = node->create_service<GetJoints>(
       get_node_prefix() + "/get_joints",
       [this](GetJoints::Request::SharedPtr request, GetJoints::Response::SharedPtr response) {
         {
