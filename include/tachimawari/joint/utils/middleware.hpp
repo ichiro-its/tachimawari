@@ -28,7 +28,7 @@
 #include "tachimawari/joint/model/joint.hpp"
 #include "tachimawari_interfaces/msg/joint.hpp"
 
-using namespace std::chrono_literals;
+using namespace std::chrono_literals;  // NOLINT
 
 namespace tachimawari::joint
 {
@@ -45,12 +45,14 @@ public:
     FORCE
   };
 
-  Middleware(double time_limit = 0.5, std::chrono::milliseconds time_unit = 8ms);
+  explicit Middleware(double time_limit = 0.5, std::chrono::milliseconds time_unit = 8ms);
 
   void set_rules(int control_type, const std::vector<uint8_t> & ids = {});
 
   bool validate(int control_type);
-  std::vector<Joint> filter_joints(int control_type, const std::vector<tachimawari_interfaces::msg::Joint> & joints_message = {});
+  std::vector<Joint> filter_joints(
+    int control_type,
+    const std::vector<tachimawari_interfaces::msg::Joint> & joints_message = {});
 
   void update();
 

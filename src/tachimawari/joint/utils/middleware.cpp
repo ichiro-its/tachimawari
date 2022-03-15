@@ -18,8 +18,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <algorithm>
 #include <chrono>
 #include <string>
+#include <vector>
 
 #include "tachimawari/joint/model/joint.hpp"
 #include "tachimawari/joint/model/joint_id.hpp"
@@ -30,7 +32,10 @@ namespace tachimawari::joint
 {
 
 Middleware::Middleware(double time_limit, std::chrono::milliseconds time_unit)
-: time_limit(time_limit), time_unit(time_unit.count() / 1000.0), is_action_controlling(false), action_value(0), action_counter(0), action_timer(0), is_head_controlling(false), head_value(0), head_counter(0), head_timer(0), is_walking_controlling(false), walking_value(0), walking_counter(0), walking_timer(0)
+: time_limit(time_limit), time_unit(time_unit.count() / 1000.0), is_action_controlling(false),
+  action_value(0), action_counter(0), action_timer(0), is_head_controlling(false), head_value(0),
+  head_counter(0), head_timer(0), is_walking_controlling(false), walking_value(0),
+  walking_counter(0), walking_timer(0)
 {
   reset_ids();
 }
@@ -73,19 +78,25 @@ void Middleware::set_rules(int control_type, const std::vector<uint8_t> & ids)
   }
 
   if (control_type != FOR_ACTION) {
-    action_ids.erase(std::remove_if(action_ids.begin(), action_ids.end(), [&](uint8_t id) {
-      return std::find(excluded_ids.begin(), excluded_ids.end(), id) != excluded_ids.end();
-    }), action_ids.end());
+    action_ids.erase(
+      std::remove_if(
+        action_ids.begin(), action_ids.end(), [&](uint8_t id) {
+          return std::find(excluded_ids.begin(), excluded_ids.end(), id) != excluded_ids.end();
+        }), action_ids.end());
   }
   if (control_type != FOR_HEAD) {
-    head_ids.erase(std::remove_if(head_ids.begin(), head_ids.end(), [&](uint8_t id) {
-      return std::find(excluded_ids.begin(), excluded_ids.end(), id) != excluded_ids.end();
-    }), head_ids.end());
+    head_ids.erase(
+      std::remove_if(
+        head_ids.begin(), head_ids.end(), [&](uint8_t id) {
+          return std::find(excluded_ids.begin(), excluded_ids.end(), id) != excluded_ids.end();
+        }), head_ids.end());
   }
   if (control_type != FOR_WALKING) {
-    walking_ids.erase(std::remove_if(walking_ids.begin(), walking_ids.end(), [&](uint8_t id) {
-      return std::find(excluded_ids.begin(), excluded_ids.end(), id) != excluded_ids.end();
-    }), walking_ids.end());
+    walking_ids.erase(
+      std::remove_if(
+        walking_ids.begin(), walking_ids.end(), [&](uint8_t id) {
+          return std::find(excluded_ids.begin(), excluded_ids.end(), id) != excluded_ids.end();
+        }), walking_ids.end());
   }
 }
 
@@ -108,9 +119,11 @@ bool Middleware::validate(int control_type)
   return true;
 }
 
-std::vector<Joint> Middleware::filter_joints(int control_type, const std::vector<tachimawari_interfaces::msg::Joint> & joints_message)
+std::vector<Joint> Middleware::filter_joints(
+  int control_type,
+  const std::vector<tachimawari_interfaces::msg::Joint> & joints_message)
 {
-  if (control_rule == DEFAULT || control_type ==  FORCE) {
+  if (control_rule == DEFAULT || control_type == FORCE) {
     std::vector<Joint> joints;
     std::transform(
       joints_message.begin(), joints_message.end(),
@@ -121,7 +134,7 @@ std::vector<Joint> Middleware::filter_joints(int control_type, const std::vector
 
     if (control_type == FOR_ACTION) {
       return joints;
-    } else if (!is_action_controlling || control_type ==  FORCE) {
+    } else if (!is_action_controlling || control_type == FORCE) {
       return joints;
     }
   } else {
