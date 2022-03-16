@@ -69,11 +69,11 @@ target_include_directories(check_joints PUBLIC
   $<INSTALL_INTERFACE:include>)
 target_link_libraries(check_joints ${PROJECT_NAME})
 
-add_executable(move_joint "src/move_joint_main.cpp")
-target_include_directories(move_joint PUBLIC
+add_executable(init_joints "src/init_joints_main.cpp")
+target_include_directories(init_joints PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
-target_link_libraries(move_joint ${PROJECT_NAME})
+target_link_libraries(init_joints ${PROJECT_NAME})
 
 add_executable(tachimawari_main "src/tachimawari_main.cpp")
 target_include_directories(tachimawari_main PUBLIC
@@ -83,7 +83,7 @@ target_link_libraries(tachimawari_main ${PROJECT_NAME})
 
 install(TARGETS
   check_joints
-  move_joint
+  init_joints
   tachimawari_main
   DESTINATION lib/${PROJECT_NAME})
 
