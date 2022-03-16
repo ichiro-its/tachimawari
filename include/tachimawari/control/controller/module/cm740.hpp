@@ -60,10 +60,6 @@ public:
   bool ping(uint8_t id) override;
 
   bool write_packet(
-    uint8_t address, int value,
-    int data_length = 1) override;
-
-  bool write_packet(
     uint8_t id, uint8_t address, int value,
     int data_length = 1) override;
 

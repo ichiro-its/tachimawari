@@ -25,7 +25,6 @@
 
 #include "keisan/keisan.hpp"
 #include "tachimawari/control/manager/control_manager.hpp"
-#include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
 #include "tachimawari/control/controller/module/cm740_address.hpp"
 
 namespace tachimawari::imu
@@ -41,16 +40,16 @@ const keisan::Vector<3> & ImuProvider::get_gyro() const
   if (control_manager->get_protocol_version() == 1.0) {
     {
       using tachimawari::control::CM740Address;
-      using tachimawari::control::protocol_1::PacketId;
+      using tachimawari::control::ControlManager;
 
       int gyro_x = control_manager->get_bulk_data(
-        PacketId::CONTROLLER,
+        ControlManager::CONTROLLER,
         CM740Address::GYRO_X_L, 2);
       int gyro_y = control_manager->get_bulk_data(
-        PacketId::CONTROLLER,
+        ControlManager::CONTROLLER,
         CM740Address::GYRO_Y_L, 2);
       int gyro_z = control_manager->get_bulk_data(
-        PacketId::CONTROLLER,
+        ControlManager::CONTROLLER,
         CM740Address::GYRO_Z_L, 2);
 
       return keisan::Vector<3>(
@@ -69,16 +68,16 @@ const keisan::Vector<3> & ImuProvider::get_accelero() const
   if (control_manager->get_protocol_version() == 1.0) {
     {
       using tachimawari::control::CM740Address;
-      using tachimawari::control::protocol_1::PacketId;
+      using tachimawari::control::ControlManager;
 
       int accel_x = control_manager->get_bulk_data(
-        PacketId::CONTROLLER,
+        ControlManager::CONTROLLER,
         CM740Address::ACCEL_X_L, 2);
       int accel_y = control_manager->get_bulk_data(
-        PacketId::CONTROLLER,
+        ControlManager::CONTROLLER,
         CM740Address::ACCEL_Y_L, 2);
       int accel_z = control_manager->get_bulk_data(
-        PacketId::CONTROLLER,
+        ControlManager::CONTROLLER,
         CM740Address::ACCEL_Z_L, 2);
 
       return keisan::Vector<3>(

@@ -23,7 +23,6 @@
 
 #include "tachimawari/control/packet/protocol_1/model/packet.hpp"
 
-#include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
 
 namespace tachimawari::control::protocol_1

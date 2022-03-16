@@ -30,7 +30,6 @@
 #include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/sync_write_packet.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/write_packet.hpp"
-#include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
 #include "tachimawari/control/packet/protocol_1/status/bulk_read_data.hpp"
 #include "tachimawari/control/packet/protocol_1/status/status_packet.hpp"
 #include "tachimawari/control/packet/protocol_1/utils/word.hpp"
@@ -53,8 +52,9 @@ namespace tachimawari::control
 CM740::CM740(
   const std::string & port_name, int baudrate,
   float protocol_version)
-: ControlManager(port_name, protocol_version, baudrate), packet_timer((1000.0 / baudrate) * 12.0),  // byte transfer rate
-  platform(std::make_shared<Linux>()),
+: ControlManager(port_name, protocol_version, baudrate), platform(std::make_shared<Linux>()),
+  // byte transfer rate
+  packet_timer((1000.0 / baudrate) * 12.0),
   bulk_data(std::make_shared<std::map<uint8_t, protocol_1::BulkReadData>>())
 {
 }
@@ -70,9 +70,12 @@ bool CM740::connect()
 
 bool CM740::dxl_power_on()
 {
-  if (write_packet(CM740Address::DXL_POWER, 1)) {
+  if (write_packet(CONTROLLER, CM740Address::DXL_POWER, 1)) {
     if (protocol_version == 1.0) {
-      write_packet(CM740Address::LED_HEAD_L, protocol_1::Word::make_color(255, 128, 0), 2);
+      write_packet(
+        CONTROLLER, CM740Address::LED_HEAD_L, protocol_1::Word::make_color(
+          255, 128,
+          0), 2);
     }
 
     return true;
@@ -203,25 +206,6 @@ bool CM740::ping(uint8_t id)
 }
 
 bool CM740::write_packet(
-  uint8_t address, int value,
-  int data_length)
-{
-  if (protocol_version == 1.0) {
-    protocol_1::WritePacket instruction_packet;
-
-    if (data_length == 1) {
-      instruction_packet.create(address, static_cast<uint8_t>(value));
-    } else if (data_length == 2) {
-      instruction_packet.create(address, static_cast<uint16_t>(value));
-    }
-
-    return send_packet(instruction_packet);
-  }
-
-  return false;
-}
-
-bool CM740::write_packet(
   uint8_t id, uint8_t address, int value,
   int data_length)
 {
@@ -262,9 +246,8 @@ bool CM740::bulk_read_packet()
   if (protocol_version == 1.0) {
     protocol_1::BulkReadPacket instruction_packet;
 
-    if (ping(protocol_1::PacketId::CONTROLLER)) {
-      instruction_packet.add(
-        protocol_1::PacketId::CONTROLLER, CM740Address::DXL_POWER, 30u);
+    if (ping(CONTROLLER)) {
+      instruction_packet.add(CONTROLLER, CM740Address::DXL_POWER, 30u);
     }
 
     if (instruction_packet.is_parameters_filled()) {
@@ -316,7 +299,7 @@ int CM740::get_bulk_data(
 void CM740::disconnect()
 {
   if (protocol_version == 1.0) {
-    write_packet(CM740Address::LED_HEAD_L, protocol_1::Word::make_color(0, 255, 0), 2);
+    write_packet(CONTROLLER, CM740Address::LED_HEAD_L, protocol_1::Word::make_color(0, 255, 0), 2);
   }
 
   platform->close_port();

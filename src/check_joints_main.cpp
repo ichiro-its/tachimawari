@@ -19,68 +19,31 @@
 // THE SOFTWARE.
 
 #include <iostream>
-#include <iomanip>
-#include <vector>
-#include <numeric>
-#include <string>
+#include <memory>
 
-#include "dynamixel_sdk/dynamixel_sdk.h"
+#include "tachimawari/control/controller/controller.hpp"
+#include "tachimawari/joint/model/joint_id.hpp"
 
 int main(int argc, char * argv[])
 {
-  std::string port_name = "/dev/ttyACM0";
-  int baudrate = 57600;
+  auto cm740 = std::make_shared<tachimawari::control::CM740>("/dev/ttyUSB0");
 
-  int dxl_comm_result = COMM_TX_FAIL;
-  uint8_t dxl_error = 0;
+  if (cm740->connect()) {
+    {
+      using tachimawari::joint::JointId;
 
-  std::vector<uint8_t> ids(20);
-  std::iota(ids.begin(), ids.end(), 1);
-
-  if (argc > 1) {
-    port_name = argv[1];
-  }
-
-  std::cout << "set the port name as " << port_name << "\n";
-  dynamixel::PortHandler * port_handler = dynamixel::PortHandler::getPortHandler(port_name.c_str());
-  dynamixel::PacketHandler * packet_handler = dynamixel::PacketHandler::getPacketHandler(2.0F);
-
-  std::cout << "open the port\n";
-  if (port_handler->openPort()) {
-    std::cout << "succeeded to open the port!\n";
-  } else {
-    std::cout << "failed to open the port!\n" <<
-      "try again!\n";
-    return 0;
-  }
-
-  if (port_handler->setBaudRate(baudrate)) {
-    std::cout << "succeeded to set the baudrate!\n";
-  } else {
-    std::cout << "failed to set the baudrate!\n" <<
-      "try again!\n";
-  }
-
-  std::cout << "\033c";
-
-  std::cout << "ping the joints\n\n";
-  for (auto id : ids) {
-    dxl_comm_result = packet_handler->ping(port_handler, id, NULL, &dxl_error);
-
-    if (dxl_comm_result != COMM_SUCCESS) {
-      std::cout << "[ID: " << std::setfill('0') << std::setw(2) << int(id) << "] ping failed. " <<
-        packet_handler->getTxRxResult(dxl_comm_result) << "\n";
-    } else if (dxl_error != 0) {
-      std::cout << "[ID: " << std::setfill('0') << std::setw(2) << int(id) << "] ping failed. " <<
-        packet_handler->getRxPacketError(dxl_comm_result) << "\n";
-    } else {
-      std::cout << "[ID: " << std::setfill('0') << std::setw(2) << int(id) << "] ping succeeded.\n";
+      for (const auto & [key, value] : JointId::by_name) {
+        std::cout << "ping " << key << ": ";
+        if (cm740->ping(value)) {
+          std::cout << "success\n";
+        } else {
+          std::cout << "failed\n";
+        }
+      }
     }
+  } else {
+    std::cout << "failed to connect CM740\n";
   }
-
-  std::cout << "\nping done\n" <<
-    "close the port\n";
-  port_handler->closePort();
 
   return 0;
 }

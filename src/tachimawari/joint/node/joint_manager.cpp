@@ -24,7 +24,6 @@
 
 #include "tachimawari/joint/node/joint_manager.hpp"
 
-#include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
 #include "tachimawari/joint/model/joint_id.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
@@ -91,7 +90,7 @@ const std::vector<Joint> & JointManager::get_current_joints()
 bool JointManager::torque_enable(bool enable)
 {
   return control_manager->write_packet(
-    tachimawari::control::protocol_1::PacketId::CONTROLLER,
+    tachimawari::control::ControlManager::CONTROLLER,
     protocol_1::MX28Address::TORQUE_ENABLE, enable);
 }
 

@@ -32,6 +32,12 @@ namespace tachimawari::control
 class ControlManager
 {
 public:
+  enum
+  {
+    CONTROLLER = 200,
+    BROADCAST = 254
+  };
+
   explicit ControlManager(
     const std::string & port_name, float protocol_version, int baudrate);
   virtual ~ControlManager() {}
@@ -42,10 +48,6 @@ public:
   virtual void disconnect() {}
 
   virtual bool ping(uint8_t id) {}
-
-  virtual bool write_packet(
-    uint8_t address, int value,
-    int data_length = 1) {}
 
   virtual bool write_packet(
     uint8_t id, uint8_t address, int value,

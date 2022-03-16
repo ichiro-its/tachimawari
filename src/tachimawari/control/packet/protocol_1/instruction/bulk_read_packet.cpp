@@ -23,7 +23,7 @@
 
 #include "tachimawari/control/packet/protocol_1/instruction/bulk_read_packet.hpp"
 
-#include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
+#include "tachimawari/control/manager/control_manager.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
 #include "tachimawari/control/packet/protocol_1/utils/word.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
@@ -32,7 +32,7 @@ namespace tachimawari::control::protocol_1
 {
 
 BulkReadPacket::BulkReadPacket()
-: Packet(PacketId::BROADCAST, Instruction::BULK_READ)
+: Packet(tachimawari::control::ControlManager::BROADCAST, Instruction::BULK_READ)
 {
   parameters.push_back(0x00);
 }
