@@ -23,6 +23,7 @@ find_package(tachimawari_interfaces REQUIRED)
 add_library(${PROJECT_NAME} SHARED
   "src/${PROJECT_NAME}/control/controller/module/cm740.cpp"
   "src/${PROJECT_NAME}/control/controller/platform/linux.cpp"
+  "src/${PROJECT_NAME}/control/controller/utils/timer.cpp"
   "src/${PROJECT_NAME}/control/manager/control_manager.cpp"
   "src/${PROJECT_NAME}/control/packet/protocol_1/instruction/bulk_read_packet.cpp"
   "src/${PROJECT_NAME}/control/packet/protocol_1/instruction/sync_write_packet.cpp"
