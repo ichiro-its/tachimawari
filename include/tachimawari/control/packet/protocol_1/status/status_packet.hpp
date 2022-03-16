@@ -39,18 +39,18 @@ public:
     std::shared_ptr<std::vector<uint8_t>> rxpacket,
     int packet_length);
 
-  StatusPacket(std::shared_ptr<std::vector<uint8_t>> rxpacket, int packet_length);
+  explicit StatusPacket(const std::vector<uint8_t> & rxpacket, int packet_length);
 
   bool is_valid();
 
   bool is_success() const;
 
-  std::shared_ptr<std::vector<uint8_t>> get_raw_packet();
+  const std::vector<uint8_t> & get_raw_packet() const;
 
   uint8_t get_data_length() const override;
 
 private:
-  std::shared_ptr<std::vector<uint8_t>> rxpacket;
+  std::vector<uint8_t> rxpacket;
 
   int rxpacket_length;
 };

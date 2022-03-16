@@ -53,7 +53,7 @@ namespace tachimawari::control
 CM740::CM740(
   const std::string & port_name, int baudrate,
   float protocol_version)
-: ControlManager(port_name, protocol_version, baudrate), byte_transfer_time(0.0),
+: ControlManager(port_name, protocol_version, baudrate), packet_timer((1000.0 / baudrate) * 12.0),  // byte transfer rate
   platform(std::make_shared<Linux>()),
   bulk_data(std::make_shared<std::map<uint8_t, protocol_1::BulkReadData>>())
 {
@@ -62,8 +62,6 @@ CM740::CM740(
 bool CM740::connect()
 {
   if (platform->open_port(port_name, baudrate)) {
-    byte_transfer_time = (1000.0 / baudrate) * 12.0;
-
     return dxl_power_on();
   }
 
@@ -83,7 +81,7 @@ bool CM740::dxl_power_on()
   return false;
 }
 
-protocol_1::StatusPacket CM740::send_packet(protocol_1::Packet packet)
+bool CM740::send_packet(protocol_1::Packet packet)
 {
   {
     using protocol_1::StatusPacket;
@@ -94,7 +92,9 @@ protocol_1::StatusPacket CM740::send_packet(protocol_1::Packet packet)
       // set packet timeout;
       int get_length = 0;
       int expected_length = packet.get_expected_length();
-      auto rxpacket = std::make_shared<std::vector<uint8_t>>(MAX_PACKET_SIZE, 0x00);
+      auto rxpacket = std::make_shared<std::vector<uint8_t>>(expected_length, 0x00);
+
+      packet_timer.set_timeout(expected_length);
 
       while (true) {
         get_length += platform->read_port(rxpacket, expected_length - get_length, get_length);
@@ -103,7 +103,7 @@ protocol_1::StatusPacket CM740::send_packet(protocol_1::Packet packet)
           int new_get_length = StatusPacket::validate(rxpacket, get_length);
 
           if (new_get_length == get_length) {
-            return StatusPacket(rxpacket, get_length);
+            return true;
           } else if (new_get_length != 0) {
             // TODO(maroqijalil): will be used for logging
             // is packet timeout ? so RX_TIMEOUT
@@ -111,12 +111,14 @@ protocol_1::StatusPacket CM740::send_packet(protocol_1::Packet packet)
           } else {
             // TODO(maroqijalil): will be used for logging
             // so RX_CORRUPT
-            return StatusPacket(nullptr, 0);
+            return false;
           }
         } else {
           // TODO(maroqijalil): will be used for logging
           // is packet timeout ? so RX_TIMEOUT
-          if (get_length > expected_length) {
+          if (packet_timer.is_timeout()) {
+            break;
+          } else if (get_length > expected_length) {
             break;
           }
         }
@@ -126,7 +128,7 @@ protocol_1::StatusPacket CM740::send_packet(protocol_1::Packet packet)
       // so TX_FAIL
     }
 
-    return StatusPacket(nullptr, 0);
+    return false;
   }
 }
 
@@ -144,7 +146,9 @@ bool CM740::send_bulk_read_packet(protocol_1::BulkReadPacket packet)
       // set packet timeout;
       int get_length = 0;
       int expected_length = packet.get_expected_length();
-      auto rxpacket = std::make_shared<std::vector<uint8_t>>(MAX_PACKET_SIZE, 0x00);
+      auto rxpacket = std::make_shared<std::vector<uint8_t>>(expected_length, 0x00);
+
+      packet_timer.set_timeout(expected_length);
 
       while (true) {
         get_length += platform->read_port(rxpacket, expected_length - get_length, get_length);
@@ -171,7 +175,9 @@ bool CM740::send_bulk_read_packet(protocol_1::BulkReadPacket packet)
         } else {
           // TODO(maroqijalil): will be used for logging
           // is packet timeout ? so RX_TIMEOUT
-          if (get_length > expected_length) {
+          if (packet_timer.is_timeout()) {
+            break;
+          } else if (get_length > expected_length) {
             break;
           }
         }
@@ -189,9 +195,8 @@ bool CM740::ping(uint8_t id)
 {
   if (protocol_version == 1.0) {
     protocol_1::Packet instruction_packet(id, protocol_1::Instruction::PING);
-    auto status_packet = send_packet(instruction_packet);
 
-    return status_packet.is_success();
+    return send_packet(instruction_packet);
   }
 
   return false;
@@ -210,8 +215,7 @@ bool CM740::write_packet(
       instruction_packet.create(address, static_cast<uint16_t>(value));
     }
 
-    auto status_packet = send_packet(instruction_packet);
-    return status_packet.is_success();
+    return send_packet(instruction_packet);
   }
 
   return false;
@@ -230,8 +234,7 @@ bool CM740::write_packet(
       instruction_packet.create(id, address, static_cast<uint16_t>(value));
     }
 
-    auto status_packet = send_packet(instruction_packet);
-    return status_packet.is_success();
+    return send_packet(instruction_packet);
   }
 
   return false;

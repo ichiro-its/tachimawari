@@ -30,10 +30,8 @@ namespace tachimawari::control::protocol_1
 {
 
 Packet::Packet(uint8_t packet_id, uint8_t instruction)
-: info(instruction), checksum(0x00)
+: info(instruction), checksum(0x00), packet_id(packet_id)
 {
-  this->packet_id = packet_id;
-
   packet.push_back(0xFF);
   packet.push_back(0xFF);
 }
