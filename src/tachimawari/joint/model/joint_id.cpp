@@ -27,7 +27,7 @@
 namespace tachimawari::joint
 {
 
-const std::array<uint8_t, 21> JointId::list = {
+const std::array<uint8_t, 20> JointId::list = {
   RIGHT_SHOULDER_PITCH,
   LEFT_SHOULDER_PITCH,
   RIGHT_SHOULDER_ROLL,
@@ -71,6 +71,32 @@ const std::map<std::string, uint8_t> JointId::by_name = {
   {"right_knee", RIGHT_KNEE},
   {"right_ankle_roll", RIGHT_ANKLE_ROLL},
   {"right_ankle_pitch", RIGHT_ANKLE_PITCH}
+};
+
+const std::array<uint8_t, 2> JointId::head_ids = {
+  NECK_YAW,
+  NECK_PITCH,
+};
+
+const std::array<uint8_t, 18> JointId::body_ids = {
+  RIGHT_SHOULDER_PITCH,
+  LEFT_SHOULDER_PITCH,
+  RIGHT_SHOULDER_ROLL,
+  LEFT_SHOULDER_ROLL,
+  RIGHT_ELBOW,
+  LEFT_ELBOW,
+  RIGHT_HIP_YAW,
+  LEFT_HIP_YAW,
+  RIGHT_HIP_ROLL,
+  LEFT_HIP_ROLL,
+  RIGHT_HIP_PITCH,
+  LEFT_HIP_PITCH,
+  RIGHT_KNEE,
+  LEFT_KNEE,
+  RIGHT_ANKLE_ROLL,
+  LEFT_ANKLE_ROLL,
+  RIGHT_ANKLE_PITCH,
+  LEFT_ANKLE_PITCH,
 };
 
 }  // namespace tachimawari::joint

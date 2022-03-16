@@ -23,7 +23,7 @@
 
 #include <string>
 
-namespace tachimawari::control::packet::protocol_1
+namespace tachimawari::control::protocol_1
 {
 
 enum Instruction : uint8_t
@@ -38,6 +38,6 @@ enum Instruction : uint8_t
   BULK_READ = 146,
 };
 
-}  // namespace tachimawari::control::packet::protocol_1
+}  // namespace tachimawari::control::protocol_1
 
 #endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__INSTRUCTION_HPP_

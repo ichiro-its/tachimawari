@@ -23,7 +23,7 @@
 
 #include <string>
 
-namespace tachimawari::control::packet::protocol_1
+namespace tachimawari::control::protocol_1
 {
 
 class Word
@@ -37,6 +37,6 @@ public:
   static uint16_t make_color(uint8_t red, uint8_t green, uint8_t blue);
 };
 
-}  // namespace tachimawari::control::packet::protocol_1
+}  // namespace tachimawari::control::protocol_1
 
 #endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__UTILS__WORD_HPP_

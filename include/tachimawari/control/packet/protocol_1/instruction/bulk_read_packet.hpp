@@ -26,7 +26,7 @@
 #include "tachimawari/control/packet/protocol_1/model/packet.hpp"
 #include "tachimawari/joint/model/joint.hpp"
 
-namespace tachimawari::control::packet::protocol_1
+namespace tachimawari::control::protocol_1
 {
 
 class BulkReadPacket : public Packet
@@ -47,6 +47,6 @@ public:
   void add(const std::vector<tachimawari::joint::Joint> & joints);
 };
 
-}  // namespace tachimawari::control::packet::protocol_1
+}  // namespace tachimawari::control::protocol_1
 
 #endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__BULK_READ_PACKET_HPP_

@@ -61,7 +61,7 @@ bool DynamixelSDK::connect()
   }
 
   if (protocol_version == 1.0) {
-    write_packet(CM740Address::LED_HEAD_L, packet::protocol_1::Word::make_color(255, 128, 0), 2);
+    write_packet(CM740Address::LED_HEAD_L, protocol_1::Word::make_color(255, 128, 0), 2);
   }
 
   return true;
@@ -109,7 +109,7 @@ bool DynamixelSDK::write_packet(
 {
   if (protocol_version == 1.0) {
     return write_packet(
-      packet::protocol_1::PacketId::CONTROLLER, address,
+      protocol_1::PacketId::CONTROLLER, address,
       value, data_length);
   }
 
@@ -178,9 +178,9 @@ bool DynamixelSDK::bulk_read_packet()
   if (protocol_version == 1.0) {
     sdk::protocol_1::GroupBulkRead group_bulk_read(port_handler, packet_handler);
 
-    if (ping(packet::protocol_1::PacketId::CONTROLLER)) {
+    if (ping(protocol_1::PacketId::CONTROLLER)) {
       group_bulk_read.add(
-        packet::protocol_1::PacketId::CONTROLLER, CM740Address::DXL_POWER, 30u);
+        protocol_1::PacketId::CONTROLLER, CM740Address::DXL_POWER, 30u);
     }
 
     if (group_bulk_read.is_parameters_filled()) {
@@ -198,7 +198,7 @@ bool DynamixelSDK::bulk_read_packet(const std::vector<joint::Joint> & joints)
   if (protocol_version == 1.0) {
     sdk::protocol_1::GroupBulkRead group_bulk_read(port_handler, packet_handler);
 
-    if (ping(packet::protocol_1::PacketId::CONTROLLER)) {
+    if (ping(protocol_1::PacketId::CONTROLLER)) {
       group_bulk_read.add(joints);
     }
 
@@ -227,7 +227,7 @@ int DynamixelSDK::get_bulk_data(
 
 void DynamixelSDK::disconnect()
 {
-  write_packet(CM740Address::LED_HEAD_L, packet::protocol_1::Word::make_color(0, 255, 0), 2);
+  write_packet(CM740Address::LED_HEAD_L, protocol_1::Word::make_color(0, 255, 0), 2);
 
   port_handler->closePort();
 }

@@ -18,59 +18,70 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__JOINT__MODEL__JOINT_HPP_
-#define TACHIMAWARI__JOINT__MODEL__JOINT_HPP_
+#ifndef TACHIMAWARI__JOINT__UTILS__MIDDLEWARE_HPP_
+#define TACHIMAWARI__JOINT__UTILS__MIDDLEWARE_HPP_
 
+#include <chrono>
 #include <string>
 #include <vector>
 
-#include "keisan/angle/angle.hpp"
-#include "tachimawari/joint/model/joint_id.hpp"
+#include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari_interfaces/msg/joint.hpp"
+
+using namespace std::chrono_literals;  // NOLINT
 
 namespace tachimawari::joint
 {
 
-class Joint
+class Middleware
 {
 public:
   enum
   {
-    CENTER_VALUE = 2048
+    DEFAULT,
+    FOR_WALKING,
+    FOR_HEAD,
+    FOR_ACTION,
+    FORCE
   };
 
-  // (360 / 4096) as the ratio of value to angle conversion
-  static constexpr double TO_ANGLE_RATIO = 0.088;
-  // (4096 / 360) as the ratio of angle to value conversion
-  static constexpr double TO_VALUE_RATIO = 11.378;
+  explicit Middleware(double time_limit = 0.5, std::chrono::milliseconds time_unit = 8ms);
 
-  static int angle_to_value(double angle);
-  static double value_to_angle(int value);
+  void set_rules(int control_type, const std::vector<uint8_t> & ids = {});
 
-  explicit Joint(uint8_t joint_id, float position = 0.0);
-  explicit Joint(uint8_t joint_id, keisan::Angle<float> position);
+  bool validate(int control_type);
+  std::vector<Joint> filter_joints(
+    int control_type,
+    const std::vector<tachimawari_interfaces::msg::Joint> & joints_message = {});
 
-  uint8_t get_id() const;
-
-  void set_position_value(int value);
-  int get_position_value() const;
-
-  void set_position(float position);
-  void set_position(keisan::Angle<float> position);
-  float get_position() const;
-
-  void set_pid_gain(float p, float i, float d);
-  std::vector<float> get_pid_gain() const;
+  void update();
 
 private:
-  uint8_t id;
+  void reset_ids();
 
-  float p_gain;
-  float i_gain;
-  float d_gain;
+  int control_rule;
+  double time_limit;
+  double time_unit;
 
-  keisan::Angle<float> position;
+  bool is_action_controlling;
+  int action_value;
+  int action_counter;
+  double action_timer;
+  std::vector<uint8_t> action_ids;
+
+  bool is_head_controlling;
+  int head_value;
+  int head_counter;
+  double head_timer;
+  std::vector<uint8_t> head_ids;
+
+  bool is_walking_controlling;
+  int walking_value;
+  int walking_counter;
+  double walking_timer;
+  std::vector<uint8_t> walking_ids;
 };
 
 }  // namespace tachimawari::joint
 
-#endif  // TACHIMAWARI__JOINT__MODEL__JOINT_HPP_
+#endif  // TACHIMAWARI__JOINT__UTILS__MIDDLEWARE_HPP_

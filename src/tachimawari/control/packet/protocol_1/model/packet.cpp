@@ -26,7 +26,7 @@
 #include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
 
-namespace tachimawari::control::packet::protocol_1
+namespace tachimawari::control::protocol_1
 {
 
 Packet::Packet(uint8_t packet_id, uint8_t instruction)
@@ -91,4 +91,4 @@ const std::vector<uint8_t> & Packet::get_packet()
   return packet;
 }
 
-}  // namespace tachimawari::control::packet::protocol_1
+}  // namespace tachimawari::control::protocol_1
