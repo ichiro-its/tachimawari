@@ -112,7 +112,6 @@ int Linux::read_port(
   if (result_length != 0) {
     for (size_t i = packet_index; i < (packet_index + packet_length) * 2; ++i) {
       packet->at(i) = rxpacket[i];
-      printf("%02x ", rxpacket[i]);
     }
   }
 
