@@ -146,7 +146,6 @@ bool CM740::send_bulk_read_packet(protocol_1::BulkReadPacket packet)
       int data_number = packet.get_data_number();
       BulkReadData::insert_all(bulk_data, packet);
 
-      // set packet timeout;
       int get_length = 0;
       int expected_length = packet.get_expected_length();
       auto rxpacket = std::make_shared<std::vector<uint8_t>>(expected_length * 2, 0x00);
@@ -160,16 +159,7 @@ bool CM740::send_bulk_read_packet(protocol_1::BulkReadPacket packet)
           int new_get_length = BulkReadData::validate(rxpacket, get_length);
 
           if (new_get_length == get_length) {
-            data_number = BulkReadData::update_all(bulk_data, rxpacket, get_length, data_number);
-
-            if (data_number == 0) {
-              return true;
-            } else {
-              // TODO(maroqijalil): will be used for logging
-              // is packet timeout ? so RX_TIMEOUT
-              // or RX_CORRUPT / data is inclompete if data number more than 0
-              return false;
-            }
+            break;
           } else {
             // TODO(maroqijalil): will be used for logging
             // is packet timeout ? so RX_TIMEOUT
@@ -184,6 +174,14 @@ bool CM740::send_bulk_read_packet(protocol_1::BulkReadPacket packet)
             break;
           }
         }
+      }
+
+      if (BulkReadData::update_all(bulk_data, *rxpacket, get_length, data_number) == 0) {
+        return true;
+      } else {
+        // TODO(maroqijalil): will be used for logging
+        // is packet timeout ? so RX_TIMEOUT
+        // or RX_CORRUPT / data is inclompete if data number more than 0
       }
     } else {
       // TODO(maroqijalil): will be used for logging

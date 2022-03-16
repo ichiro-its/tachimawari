@@ -36,6 +36,11 @@ namespace tachimawari::control::protocol_1
 class BulkReadData : public Packet
 {
 public:
+  enum
+  {
+    MAX_LENGTH = 255
+  };
+
   static void insert_all(
     std::shared_ptr<std::map<uint8_t, BulkReadData>> bulk_data,
     const BulkReadPacket & bulk_read_packet);
@@ -46,11 +51,11 @@ public:
 
   static int update_all(
     std::shared_ptr<std::map<uint8_t, BulkReadData>> bulk_data,
-    std::shared_ptr<std::vector<uint8_t>> rxpacket, int packet_length, int data_number);
+    std::vector<uint8_t> rxpacket, int packet_length, int data_number);
 
-  BulkReadData(
-    uint8_t id, uint8_t starting_address,
-    uint8_t data_length);
+  explicit BulkReadData(uint8_t id, int data_length = MAX_LENGTH);
+
+  void set_starting_address(uint8_t start_address);
 
   bool is_valid(std::vector<uint8_t> rxpacket);
 
@@ -62,7 +67,7 @@ public:
 private:
   uint8_t start_address;
 
-  int data_length;
+  std::vector<uint8_t> data;
 };
 
 }  // namespace tachimawari::control::protocol_1
