@@ -105,12 +105,12 @@ int Linux::read_port(
   std::shared_ptr<std::vector<uint8_t>> packet, int packet_length,
   int packet_index)
 {
-  unsigned char rxpacket[packet_index + packet_length] = {0x00};
+  unsigned char rxpacket[(packet_index + packet_length) * 2] = {0x00};
 
   int result_length = read(socket_fd, &rxpacket[packet_index], packet_length);
 
   if (result_length != 0) {
-    for (size_t i = packet_index; i < packet_index + packet_length; ++i) {
+    for (size_t i = packet_index; i < (packet_index + packet_length) * 2; ++i) {
       packet->at(i) = rxpacket[i];
       printf("%02x ", rxpacket[i]);
     }

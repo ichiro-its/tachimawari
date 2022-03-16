@@ -95,7 +95,7 @@ bool CM740::send_packet(protocol_1::Packet packet)
       // set packet timeout;
       int get_length = 0;
       int expected_length = packet.get_expected_length();
-      auto rxpacket = std::make_shared<std::vector<uint8_t>>(expected_length, 0x00);
+      auto rxpacket = std::make_shared<std::vector<uint8_t>>(expected_length * 2, 0x00);
 
       packet_timer.set_timeout(expected_length);
 
@@ -149,7 +149,7 @@ bool CM740::send_bulk_read_packet(protocol_1::BulkReadPacket packet)
       // set packet timeout;
       int get_length = 0;
       int expected_length = packet.get_expected_length();
-      auto rxpacket = std::make_shared<std::vector<uint8_t>>(expected_length, 0x00);
+      auto rxpacket = std::make_shared<std::vector<uint8_t>>(expected_length * 2, 0x00);
 
       packet_timer.set_timeout(expected_length);
 
