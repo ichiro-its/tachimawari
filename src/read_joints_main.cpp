@@ -28,23 +28,22 @@
 int main(int argc, char * argv[])
 {
   auto cm740 = std::make_shared<tachimawari::control::CM740>("/dev/ttyUSB0");
+  if (!cm740->connect()) {
+    cm740->set_port("/dev/ttyUSB1");
+
+    if (!cm740->connect()) {
+      std::cout << "failed to connect CM740\n";
+      return 1;
+    }
+  }
+
   auto joint_manager = std::make_shared<tachimawari::joint::JointManager>(cm740);
 
-  if (cm740->connect()) {
-    for (auto & [key, value] : tachimawari::joint::JointId::by_name) {
-      if (!cm740->write_packet(value, tachimawari::joint::protocol_1::TORQUE_ENABLE, 1)) {
-        std::cout << "failed to torque enable " << key << "\n";
-      }
-    }
+  auto joints = joint_manager->get_current_joints();
 
-    auto joints = joint_manager->get_current_joints();
-
-    for (auto joint : joints) {
-      std::cout << "id " << static_cast<int>(joint.get_id()) << ": " << joint.get_position() <<
-        std::endl;
-    }
-  } else {
-    std::cout << "failed to connect CM740\n";
+  for (auto joint : joints) {
+    std::cout << "id " << static_cast<int>(joint.get_id()) << ": " << joint.get_position() <<
+      std::endl;
   }
 
   return 0;

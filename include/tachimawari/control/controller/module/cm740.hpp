@@ -54,6 +54,8 @@ public:
   // for serial comunication
   void set_platform(/* platform */);
 
+  void set_port(const std::string & port_name);
+
   bool connect() override;
   void disconnect() override;
 

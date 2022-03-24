@@ -52,16 +52,16 @@ public:
     LEFT_HIP_ROLL = 10,
     LEFT_HIP_PITCH = 12,
     LEFT_KNEE = 14,
-    LEFT_ANKLE_ROLL = 16,
-    LEFT_ANKLE_PITCH = 18,
+    LEFT_ANKLE_PITCH = 16,
+    LEFT_ANKLE_ROLL = 18,
 
     // right leg motors
     RIGHT_HIP_YAW = 7,
     RIGHT_HIP_ROLL = 9,
     RIGHT_HIP_PITCH = 11,
     RIGHT_KNEE = 13,
-    RIGHT_ANKLE_ROLL = 15,
-    RIGHT_ANKLE_PITCH = 17,
+    RIGHT_ANKLE_PITCH = 15,
+    RIGHT_ANKLE_ROLL = 17,
   };
 
   static const std::array<uint8_t, 20> list;

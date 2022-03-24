@@ -20,34 +20,37 @@
 
 #include <iostream>
 #include <memory>
+#include <vector>
 
 #include "tachimawari/control/controller/controller.hpp"
-#include "tachimawari/joint/model/joint_id.hpp"
+#include "tachimawari/joint/joint.hpp"
 #include "tachimawari/control/packet/protocol_1/protocol_1.hpp"
 
 int main(int argc, char * argv[])
 {
   auto cm740 = std::make_shared<tachimawari::control::CM740>("/dev/ttyUSB0");
+  if (!cm740->connect()) {
+    cm740->set_port("/dev/ttyUSB1");
 
-  if (cm740->connect()) {
-    {
-      using tachimawari::joint::JointId;
+    if (!cm740->connect()) {
+      std::cout << "failed to connect CM740\n";
+      return 1;
+    }
+  }
 
-      for (auto & [key, value] : JointId::by_name) {
-        if (cm740->write_packet(value, tachimawari::joint::protocol_1::TORQUE_ENABLE, 1)) {
-          if (!cm740->write_packet(
-              value, tachimawari::joint::protocol_1::GOAL_POSITION_L, 2048,
-              2))
-          {
-            std::cout << "failed to init joint " << key << "\n";
-          }
-        } else {
-          std::cout << "failed to torque enable " << key << "\n";
-        }
-      }
+  auto joint_manager = std::make_shared<tachimawari::joint::JointManager>(cm740);
+
+  if (!joint_manager->torque_enable(true)) {
+    std::vector<tachimawari::joint::Joint> joints;
+    for (auto id : tachimawari::joint::JointId::list) {
+      joints.push_back(tachimawari::joint::Joint(id, 0.0));
+    }
+
+    if (!joint_manager->set_joints(joints)) {
+      std::cout << "failed to sync write\n";
     }
   } else {
-    std::cout << "failed to connect CM740\n";
+    std::cout << "failed to torque enable\n";
   }
 
   return 0;

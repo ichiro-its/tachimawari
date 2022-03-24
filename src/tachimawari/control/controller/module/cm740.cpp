@@ -59,6 +59,11 @@ CM740::CM740(
 {
 }
 
+void CM740::set_port(const std::string & port_name)
+{
+  this->port_name = port_name;
+}
+
 bool CM740::connect()
 {
   if (platform->open_port(port_name, baudrate)) {
@@ -233,6 +238,7 @@ bool CM740::sync_write_packet(const std::vector<joint::Joint> & joints, bool wit
       tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
 
     std::vector<uint8_t> txpacket = instruction_packet.get_packet();
+
     return platform->write_port(txpacket) == txpacket.size();
   }
 

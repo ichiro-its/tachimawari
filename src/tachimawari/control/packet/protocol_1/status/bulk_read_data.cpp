@@ -133,7 +133,7 @@ int BulkReadData::update_all(
 }
 
 BulkReadData::BulkReadData(uint8_t id, int data_length)
-: Packet(id, 0xFF), data(data_length, 0x00)
+: Packet(id, 0xFF), data(data_length, 0x00), marker(data_length, false)
 {
 }
 
@@ -155,6 +155,7 @@ bool BulkReadData::is_valid(std::vector<uint8_t> rxpacket)
   if (checksum == rxpacket[packet_length - 1]) {
     for (size_t i = PacketIndex::PARAMETER; i < packet_length - 1; ++i) {
       data[static_cast<size_t>(start_address) + (i - PacketIndex::PARAMETER)] = rxpacket[i];
+      marker[static_cast<size_t>(start_address) + (i - PacketIndex::PARAMETER)] = true;
     }
 
     return true;
@@ -175,7 +176,7 @@ bool BulkReadData::is_filled() const
 int BulkReadData::get(uint8_t address) const
 {
   size_t index = static_cast<size_t>(address);
-  if (index < data.size()) {
+  if ((index < data.size()) && marker[index]) {
     return data[index];
   }
 
@@ -185,7 +186,7 @@ int BulkReadData::get(uint8_t address) const
 int BulkReadData::get(uint16_t address) const
 {
   size_t index = static_cast<size_t>(address);
-  if (index < data.size()) {
+  if ((index < data.size()) && marker[index] && marker[index + 1]) {
     return Word::make_word(data[index], data[index + 1]);
   }
 

@@ -27,22 +27,26 @@
 int main(int argc, char * argv[])
 {
   auto cm740 = std::make_shared<tachimawari::control::CM740>("/dev/ttyUSB0");
+  if (!cm740->connect()) {
+    cm740->set_port("/dev/ttyUSB1");
 
-  if (cm740->connect()) {
-    {
-      using tachimawari::joint::JointId;
+    if (!cm740->connect()) {
+      std::cout << "failed to connect CM740\n";
+      return 1;
+    }
+  }
 
-      for (const auto & [key, value] : JointId::by_name) {
-        std::cout << "ping " << key << ": ";
-        if (cm740->ping(value)) {
-          std::cout << "success\n";
-        } else {
-          std::cout << "failed\n";
-        }
+  {
+    using tachimawari::joint::JointId;
+
+    for (const auto & [key, value] : JointId::by_name) {
+      std::cout << "ping " << key << ": ";
+      if (cm740->ping(value)) {
+        std::cout << "success\n";
+      } else {
+        std::cout << "failed\n";
       }
     }
-  } else {
-    std::cout << "failed to connect CM740\n";
   }
 
   return 0;

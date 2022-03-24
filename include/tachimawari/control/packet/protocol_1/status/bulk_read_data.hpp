@@ -68,6 +68,7 @@ private:
   uint8_t start_address;
 
   std::vector<uint8_t> data;
+  std::vector<bool> marker;
 };
 
 }  // namespace tachimawari::control::protocol_1
