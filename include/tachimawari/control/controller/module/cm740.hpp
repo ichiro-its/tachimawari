@@ -83,7 +83,7 @@ public:
 private:
   bool dxl_power_on();
 
-  const protocol_1::StatusPacket & send_packet(protocol_1::Packet packet);
+  protocol_1::StatusPacket send_packet(protocol_1::Packet packet);
 
   bool send_bulk_read_packet(protocol_1::BulkReadPacket packet);
 

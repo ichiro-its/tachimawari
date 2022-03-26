@@ -90,7 +90,7 @@ bool CM740::dxl_power_on()
   return false;
 }
 
-const protocol_1::StatusPacket & CM740::send_packet(protocol_1::Packet packet)
+protocol_1::StatusPacket CM740::send_packet(protocol_1::Packet packet)
 {
   using protocol_1::StatusPacket;
 
@@ -111,7 +111,7 @@ const protocol_1::StatusPacket & CM740::send_packet(protocol_1::Packet packet)
         int new_get_length = StatusPacket::validate(rxpacket, get_length);
 
         if (new_get_length == get_length) {
-          status_packet = StatusPacket(*rxpacket, new_get_length);          
+          status_packet = StatusPacket(*rxpacket, new_get_length);
 
           return status_packet;
         } else if (new_get_length != 0) {
