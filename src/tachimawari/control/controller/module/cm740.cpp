@@ -229,8 +229,7 @@ bool CM740::write_packet(
 }
 
 int CM740::read_packet(
-  uint8_t id, uint8_t address, int value,
-  int data_length)
+  uint8_t id, uint8_t address, int data_length)
 {
   using ReadPacket = protocol_1::ReadPacket;
 

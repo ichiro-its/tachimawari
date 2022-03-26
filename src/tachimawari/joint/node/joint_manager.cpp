@@ -59,18 +59,14 @@ void JointManager::update_current_joints(const std::vector<Joint> & joints)
 
 void JointManager::update_current_joints_from_control_manager(const std::vector<Joint> & joints)
 {
-  control_manager->bulk_read_packet(joints);
-
   std::vector<Joint> new_joints(joints);
   for (auto & joint : new_joints) {
     float value = Joint::CENTER_VALUE;
 
-    if (control_manager->get_protocol_version() == 1.0) {
-      int current_value = control_manager->get_bulk_data(
-        joint.get_id(), protocol_1::MX28Address::PRESENT_POSITION_L, 2);
+    int current_value = control_manager->read_packet(
+      joint.get_id(), protocol_1::MX28Address::PRESENT_POSITION_L, 2);
 
-      value = (current_value == -1) ? value : current_value;
-    }
+    value = (current_value == -1) ? value : current_value;
 
     joint.set_position_value(value);
   }
