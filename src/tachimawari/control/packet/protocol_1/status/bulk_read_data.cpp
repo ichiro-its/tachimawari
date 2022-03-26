@@ -176,7 +176,7 @@ bool BulkReadData::is_filled() const
 int BulkReadData::get(uint8_t address) const
 {
   size_t index = static_cast<size_t>(address);
-  if ((index < data.size()) && marker[index]) {
+  if (index < data.size() && marker[index]) {
     return data[index];
   }
 
@@ -186,7 +186,7 @@ int BulkReadData::get(uint8_t address) const
 int BulkReadData::get(uint16_t address) const
 {
   size_t index = static_cast<size_t>(address);
-  if ((index < data.size()) && marker[index] && marker[index + 1]) {
+  if (index < data.size() && marker[index] && marker[index + 1]) {
     return Word::make_word(data[index], data[index + 1]);
   }
 

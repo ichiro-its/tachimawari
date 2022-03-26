@@ -49,6 +49,8 @@ public:
 
   uint8_t get_data_length() const override;
 
+  int get_read_data(uint8_t data_length) const;
+
 private:
   std::vector<uint8_t> rxpacket;
 

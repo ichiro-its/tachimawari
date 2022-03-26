@@ -65,6 +65,10 @@ public:
     uint8_t id, uint8_t address, int value,
     int data_length = 1) override;
 
+  int read_packet(
+    uint8_t id, uint8_t address, int value,
+    int data_length = 1) override;
+
   bool sync_write_packet(
     const std::vector<joint::Joint> & joints,
     bool with_pid = false) override;
@@ -80,7 +84,7 @@ public:
 private:
   bool dxl_power_on();
 
-  bool send_packet(protocol_1::Packet packet);
+  const protocol_1::StatusPacket & send_packet(protocol_1::Packet packet);
 
   bool send_bulk_read_packet(protocol_1::BulkReadPacket packet);
 

@@ -21,34 +21,31 @@
 #include <string>
 #include <vector>
 
-#include "tachimawari/control/packet/protocol_1/instruction/write_packet.hpp"
+#include "tachimawari/control/packet/protocol_1/instruction/read_packet.hpp"
 
 #include "tachimawari/control/manager/control_manager.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
-#include "tachimawari/control/packet/protocol_1/utils/word.hpp"
-#include "tachimawari/joint/protocol_1/mx28_address.hpp"
+#include "tachimawari/control/packet/protocol_1/model/packet.hpp"
 
 namespace tachimawari::control::protocol_1
 {
 
-WritePacket::WritePacket()
+ReadPacket::ReadPacket()
 : Packet(tachimawari::control::ControlManager::CONTROLLER, Instruction::WRITE)
 {
 }
 
-void WritePacket::create(uint8_t id, uint8_t address, uint8_t value)
+bool ReadPacket::is_match(const Packet & instruction_packet, const Packet & status_packet)
 {
-  packet_id = id;
-  parameters.push_back(address);
-  parameters.push_back(value);
+  return (instruction_packet.get_packet_id() == status_packet.get_packet_id()) &&
+    (static_cast<size_t>(instruction_packet.get_parameters()[1]) == status_packet.get_parameters().size());
 }
 
-void WritePacket::create(uint8_t id, uint8_t address, uint16_t value)
+void ReadPacket::create(uint8_t id, uint8_t address, uint8_t data_length)
 {
   packet_id = id;
   parameters.push_back(address);
-  parameters.push_back(Word::get_low_byte(value));
-  parameters.push_back(Word::get_high_byte(value));
+  parameters.push_back(data_length);
 }
 
 }  // namespace tachimawari::control::protocol_1

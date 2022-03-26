@@ -28,6 +28,7 @@
 #include "tachimawari/control/controller/module/cm740_address.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/bulk_read_packet.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
+#include "tachimawari/control/packet/protocol_1/instruction/read_packet.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/sync_write_packet.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/write_packet.hpp"
 #include "tachimawari/control/packet/protocol_1/status/bulk_read_data.hpp"
@@ -89,55 +90,55 @@ bool CM740::dxl_power_on()
   return false;
 }
 
-bool CM740::send_packet(protocol_1::Packet packet)
+const protocol_1::StatusPacket & CM740::send_packet(protocol_1::Packet packet)
 {
-  {
-    using protocol_1::StatusPacket;
+  using protocol_1::StatusPacket;
 
-    std::vector<uint8_t> txpacket = packet.get_packet();
+  int get_length = 0;
+  int expected_length = packet.get_expected_length();
+  auto rxpacket = std::make_shared<std::vector<uint8_t>>(expected_length * 2, 0x00);
 
-    if (platform->write_port(txpacket) == txpacket.size()) {
-      // set packet timeout;
-      int get_length = 0;
-      int expected_length = packet.get_expected_length();
-      auto rxpacket = std::make_shared<std::vector<uint8_t>>(expected_length * 2, 0x00);
+  std::vector<uint8_t> txpacket = packet.get_packet();
+  StatusPacket status_packet(*rxpacket, get_length);
 
-      packet_timer.set_timeout(expected_length);
+  if (platform->write_port(txpacket) == txpacket.size()) {
+    packet_timer.set_timeout(expected_length);
 
-      while (true) {
-        get_length += platform->read_port(rxpacket, expected_length - get_length, get_length);
+    while (true) {
+      get_length += platform->read_port(rxpacket, expected_length - get_length, get_length);
 
-        if (get_length == expected_length) {
-          int new_get_length = StatusPacket::validate(rxpacket, get_length);
+      if (get_length == expected_length) {
+        int new_get_length = StatusPacket::validate(rxpacket, get_length);
 
-          if (new_get_length == get_length) {
-            return true;
-          } else if (new_get_length != 0) {
-            // TODO(maroqijalil): will be used for logging
-            // is packet timeout ? so RX_TIMEOUT
-            get_length = new_get_length;
-          } else {
-            // TODO(maroqijalil): will be used for logging
-            // so RX_CORRUPT
-            return false;
-          }
-        } else {
+        if (new_get_length == get_length) {
+          status_packet = StatusPacket(*rxpacket, new_get_length);          
+
+          return status_packet;
+        } else if (new_get_length != 0) {
           // TODO(maroqijalil): will be used for logging
           // is packet timeout ? so RX_TIMEOUT
-          if (packet_timer.is_timeout()) {
-            break;
-          } else if (get_length > expected_length) {
-            break;
-          }
+          get_length = new_get_length;
+        } else {
+          // TODO(maroqijalil): will be used for logging
+          // so RX_CORRUPT
+          return status_packet;
+        }
+      } else {
+        // TODO(maroqijalil): will be used for logging
+        // is packet timeout ? so RX_TIMEOUT
+        if (packet_timer.is_timeout()) {
+          break;
+        } else if (get_length > expected_length) {
+          break;
         }
       }
-    } else {
-      // TODO(maroqijalil): will be used for logging
-      // so TX_FAIL
     }
-
-    return false;
+  } else {
+    // TODO(maroqijalil): will be used for logging
+    // so TX_FAIL
   }
+
+  return status_packet;
 }
 
 bool CM740::send_bulk_read_packet(protocol_1::BulkReadPacket packet)
@@ -202,7 +203,7 @@ bool CM740::ping(uint8_t id)
   if (protocol_version == 1.0) {
     protocol_1::Packet instruction_packet(id, protocol_1::Instruction::PING);
 
-    return send_packet(instruction_packet);
+    return send_packet(instruction_packet).is_success();
   }
 
   return false;
@@ -221,10 +222,30 @@ bool CM740::write_packet(
       instruction_packet.create(id, address, static_cast<uint16_t>(value));
     }
 
-    return send_packet(instruction_packet);
+    return send_packet(instruction_packet).is_success();
   }
 
   return false;
+}
+
+int CM740::read_packet(
+  uint8_t id, uint8_t address, int value,
+  int data_length)
+{
+  using ReadPacket = protocol_1::ReadPacket;
+
+  if (protocol_version == 1.0) {
+    ReadPacket instruction_packet;
+    instruction_packet.create(id, address, data_length);
+
+    auto status_packet = send_packet(instruction_packet);
+
+    if (status_packet.is_success() && ReadPacket::is_match(instruction_packet, status_packet)) {
+      return status_packet.get_read_data(data_length);
+    }
+  }
+
+  return -1;
 }
 
 bool CM740::sync_write_packet(const std::vector<joint::Joint> & joints, bool with_pid)
@@ -293,8 +314,6 @@ int CM740::get_bulk_data(
     } else if (data_length == 2) {
       return bulk_data->at(id).get(static_cast<uint16_t>(address));
     }
-  } else {
-    return -1;
   }
 
   return -1;

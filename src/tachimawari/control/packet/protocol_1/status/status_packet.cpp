@@ -27,6 +27,7 @@
 #include "tachimawari/control/packet/protocol_1/model/packet_index.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
 #include "tachimawari/control/packet/protocol_1/utils/word.hpp"
+#include "tachimawari/control/packet/protocol_1/utils/word.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
 namespace tachimawari::control::protocol_1
@@ -66,15 +67,15 @@ StatusPacket::StatusPacket(const std::vector<uint8_t> & rxpacket, int packet_len
 : Packet(rxpacket[PacketIndex::ID], rxpacket[PacketIndex::ERROR]),
   rxpacket_length(packet_length), rxpacket(rxpacket)
 {
-}
-
-bool StatusPacket::is_valid()
-{
   for (size_t i = PacketIndex::PARAMETER; i < rxpacket_length - 1; ++i) {
     parameters.push_back(rxpacket[i]);
   }
 
   calculate_checksum();
+}
+
+bool StatusPacket::is_valid()
+{
   return checksum == rxpacket[rxpacket_length - 1];
 }
 
@@ -91,6 +92,17 @@ const std::vector<uint8_t> & StatusPacket::get_raw_packet() const
 bool StatusPacket::is_success() const
 {
   return rxpacket_length != 0;
+}
+
+int StatusPacket::get_read_data(uint8_t data_length) const
+{
+  if (data_length == 1) {
+    return parameters[0];
+  } else if (data_length == 2 && parameters.size() > 1) {
+    return Word::make_word(parameters[0], parameters[1]);
+  }
+
+  return -1;
 }
 
 }  // namespace tachimawari::control::protocol_1
