@@ -139,6 +139,46 @@ bool DynamixelSDK::write_packet(
   return true;
 }
 
+int DynamixelSDK::read_packet(
+  uint8_t id, uint8_t address, int data_length)
+{
+  int value = -1;
+
+  if (protocol_version == 1.0) {
+    uint8_t error = 0;
+    uint16_t model_number;
+    int result = TX_FAIL;
+
+    if (data_length == 1) {
+      uint8_t result_val = 0;
+
+      result = packet_handler->read1ByteTxRx(
+        port_handler, id, address,
+        &result_val, &error);
+
+      value = (result == SUCCESS) ? result_val : value;
+    } else if (data_length == 2) {
+      uint16_t result_val = 0;
+
+      result = packet_handler->read2ByteTxRx(
+        port_handler, id, address,
+        &result_val, &error);
+
+      value = (result == SUCCESS) ? result_val : value;
+    }
+
+    if (result != SUCCESS) {
+      // TODO(maroqijalil): will be used for logging
+      // packet_handler->getTxRxResult(result);
+    } else if (error != 0) {
+      // TODO(maroqijalil): will be used for logging
+      // packet_handler->getRxPacketError(error);
+    }
+  }
+
+  return value;
+}
+
 bool DynamixelSDK::sync_write_packet(
   const std::vector<joint::Joint> & joints,
   bool with_pid)

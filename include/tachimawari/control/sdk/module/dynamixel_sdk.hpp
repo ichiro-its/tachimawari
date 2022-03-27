@@ -58,6 +58,9 @@ public:
     uint8_t id, uint8_t address, int value,
     int data_length = 1) override;
 
+  int read_packet(
+    uint8_t id, uint8_t address, int data_length = 1) override;
+
   bool sync_write_packet(
     const std::vector<joint::Joint> & joints,
     bool with_pid = false) override;
