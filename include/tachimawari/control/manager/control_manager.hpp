@@ -62,8 +62,6 @@ public:
 
   virtual bool bulk_read_packet() {}
 
-  virtual bool bulk_read_packet(const std::vector<joint::Joint> & joints) {}
-
   virtual int get_bulk_data(
     uint8_t id, uint8_t address,
     int data_length = 1) {}

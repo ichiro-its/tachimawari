@@ -43,8 +43,6 @@ public:
   void add(
     uint8_t id, uint8_t starting_address,
     uint8_t data_length);
-
-  void add(const std::vector<tachimawari::joint::Joint> & joints);
 };
 
 }  // namespace tachimawari::control::protocol_1

@@ -180,25 +180,6 @@ bool DynamixelSDK::bulk_read_packet()
   return false;
 }
 
-bool DynamixelSDK::bulk_read_packet(const std::vector<joint::Joint> & joints)
-{
-  if (protocol_version == 1.0) {
-    sdk::protocol_1::GroupBulkRead group_bulk_read(port_handler, packet_handler);
-
-    if (ping(CONTROLLER)) {
-      group_bulk_read.add(joints);
-    }
-
-    if (group_bulk_read.is_parameters_filled()) {
-      return send_bulk_read_packet(group_bulk_read);
-    } else {
-      return false;
-    }
-  }
-
-  return false;
-}
-
 int DynamixelSDK::get_bulk_data(
   uint8_t id, uint8_t address,
   int data_length)

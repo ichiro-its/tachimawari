@@ -284,25 +284,6 @@ bool CM740::bulk_read_packet()
   return false;
 }
 
-bool CM740::bulk_read_packet(const std::vector<joint::Joint> & joints)
-{
-  if (protocol_version == 1.0) {
-    protocol_1::BulkReadPacket instruction_packet;
-
-    if (joints.size()) {
-      instruction_packet.add(joints);
-    }
-
-    if (instruction_packet.is_parameters_filled()) {
-      return send_bulk_read_packet(instruction_packet);
-    } else {
-      return false;
-    }
-  }
-
-  return false;
-}
-
 int CM740::get_bulk_data(
   uint8_t id, uint8_t address,
   int data_length)

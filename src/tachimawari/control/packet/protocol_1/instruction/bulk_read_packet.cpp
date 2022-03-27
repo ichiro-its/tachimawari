@@ -67,13 +67,4 @@ void BulkReadPacket::add(
   parameters.push_back(starting_address);
 }
 
-void BulkReadPacket::add(const std::vector<tachimawari::joint::Joint> & joints)
-{
-  for (const auto & joint : joints) {
-    parameters.push_back(2);  // present position size
-    parameters.push_back(joint.get_id());
-    parameters.push_back(tachimawari::joint::protocol_1::MX28Address::PRESENT_POSITION_L);
-  }
-}
-
 }  // namespace tachimawari::control::protocol_1
