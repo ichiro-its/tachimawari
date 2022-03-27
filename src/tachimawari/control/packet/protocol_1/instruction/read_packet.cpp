@@ -30,16 +30,16 @@
 namespace tachimawari::control::protocol_1
 {
 
-ReadPacket::ReadPacket()
-: Packet(tachimawari::control::ControlManager::CONTROLLER, Instruction::WRITE)
-{
-}
-
 bool ReadPacket::is_match(const Packet & instruction_packet, const Packet & status_packet)
 {
   return (instruction_packet.get_packet_id() == status_packet.get_packet_id()) &&
          (static_cast<size_t>(instruction_packet.get_parameters()[1]) ==
          status_packet.get_parameters().size());
+}
+
+ReadPacket::ReadPacket()
+: Packet(tachimawari::control::ControlManager::CONTROLLER, Instruction::READ)
+{
 }
 
 void ReadPacket::create(uint8_t id, uint8_t address, uint8_t data_length)

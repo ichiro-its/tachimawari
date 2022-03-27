@@ -66,16 +66,17 @@ StatusPacket::StatusPacket(const std::vector<uint8_t> & rxpacket, int packet_len
 : Packet(rxpacket[PacketIndex::ID], rxpacket[PacketIndex::ERROR]),
   rxpacket_length(packet_length), rxpacket(rxpacket)
 {
-  for (size_t i = PacketIndex::PARAMETER; i < rxpacket_length - 1; ++i) {
-    parameters.push_back(rxpacket[i]);
+  if (rxpacket_length > PacketIndex::PARAMETER) {
+    for (size_t i = PacketIndex::PARAMETER; i < rxpacket_length - 1; ++i) {
+      parameters.push_back(rxpacket[i]);
+    }
   }
-
-  calculate_checksum();
 }
 
 bool StatusPacket::is_valid()
 {
-  return checksum == rxpacket[rxpacket_length - 1];
+  calculate_checksum();
+  return (rxpacket_length > 0) && (checksum == rxpacket[rxpacket_length - 1]);
 }
 
 uint8_t StatusPacket::get_data_length() const

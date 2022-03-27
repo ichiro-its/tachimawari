@@ -98,7 +98,7 @@ protocol_1::StatusPacket CM740::send_packet(protocol_1::Packet packet)
   int expected_length = packet.get_expected_length();
   auto rxpacket = std::make_shared<std::vector<uint8_t>>(expected_length * 2, 0x00);
 
-  std::vector<uint8_t> txpacket = packet.get_packet();
+  std::vector<uint8_t> txpacket(packet.get_packet());
   StatusPacket status_packet(*rxpacket, get_length);
 
   if (platform->write_port(txpacket) == txpacket.size()) {
@@ -146,7 +146,7 @@ bool CM740::send_bulk_read_packet(protocol_1::BulkReadPacket packet)
   {
     using protocol_1::BulkReadData;
 
-    std::vector<uint8_t> txpacket = packet.get_packet();
+    std::vector<uint8_t> txpacket(packet.get_packet());
 
     if (platform->write_port(txpacket) == txpacket.size()) {
       int data_number = packet.get_data_number();
