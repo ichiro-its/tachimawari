@@ -21,6 +21,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include "tachimawari/joint/node/joint_node.hpp"
 
@@ -37,6 +38,9 @@ namespace tachimawari::joint
 JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager)
 : joint_manager(joint_manager)
 {
+  current_joints_publisher = node->create_publisher<tachimawari_interfaces::msg::CurrentJoints>(
+    get_node_prefix() + "/current_joints", 10);
+
   set_joints_subscriber = node->create_subscription<tachimawari_interfaces::msg::SetJoints>(
     get_node_prefix() + "/set_joints", 10,
     [this](const tachimawari_interfaces::msg::SetJoints::SharedPtr message) {
@@ -89,6 +93,19 @@ JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager>
 std::string JointNode::get_node_prefix() const
 {
   return "joint";
+}
+
+void JointNode::publish_current_joints()
+{
+  const auto & current_joints = this->joint_manager->get_current_joints();
+  auto msg_joints = tachimawari_interfaces::msg::CurrentJoints();
+
+  for (size_t i = 0; i < msg_joints.joints.size() && i < current_joints.size(); ++i) {
+    msg_joints.joints[i].id = current_joints[i].get_id();
+    msg_joints.joints[i].position = current_joints[i].get_position();
+  }
+
+  current_joints_publisher->publish(msg_joints);
 }
 
 }  // namespace tachimawari::joint

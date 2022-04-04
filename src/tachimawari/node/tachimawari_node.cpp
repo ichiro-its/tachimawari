@@ -47,6 +47,10 @@ TachimawariNode::TachimawariNode(rclcpp::Node::SharedPtr node)
 
           imu_node->update_imu();
         }
+
+        if (joint_node != nullptr) {
+          joint_node->publish_current_joints();
+        }
       }
     }
   );
