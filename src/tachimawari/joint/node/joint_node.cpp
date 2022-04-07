@@ -120,10 +120,12 @@ void JointNode::publish_current_joints()
 {
   const auto & current_joints = this->joint_manager->get_current_joints();
   auto msg_joints = tachimawari_interfaces::msg::CurrentJoints();
+  auto & joints = msg_joints.joints;
 
-  for (size_t i = 0; i < msg_joints.joints.size() && i < current_joints.size(); ++i) {
-    msg_joints.joints[i].id = current_joints[i].get_id();
-    msg_joints.joints[i].position = current_joints[i].get_position();
+  joints.resize(current_joints.size());
+  for (size_t i = 0; i < joints.size() && i < current_joints.size(); ++i) {
+    joints[i].id = current_joints[i].get_id();
+    joints[i].position = current_joints[i].get_position();
   }
 
   current_joints_publisher->publish(msg_joints);
