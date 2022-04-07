@@ -21,6 +21,7 @@
 #include <chrono>
 #include <memory>
 #include <string>
+#include <iostream>
 
 #include "tachimawari/node/tachimawari_node.hpp"
 
@@ -58,20 +59,24 @@ TachimawariNode::TachimawariNode(rclcpp::Node::SharedPtr node)
   );
 }
 
-void TachimawariNode::set_joint_manager(
-  std::shared_ptr<control::ControlManager> control_manager)
+void TachimawariNode::activate_joint_manager()
 {
   joint_node = std::make_shared<joint::JointNode>(
     node,
     std::make_shared<joint::JointManager>(control_manager));
 }
 
-void TachimawariNode::set_imu_provider(
-  std::shared_ptr<control::ControlManager> control_manager)
+void TachimawariNode::activate_imu_provider()
 {
   imu_node = std::make_shared<imu::ImuNode>(
     node,
     std::make_shared<imu::ImuProvider>(control_manager));
+}
+
+void TachimawariNode::set_control_manager(
+  std::shared_ptr<control::ControlManager> control_manager) 
+{
+  this->control_manager = control_manager;
 }
 
 }  // namespace tachimawari
