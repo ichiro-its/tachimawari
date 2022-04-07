@@ -84,21 +84,19 @@ bool DynamixelSDK::send_bulk_read_packet(sdk::protocol_1::GroupBulkRead group_bu
 
 bool DynamixelSDK::ping(uint8_t id)
 {
-  if (protocol_version == 1.0) {
-    uint8_t error = 0;
-    uint16_t model_number;
+  uint8_t error = 0;
+  uint16_t model_number;
 
-    if (packet_handler->ping(port_handler, id, &model_number, &error) != SUCCESS) {
-      // TODO(maroqijalil): will be used for logging
-      // packet_handler->getTxRxResult(result);
+  if (packet_handler->ping(port_handler, id, &model_number, &error) != SUCCESS) {
+    // TODO(maroqijalil): will be used for logging
+    // packet_handler->getTxRxResult(result);
 
-      return false;
-    } else if (error != 0) {
-      // TODO(maroqijalil): will be used for logging
-      // packet_handler->getRxPacketError(error);
+    return false;
+  } else if (error != 0) {
+    // TODO(maroqijalil): will be used for logging
+    // packet_handler->getRxPacketError(error);
 
-      return false;
-    }
+    return false;
   }
 
   return true;
@@ -108,32 +106,34 @@ bool DynamixelSDK::write_packet(
   uint8_t id, uint8_t address, int value,
   int data_length)
 {
-  if (protocol_version == 1.0) {
-    uint8_t error = 0;
-    uint16_t model_number;
-    int result = TX_FAIL;
+  uint8_t error = 0;
+  uint16_t model_number;
+  int result = TX_FAIL;
 
-    if (data_length == 1) {
-      result = packet_handler->write1ByteTxRx(
-        port_handler, id, address,
-        static_cast<uint8_t>(value), &error);
-    } else if (data_length == 2) {
-      result = packet_handler->write2ByteTxRx(
-        port_handler, id, address,
-        static_cast<uint16_t>(value), &error);
-    }
+  if (data_length == 1) {
+    result = packet_handler->write1ByteTxRx(
+      port_handler, id, address,
+      static_cast<uint8_t>(value), &error);
+  } else if (data_length == 2) {
+    result = packet_handler->write2ByteTxRx(
+      port_handler, id, address,
+      static_cast<uint16_t>(value), &error);
+  } else if (data_length == 4) {
+    result = packet_handler->write4ByteTxRx(
+      port_handler, id, address,
+      static_cast<uint32_t>(value), &error);
+  }
 
-    if (result != SUCCESS) {
-      // TODO(maroqijalil): will be used for logging
-      // packet_handler->getTxRxResult(result);
+  if (result != SUCCESS) {
+    // TODO(maroqijalil): will be used for logging
+    // packet_handler->getTxRxResult(result);
 
-      return false;
-    } else if (error != 0) {
-      // TODO(maroqijalil): will be used for logging
-      // packet_handler->getRxPacketError(error);
+    return false;
+  } else if (error != 0) {
+    // TODO(maroqijalil): will be used for logging
+    // packet_handler->getRxPacketError(error);
 
-      return false;
-    }
+    return false;
   }
 
   return true;
@@ -143,37 +143,42 @@ int DynamixelSDK::read_packet(
   uint8_t id, uint8_t address, int data_length)
 {
   int value = -1;
+  uint8_t error = 0;
+  uint16_t model_number;
+  int result = TX_FAIL;
 
-  if (protocol_version == 1.0) {
-    uint8_t error = 0;
-    uint16_t model_number;
-    int result = TX_FAIL;
+  if (data_length == 1) {
+    uint8_t result_val = 0;
 
-    if (data_length == 1) {
-      uint8_t result_val = 0;
+    result = packet_handler->read1ByteTxRx(
+      port_handler, id, address,
+      &result_val, &error);
 
-      result = packet_handler->read1ByteTxRx(
-        port_handler, id, address,
-        &result_val, &error);
+    value = (result == SUCCESS) ? result_val : value;
+  } else if (data_length == 2) {
+    uint16_t result_val = 0;
 
-      value = (result == SUCCESS) ? result_val : value;
-    } else if (data_length == 2) {
-      uint16_t result_val = 0;
+    result = packet_handler->read2ByteTxRx(
+      port_handler, id, address,
+      &result_val, &error);
 
-      result = packet_handler->read2ByteTxRx(
-        port_handler, id, address,
-        &result_val, &error);
+    value = (result == SUCCESS) ? result_val : value;
+  } else if (data_length == 4) {
+    uint32_t result_val = 0;
 
-      value = (result == SUCCESS) ? result_val : value;
-    }
+    result = packet_handler->read4ByteTxRx(
+      port_handler, id, address,
+      &result_val, &error);
 
-    if (result != SUCCESS) {
-      // TODO(maroqijalil): will be used for logging
-      // packet_handler->getTxRxResult(result);
-    } else if (error != 0) {
-      // TODO(maroqijalil): will be used for logging
-      // packet_handler->getRxPacketError(error);
-    }
+    value = (result == SUCCESS) ? result_val : value;
+  }
+
+  if (result != SUCCESS) {
+    // TODO(maroqijalil): will be used for logging
+    // packet_handler->getTxRxResult(result);
+  } else if (error != 0) {
+    // TODO(maroqijalil): will be used for logging
+    // packet_handler->getRxPacketError(error);
   }
 
   return value;
