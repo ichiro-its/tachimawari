@@ -18,75 +18,70 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#ifndef TACHIMAWARI__JOINT__UTILS__MIDDLEWARE_HPP_
+#define TACHIMAWARI__JOINT__UTILS__MIDDLEWARE_HPP_
+
+#include <chrono>
 #include <string>
 #include <vector>
 
-#include "keisan/angle/angle.hpp"
 #include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari_interfaces/msg/joint.hpp"
+
+using namespace std::chrono_literals;  // NOLINT
 
 namespace tachimawari::joint
 {
 
-int Joint::angle_to_value(double angle)
+class Middleware
 {
-  return angle * TO_VALUE_RATIO;
-}
+public:
+  enum
+  {
+    DEFAULT,
+    FOR_WALKING,
+    FOR_HEAD,
+    FOR_ACTION,
+    FORCE
+  };
 
-double Joint::value_to_angle(int value)
-{
-  return value * TO_ANGLE_RATIO;
-}
+  explicit Middleware(double time_limit = 0.5, std::chrono::milliseconds time_unit = 8ms);
 
-Joint::Joint(uint8_t joint_id, float position)
-: id(joint_id), position(keisan::make_degree(position)), p_gain(30.0), i_gain(30.0), d_gain(30.0)
-{
-}
+  void set_rules(int control_type, const std::vector<uint8_t> & ids = {});
 
-Joint::Joint(uint8_t joint_id, keisan::Angle<float> position)
-: Joint(joint_id, position.degree())
-{
-}
+  bool validate(int control_type);
+  std::vector<Joint> filter_joints(
+    int control_type,
+    const std::vector<tachimawari_interfaces::msg::Joint> & joints_message = {});
 
-void Joint::set_position(float position)
-{
-  this->position = keisan::make_degree(position);
-}
+  void update();
 
-void Joint::set_position(keisan::Angle<float> position)
-{
-  this->position = position;
-}
+private:
+  void reset_ids();
 
-void Joint::set_pid_gain(float p, float i, float d)
-{
-  p_gain = p;
-  i_gain = i;
-  d_gain = d;
-}
+  int control_rule;
+  double time_limit;
+  double time_unit;
 
-uint8_t Joint::get_id() const
-{
-  return id;
-}
+  bool is_action_controlling;
+  int action_value;
+  int action_counter;
+  double action_timer;
+  std::vector<uint8_t> action_ids;
 
-float Joint::get_position() const
-{
-  return position.normalize().degree();
-}
+  bool is_head_controlling;
+  int head_value;
+  int head_counter;
+  double head_timer;
+  std::vector<uint8_t> head_ids;
 
-std::vector<float> Joint::get_pid_gain() const
-{
-  return {p_gain, i_gain, d_gain};
-}
-
-void Joint::set_position_value(int value)
-{
-  position = keisan::make_degree((value - CENTER_VALUE) * TO_ANGLE_RATIO).normalize();
-}
-
-int Joint::get_position_value() const
-{
-  return (position.degree() * TO_VALUE_RATIO) + CENTER_VALUE;
-}
+  bool is_walking_controlling;
+  int walking_value;
+  int walking_counter;
+  double walking_timer;
+  std::vector<uint8_t> walking_ids;
+};
 
 }  // namespace tachimawari::joint
+
+#endif  // TACHIMAWARI__JOINT__UTILS__MIDDLEWARE_HPP_

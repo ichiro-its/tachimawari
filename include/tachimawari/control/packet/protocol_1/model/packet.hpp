@@ -24,10 +24,9 @@
 #include <string>
 #include <vector>
 
-#include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
 
-namespace tachimawari::control::packet::protocol_1
+namespace tachimawari::control::protocol_1
 {
 
 class Packet
@@ -60,6 +59,6 @@ protected:
   uint8_t checksum;
 };
 
-}  // namespace tachimawari::control::packet::protocol_1
+}  // namespace tachimawari::control::protocol_1
 
 #endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__MODEL__PACKET_HPP_

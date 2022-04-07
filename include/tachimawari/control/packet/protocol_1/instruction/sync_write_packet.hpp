@@ -28,7 +28,7 @@
 #include "tachimawari/joint/model/joint.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
-namespace tachimawari::control::packet::protocol_1
+namespace tachimawari::control::protocol_1
 {
 
 class SyncWritePacket : public Packet
@@ -42,6 +42,6 @@ public:
     tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
 };
 
-}  // namespace tachimawari::control::packet::protocol_1
+}  // namespace tachimawari::control::protocol_1
 
 #endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__SYNC_WRITE_PACKET_HPP_

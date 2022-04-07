@@ -27,6 +27,8 @@
 #include "rclcpp/rclcpp.hpp"
 #include "tachimawari/joint/node/joint_manager.hpp"
 #include "tachimawari_interfaces/msg/current_joints.hpp"
+#include "tachimawari/joint/utils/middleware.hpp"
+#include "tachimawari_interfaces/msg/control_joints.hpp"
 #include "tachimawari_interfaces/msg/set_joints.hpp"
 #include "tachimawari_interfaces/msg/set_torques.hpp"
 #include "tachimawari_interfaces/srv/get_joints.hpp"
@@ -40,6 +42,7 @@ public:
   JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager);
 
   void publish_current_joints();
+  void update();
 
 private:
   std::string get_node_prefix() const;
@@ -49,14 +52,18 @@ private:
   rclcpp::Publisher<tachimawari_interfaces::msg::CurrentJoints>::SharedPtr
     current_joints_publisher;
 
+  Middleware middleware;
+
+  rclcpp::Subscription<tachimawari_interfaces::msg::ControlJoints>::SharedPtr
+    control_joints_subscriber;
+
+  rclcpp::Service<tachimawari_interfaces::srv::GetJoints>::SharedPtr
+    get_joints_server;
   rclcpp::Subscription<tachimawari_interfaces::msg::SetJoints>::SharedPtr
     set_joints_subscriber;
 
   rclcpp::Subscription<tachimawari_interfaces::msg::SetTorques>::SharedPtr
     set_torques_subscriber;
-
-  rclcpp::Service<tachimawari_interfaces::srv::GetJoints>::SharedPtr
-    get_joints_server;
 };
 
 }  // namespace tachimawari::joint

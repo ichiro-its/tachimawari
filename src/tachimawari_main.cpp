@@ -28,18 +28,24 @@ int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
 
+  auto cm740 = std::make_shared<tachimawari::control::CM740>("/dev/ttyUSB0");
+  if (!cm740->connect()) {
+    cm740->set_port("/dev/ttyUSB1");
+
+    if (!cm740->connect()) {
+      std::cout << "failed to connect CM740\n";
+      return 1;
+    }
+  }
+
   auto node = std::make_shared<rclcpp::Node>("tachimawari_node");
   auto tachimawari_node = std::make_shared<tachimawari::TachimawariNode>(node);
 
-  auto cm740 = std::make_shared<tachimawari::control::CM740>("/dev/ttyUSB0");
+  tachimawari_node->set_joint_manager(cm740);
+  tachimawari_node->set_imu_provider(cm740);
 
-  if (cm740->connect()) {
-    tachimawari_node->set_joint_manager(cm740);
-    tachimawari_node->set_imu_provider(cm740);
-
-    rclcpp::spin(node);
-    rclcpp::shutdown();
-  }
+  rclcpp::spin(node);
+  rclcpp::shutdown();
 
   return 0;
 }

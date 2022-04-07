@@ -21,44 +21,32 @@
 #include <string>
 #include <vector>
 
-#include "tachimawari/control/packet/protocol_1/instruction/sync_write_packet.hpp"
+#include "tachimawari/control/packet/protocol_1/instruction/read_packet.hpp"
 
 #include "tachimawari/control/manager/control_manager.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
-#include "tachimawari/control/packet/protocol_1/utils/word.hpp"
-#include "tachimawari/joint/protocol_1/mx28_address.hpp"
+#include "tachimawari/control/packet/protocol_1/model/packet.hpp"
 
 namespace tachimawari::control::protocol_1
 {
 
-SyncWritePacket::SyncWritePacket()
-: Packet(tachimawari::control::ControlManager::BROADCAST, Instruction::SYNC_WRITE)
+bool ReadPacket::is_match(const Packet & instruction_packet, const Packet & status_packet)
+{
+  return (instruction_packet.get_packet_id() == status_packet.get_packet_id()) &&
+         (static_cast<size_t>(instruction_packet.get_parameters()[1]) ==
+         status_packet.get_parameters().size());
+}
+
+ReadPacket::ReadPacket()
+: Packet(tachimawari::control::ControlManager::CONTROLLER, Instruction::READ)
 {
 }
 
-void SyncWritePacket::create(
-  const std::vector<tachimawari::joint::Joint> & joints,
-  uint8_t starting_address)
+void ReadPacket::create(uint8_t id, uint8_t address, uint8_t data_length)
 {
-  parameters.push_back(starting_address);
-
-  // check does the request need pid to be included
-  bool is_include_pid = starting_address == tachimawari::joint::protocol_1::MX28Address::D_GAIN;
-  parameters.push_back((is_include_pid) ? 6 : 2);  // set the data lenngth
-
-  for (const auto & joint : joints) {
-    parameters.push_back(joint.get_id());
-
-    if (is_include_pid) {
-      parameters.push_back(joint.get_pid_gain()[2]);
-      parameters.push_back(joint.get_pid_gain()[1]);
-      parameters.push_back(joint.get_pid_gain()[0]);
-      parameters.push_back(0x00);
-    }
-
-    parameters.push_back(Word::get_low_byte(joint.get_position_value()));
-    parameters.push_back(Word::get_high_byte(joint.get_position_value()));
-  }
+  packet_id = id;
+  parameters.push_back(address);
+  parameters.push_back(data_length);
 }
 
 }  // namespace tachimawari::control::protocol_1
