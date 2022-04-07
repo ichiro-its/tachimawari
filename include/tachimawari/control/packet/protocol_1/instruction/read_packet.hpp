@@ -18,37 +18,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__READ_PACKET_HPP_
+#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__READ_PACKET_HPP_
+
 #include <string>
-#include <vector>
 
-#include "tachimawari/control/packet/protocol_1/instruction/write_packet.hpp"
-
-#include "tachimawari/control/manager/control_manager.hpp"
-#include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
-#include "tachimawari/control/packet/protocol_1/utils/word.hpp"
-#include "tachimawari/joint/protocol_1/mx28_address.hpp"
+#include "tachimawari/control/packet/protocol_1/model/packet.hpp"
 
 namespace tachimawari::control::protocol_1
 {
 
-WritePacket::WritePacket()
-: Packet(tachimawari::control::ControlManager::CONTROLLER, Instruction::WRITE)
+class ReadPacket : public Packet
 {
-}
+public:
+  static bool is_match(const Packet & instruction_packet, const Packet & status_packet);
 
-void WritePacket::create(uint8_t id, uint8_t address, uint8_t value)
-{
-  packet_id = id;
-  parameters.push_back(address);
-  parameters.push_back(value);
-}
+  ReadPacket();
 
-void WritePacket::create(uint8_t id, uint8_t address, uint16_t value)
-{
-  packet_id = id;
-  parameters.push_back(address);
-  parameters.push_back(Word::get_low_byte(value));
-  parameters.push_back(Word::get_high_byte(value));
-}
+  void create(uint8_t id, uint8_t address, uint8_t data_length);
+};
 
 }  // namespace tachimawari::control::protocol_1
+
+#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__READ_PACKET_HPP_

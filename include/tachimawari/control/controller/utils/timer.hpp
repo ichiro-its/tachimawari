@@ -18,20 +18,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__MODEL__PACKET_ID_HPP_
-#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__MODEL__PACKET_ID_HPP_
+#ifndef TACHIMAWARI__CONTROL__CONTROLLER__UTILS__TIMER_HPP_
+#define TACHIMAWARI__CONTROL__CONTROLLER__UTILS__TIMER_HPP_
 
-#include <string>
-
-namespace tachimawari::control::protocol_1
+namespace tachimawari::control
 {
 
-enum PacketId : uint8_t
+class Timer
 {
-  CONTROLLER = 200,
-  BROADCAST = 254
+public:
+  explicit Timer(double transfer_time);
+
+  void set_timeout(int length, double additional_time = 40.0);
+
+  bool is_timeout();
+
+private:
+  double get_current_time();
+
+  double start_time;
+  double wait_time;
+  double transfer_time;
 };
 
-}  // namespace tachimawari::control::protocol_1
+}  // namespace tachimawari::control
 
-#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__MODEL__PACKET_ID_HPP_
+#endif  // TACHIMAWARI__CONTROL__CONTROLLER__UTILS__TIMER_HPP_

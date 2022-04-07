@@ -42,10 +42,10 @@ const std::array<uint8_t, 20> JointId::list = {
   LEFT_HIP_PITCH,
   RIGHT_KNEE,
   LEFT_KNEE,
-  RIGHT_ANKLE_ROLL,
-  LEFT_ANKLE_ROLL,
   RIGHT_ANKLE_PITCH,
   LEFT_ANKLE_PITCH,
+  RIGHT_ANKLE_ROLL,
+  LEFT_ANKLE_ROLL,
   NECK_YAW,
   NECK_PITCH,
 };
@@ -93,10 +93,10 @@ const std::array<uint8_t, 18> JointId::body_ids = {
   LEFT_HIP_PITCH,
   RIGHT_KNEE,
   LEFT_KNEE,
-  RIGHT_ANKLE_ROLL,
-  LEFT_ANKLE_ROLL,
   RIGHT_ANKLE_PITCH,
   LEFT_ANKLE_PITCH,
+  RIGHT_ANKLE_ROLL,
+  LEFT_ANKLE_ROLL,
 };
 
 }  // namespace tachimawari::joint

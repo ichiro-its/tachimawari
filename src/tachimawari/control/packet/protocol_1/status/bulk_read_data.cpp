@@ -41,12 +41,11 @@ void BulkReadData::insert_all(
   auto parameters = bulk_read_packet.get_parameters();
 
   for (size_t i = 1; i < parameters.size(); i += 3) {
-    if (bulk_data->find(parameters[i + 1]) != bulk_data->end()) {
-      bulk_data->insert(
-        {parameters[i + 1], BulkReadData(
-            parameters[i + 1], parameters[i],
-            parameters[i + 2])});
+    if (bulk_data->find(parameters[i + 1]) == bulk_data->end()) {
+      bulk_data->insert({parameters[i + 1], BulkReadData(parameters[i + 1])});
     }
+
+    bulk_data->at(parameters[i + 1]).set_starting_address(parameters[i + 2]);
   }
 }
 
@@ -76,59 +75,71 @@ int BulkReadData::validate(
 
 int BulkReadData::update_all(
   std::shared_ptr<std::map<uint8_t, BulkReadData>> bulk_data,
-  std::shared_ptr<std::vector<uint8_t>> rxpacket, int packet_length, int data_number)
+  std::vector<uint8_t> rxpacket, int packet_length, int data_number)
 {
   while (true) {
     int header_place = 0;
     for (header_place = 0; header_place < (packet_length - 1); ++header_place) {
-      if (rxpacket->at(header_place) == 0xFF && rxpacket->at(header_place + 1) == 0xFF) {
+      if (rxpacket[header_place] == 0xFF && rxpacket[header_place + 1] == 0xFF) {
         break;
       }
     }
 
     if (header_place == 0) {
-      uint8_t packet_id = rxpacket->at(PacketIndex::ID);
+      uint8_t packet_id = rxpacket[PacketIndex::ID];
 
-      if (bulk_data->find(packet_id) != bulk_data->end()) {
-        int length = rxpacket->at(PacketIndex::LENGTH) + 4;
+      bool is_found = bulk_data->find(packet_id) != bulk_data->end();
+      if (is_found) {
+        int length = rxpacket[PacketIndex::LENGTH] + 4;
 
-        if (bulk_data->at(packet_id).is_valid(*rxpacket.get())) {
-          int bulk_data_length = rxpacket->at(PacketIndex::LENGTH) + 4;
+        if (bulk_data->at(packet_id).is_valid(rxpacket)) {
+          int bulk_data_length = rxpacket[PacketIndex::LENGTH] + 4;
 
           for (size_t i = 0; i < packet_length - bulk_data_length; ++i) {
-            rxpacket->at(i) = rxpacket->at(i + bulk_data_length);
+            rxpacket[i] = rxpacket[i + bulk_data_length];
           }
 
           data_number--;
           packet_length -= bulk_data_length;
         } else {
-          // so RX_CORRUPT
-          for (size_t i = 0; i < packet_length - 2; ++i) {
-            rxpacket->at(i) = rxpacket->at(i + 2);
-          }
-
-          packet_length -= 2;
+          is_found = false;
         }
       }
 
       if (data_number <= 0 || packet_length <= 0) {
         return data_number;
       }
+
+      if (!is_found && packet_length >= 2) {
+        // so RX_CORRUPT
+        for (size_t i = 0; i < packet_length - 2; ++i) {
+          rxpacket[i] = rxpacket[i + 2];
+        }
+
+        packet_length -= 2;
+      }
     } else {
       for (size_t i = 0; i < (packet_length - header_place); ++i) {
-        rxpacket->at(i) = rxpacket->at(i + header_place);
+        rxpacket[i] = rxpacket[i + header_place];
       }
 
       packet_length -= header_place;
     }
+
+    if (packet_length < 2) {
+      break;
+    }
   }
 }
 
-BulkReadData::BulkReadData(
-  uint8_t id, uint8_t starting_address,
-  uint8_t data_length)
-: Packet(id, 0xFF), start_address(starting_address), data_length(data_length)
+BulkReadData::BulkReadData(uint8_t id, int data_length)
+: Packet(id, 0xFF), data(data_length, 0x00), marker(data_length, false)
 {
+}
+
+void BulkReadData::set_starting_address(uint8_t start_address)
+{
+  this->start_address = start_address;
 }
 
 bool BulkReadData::is_valid(std::vector<uint8_t> rxpacket)
@@ -142,6 +153,11 @@ bool BulkReadData::is_valid(std::vector<uint8_t> rxpacket)
 
   calculate_checksum();
   if (checksum == rxpacket[packet_length - 1]) {
+    for (size_t i = PacketIndex::PARAMETER; i < packet_length - 1; ++i) {
+      data[static_cast<size_t>(start_address) + (i - PacketIndex::PARAMETER)] = rxpacket[i];
+      marker[static_cast<size_t>(start_address) + (i - PacketIndex::PARAMETER)] = true;
+    }
+
     return true;
   } else {
     info = 0xFF;
@@ -159,12 +175,9 @@ bool BulkReadData::is_filled() const
 
 int BulkReadData::get(uint8_t address) const
 {
-  if (address >= start_address) {
-    size_t index = static_cast<size_t>(address - start_address);
-
-    if (index < data_length) {
-      return parameters[index];
-    }
+  size_t index = static_cast<size_t>(address);
+  if (index < data.size() && marker[index]) {
+    return data[index];
   }
 
   return -1;
@@ -172,12 +185,9 @@ int BulkReadData::get(uint8_t address) const
 
 int BulkReadData::get(uint16_t address) const
 {
-  if (address >= start_address) {
-    size_t index = static_cast<size_t>(address - start_address);
-
-    if (index < data_length - 1) {
-      return Word::make_word(parameters[index], parameters[index + 1]);
-    }
+  size_t index = static_cast<size_t>(address);
+  if (index < data.size() && marker[index] && marker[index + 1]) {
+    return Word::make_word(data[index], data[index + 1]);
   }
 
   return -1;

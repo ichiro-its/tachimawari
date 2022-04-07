@@ -26,7 +26,6 @@
 #include "tachimawari/control/sdk/module/dynamixel_sdk.hpp"
 
 #include "tachimawari/control/controller/module/cm740_address.hpp"
-#include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
 #include "tachimawari/control/packet/protocol_1/utils/word.hpp"
 #include "tachimawari/control/sdk/utils/protocol_1/group_bulk_read.hpp"
 #include "tachimawari/control/sdk/utils/protocol_1/group_sync_write.hpp"
@@ -61,7 +60,9 @@ bool DynamixelSDK::connect()
   }
 
   if (protocol_version == 1.0) {
-    write_packet(CM740Address::LED_HEAD_L, protocol_1::Word::make_color(255, 128, 0), 2);
+    write_packet(
+      CONTROLLER, CM740Address::LED_HEAD_L, protocol_1::Word::make_color(255, 128, 0),
+      2);
   }
 
   return true;
@@ -104,19 +105,6 @@ bool DynamixelSDK::ping(uint8_t id)
 }
 
 bool DynamixelSDK::write_packet(
-  uint8_t address, int value,
-  int data_length)
-{
-  if (protocol_version == 1.0) {
-    return write_packet(
-      protocol_1::PacketId::CONTROLLER, address,
-      value, data_length);
-  }
-
-  return false;
-}
-
-bool DynamixelSDK::write_packet(
   uint8_t id, uint8_t address, int value,
   int data_length)
 {
@@ -151,6 +139,46 @@ bool DynamixelSDK::write_packet(
   return true;
 }
 
+int DynamixelSDK::read_packet(
+  uint8_t id, uint8_t address, int data_length)
+{
+  int value = -1;
+
+  if (protocol_version == 1.0) {
+    uint8_t error = 0;
+    uint16_t model_number;
+    int result = TX_FAIL;
+
+    if (data_length == 1) {
+      uint8_t result_val = 0;
+
+      result = packet_handler->read1ByteTxRx(
+        port_handler, id, address,
+        &result_val, &error);
+
+      value = (result == SUCCESS) ? result_val : value;
+    } else if (data_length == 2) {
+      uint16_t result_val = 0;
+
+      result = packet_handler->read2ByteTxRx(
+        port_handler, id, address,
+        &result_val, &error);
+
+      value = (result == SUCCESS) ? result_val : value;
+    }
+
+    if (result != SUCCESS) {
+      // TODO(maroqijalil): will be used for logging
+      // packet_handler->getTxRxResult(result);
+    } else if (error != 0) {
+      // TODO(maroqijalil): will be used for logging
+      // packet_handler->getRxPacketError(error);
+    }
+  }
+
+  return value;
+}
+
 bool DynamixelSDK::sync_write_packet(
   const std::vector<joint::Joint> & joints,
   bool with_pid)
@@ -178,28 +206,8 @@ bool DynamixelSDK::bulk_read_packet()
   if (protocol_version == 1.0) {
     sdk::protocol_1::GroupBulkRead group_bulk_read(port_handler, packet_handler);
 
-    if (ping(protocol_1::PacketId::CONTROLLER)) {
-      group_bulk_read.add(
-        protocol_1::PacketId::CONTROLLER, CM740Address::DXL_POWER, 30u);
-    }
-
-    if (group_bulk_read.is_parameters_filled()) {
-      return send_bulk_read_packet(group_bulk_read);
-    } else {
-      return false;
-    }
-  }
-
-  return false;
-}
-
-bool DynamixelSDK::bulk_read_packet(const std::vector<joint::Joint> & joints)
-{
-  if (protocol_version == 1.0) {
-    sdk::protocol_1::GroupBulkRead group_bulk_read(port_handler, packet_handler);
-
-    if (ping(protocol_1::PacketId::CONTROLLER)) {
-      group_bulk_read.add(joints);
+    if (ping(CONTROLLER)) {
+      group_bulk_read.add(CONTROLLER, CM740Address::DXL_POWER, 30u);
     }
 
     if (group_bulk_read.is_parameters_filled()) {
@@ -227,7 +235,7 @@ int DynamixelSDK::get_bulk_data(
 
 void DynamixelSDK::disconnect()
 {
-  write_packet(CM740Address::LED_HEAD_L, protocol_1::Word::make_color(0, 255, 0), 2);
+  write_packet(CONTROLLER, CM740Address::LED_HEAD_L, protocol_1::Word::make_color(0, 255, 0), 2);
 
   port_handler->closePort();
 }

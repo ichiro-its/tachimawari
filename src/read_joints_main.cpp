@@ -18,37 +18,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <string>
-#include <vector>
+#include <iostream>
+#include <memory>
 
-#include "tachimawari/control/packet/protocol_1/instruction/write_packet.hpp"
+#include "tachimawari/control/controller/controller.hpp"
+#include "tachimawari/control/packet/protocol_1/protocol_1.hpp"
+#include "tachimawari/joint/joint.hpp"
 
-#include "tachimawari/control/manager/control_manager.hpp"
-#include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
-#include "tachimawari/control/packet/protocol_1/utils/word.hpp"
-#include "tachimawari/joint/protocol_1/mx28_address.hpp"
-
-namespace tachimawari::control::protocol_1
+int main(int argc, char * argv[])
 {
+  auto cm740 = std::make_shared<tachimawari::control::CM740>("/dev/ttyUSB0");
+  if (!cm740->connect()) {
+    cm740->set_port("/dev/ttyUSB1");
 
-WritePacket::WritePacket()
-: Packet(tachimawari::control::ControlManager::CONTROLLER, Instruction::WRITE)
-{
+    if (!cm740->connect()) {
+      std::cout << "failed to connect CM740\n";
+      return 1;
+    }
+  }
+
+  auto joint_manager = std::make_shared<tachimawari::joint::JointManager>(cm740);
+
+  auto joints = joint_manager->get_current_joints();
+
+  for (auto joint : joints) {
+    std::cout << "id " << static_cast<int>(joint.get_id()) << ": " << joint.get_position() <<
+      std::endl;
+  }
+
+  return 0;
 }
-
-void WritePacket::create(uint8_t id, uint8_t address, uint8_t value)
-{
-  packet_id = id;
-  parameters.push_back(address);
-  parameters.push_back(value);
-}
-
-void WritePacket::create(uint8_t id, uint8_t address, uint16_t value)
-{
-  packet_id = id;
-  parameters.push_back(address);
-  parameters.push_back(Word::get_low_byte(value));
-  parameters.push_back(Word::get_high_byte(value));
-}
-
-}  // namespace tachimawari::control::protocol_1

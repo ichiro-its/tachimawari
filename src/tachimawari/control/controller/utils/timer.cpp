@@ -18,60 +18,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef TACHIMAWARI__JOINT__MODEL__JOINT_ID_HPP_
-#define TACHIMAWARI__JOINT__MODEL__JOINT_ID_HPP_
-
-#include <array>
-#include <map>
 #include <string>
 
-namespace tachimawari::joint
+#include "tachimawari/control/controller/utils/timer.hpp"
+
+#include "sys/time.h"
+
+namespace tachimawari::control
 {
-
-class JointId
+Timer::Timer(double transfer_time)
+: start_time(0.0), wait_time(0.0), transfer_time(transfer_time)
 {
-public:
-  enum : uint8_t
-  {
-    // head motors
-    NECK_YAW = 19,
-    NECK_PITCH = 20,
+}
 
-    // left arm motors
-    LEFT_SHOULDER_PITCH = 2,
-    LEFT_SHOULDER_ROLL = 4,
-    LEFT_ELBOW = 6,
+void Timer::set_timeout(int length, double additional_time)
+{
+  start_time = get_current_time();
+  wait_time = (transfer_time * length) + additional_time;
+}
 
-    // right arm motors
-    RIGHT_SHOULDER_PITCH = 1,
-    RIGHT_SHOULDER_ROLL = 3,
-    RIGHT_ELBOW = 5,
+bool Timer::is_timeout()
+{
+  double time_diff = get_current_time() - start_time;
+  start_time = (time_diff < 0) ? get_current_time() : start_time;
 
-    // left leg motors
-    LEFT_HIP_YAW = 8,
-    LEFT_HIP_ROLL = 10,
-    LEFT_HIP_PITCH = 12,
-    LEFT_KNEE = 14,
-    LEFT_ANKLE_PITCH = 16,
-    LEFT_ANKLE_ROLL = 18,
+  return time_diff > wait_time;
+}
 
-    // right leg motors
-    RIGHT_HIP_YAW = 7,
-    RIGHT_HIP_ROLL = 9,
-    RIGHT_HIP_PITCH = 11,
-    RIGHT_KNEE = 13,
-    RIGHT_ANKLE_PITCH = 15,
-    RIGHT_ANKLE_ROLL = 17,
-  };
+double Timer::get_current_time()
+{
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  return tv.tv_sec * 1000.0 + tv.tv_usec / 1000.0;
+}
 
-  static const std::array<uint8_t, 20> list;
-
-  static const std::map<std::string, uint8_t> by_name;
-
-  static const std::array<uint8_t, 2> head_ids;
-  static const std::array<uint8_t, 18> body_ids;
-};
-
-}  // namespace tachimawari::joint
-
-#endif  // TACHIMAWARI__JOINT__MODEL__JOINT_ID_HPP_
+}  // namespace tachimawari::control

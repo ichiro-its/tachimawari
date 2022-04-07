@@ -27,6 +27,7 @@
 #include <vector>
 
 #include "tachimawari/control/controller/platform/linux.hpp"
+#include "tachimawari/control/controller/utils/timer.hpp"
 #include "tachimawari/control/manager/control_manager.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/bulk_read_packet.hpp"
 #include "tachimawari/control/packet/protocol_1/status/bulk_read_data.hpp"
@@ -53,26 +54,25 @@ public:
   // for serial comunication
   void set_platform(/* platform */);
 
+  void set_port(const std::string & port_name);
+
   bool connect() override;
   void disconnect() override;
 
   bool ping(uint8_t id) override;
 
   bool write_packet(
-    uint8_t address, int value,
-    int data_length = 1) override;
-
-  bool write_packet(
     uint8_t id, uint8_t address, int value,
     int data_length = 1) override;
+
+  int read_packet(
+    uint8_t id, uint8_t address, int data_length = 1) override;
 
   bool sync_write_packet(
     const std::vector<joint::Joint> & joints,
     bool with_pid = false) override;
 
   bool bulk_read_packet() override;
-
-  bool bulk_read_packet(const std::vector<joint::Joint> & joints) override;
 
   int get_bulk_data(
     uint8_t id, uint8_t address,
@@ -87,7 +87,7 @@ private:
 
   std::shared_ptr<Linux> platform;
 
-  double byte_transfer_time;
+  Timer packet_timer;
 
   std::shared_ptr<std::map<uint8_t, protocol_1::BulkReadData>> bulk_data;
 };

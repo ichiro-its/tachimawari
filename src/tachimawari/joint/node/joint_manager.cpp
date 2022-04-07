@@ -24,7 +24,6 @@
 
 #include "tachimawari/joint/node/joint_manager.hpp"
 
-#include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
 #include "tachimawari/joint/model/joint_id.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
@@ -60,23 +59,19 @@ void JointManager::update_current_joints(const std::vector<Joint> & joints)
 
 void JointManager::update_current_joints_from_control_manager(const std::vector<Joint> & joints)
 {
-  if (!control_manager->bulk_read_packet(joints)) {
-    return;
+  std::vector<Joint> new_joints(joints);
+  for (auto & joint : new_joints) {
+    float value = Joint::CENTER_VALUE;
+
+    int current_value = control_manager->read_packet(
+      joint.get_id(), protocol_1::MX28Address::PRESENT_POSITION_L, 2);
+
+    value = (current_value == -1) ? value : current_value;
+
+    joint.set_position_value(value);
   }
 
-  for (auto joint : joints) {
-    float position = 0.0;
-
-    if (control_manager->get_protocol_version() == 1.0) {
-      int current_position = control_manager->get_bulk_data(
-        joint.get_id(), protocol_1::MX28Address::PRESENT_POSITION_L, 2);
-      position = (current_position == -1) ? 0.0 : current_position;
-    }
-
-    joint.set_position(position);
-  }
-
-  update_current_joints(joints);
+  update_current_joints(new_joints);
 }
 
 const std::vector<Joint> & JointManager::get_current_joints()
@@ -91,7 +86,7 @@ const std::vector<Joint> & JointManager::get_current_joints()
 bool JointManager::torque_enable(bool enable)
 {
   return control_manager->write_packet(
-    tachimawari::control::protocol_1::PacketId::CONTROLLER,
+    tachimawari::control::ControlManager::BROADCAST,
     protocol_1::MX28Address::TORQUE_ENABLE, enable);
 }
 

@@ -71,7 +71,7 @@ uint8_t Joint::get_id() const
 
 float Joint::get_position() const
 {
-  return position.degree();
+  return position.normalize().degree();
 }
 
 std::vector<float> Joint::get_pid_gain() const
@@ -81,7 +81,7 @@ std::vector<float> Joint::get_pid_gain() const
 
 void Joint::set_position_value(int value)
 {
-  position = keisan::make_degree((value - CENTER_VALUE) * TO_ANGLE_RATIO);
+  position = keisan::make_degree((value - CENTER_VALUE) * TO_ANGLE_RATIO).normalize();
 }
 
 int Joint::get_position_value() const

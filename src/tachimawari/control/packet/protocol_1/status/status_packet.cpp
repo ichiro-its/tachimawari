@@ -46,7 +46,7 @@ int StatusPacket::validate(
   }
 
   if (header_place == 0) {
-    StatusPacket status_packet(rxpacket, packet_length);
+    StatusPacket status_packet(*rxpacket, packet_length);
 
     if (status_packet.is_valid()) {
       return packet_length;
@@ -62,37 +62,47 @@ int StatusPacket::validate(
   }
 }
 
-StatusPacket::StatusPacket(
-  std::shared_ptr<std::vector<uint8_t>> rxpacket,
-  int packet_length)
-: Packet(rxpacket->at(PacketIndex::ID), rxpacket->at(PacketIndex::ERROR)),
+StatusPacket::StatusPacket(const std::vector<uint8_t> & rxpacket, int packet_length)
+: Packet(rxpacket[PacketIndex::ID], rxpacket[PacketIndex::ERROR]),
   rxpacket_length(packet_length), rxpacket(rxpacket)
 {
+  if (rxpacket_length > PacketIndex::PARAMETER) {
+    for (size_t i = PacketIndex::PARAMETER; i < rxpacket_length - 1; ++i) {
+      parameters.push_back(rxpacket[i]);
+    }
+  }
 }
 
 bool StatusPacket::is_valid()
 {
-  for (size_t i = PacketIndex::PARAMETER; i < rxpacket_length - 1; ++i) {
-    parameters.push_back(rxpacket->at(i));
-  }
-
   calculate_checksum();
-  return checksum == rxpacket->at(rxpacket_length - 1);
+  return (rxpacket_length > 0) && (checksum == rxpacket[rxpacket_length - 1]);
 }
 
 uint8_t StatusPacket::get_data_length() const
 {
-  return rxpacket->at(PacketIndex::LENGTH);
+  return rxpacket[PacketIndex::LENGTH];
 }
 
-std::shared_ptr<std::vector<uint8_t>> StatusPacket::get_raw_packet()
+const std::vector<uint8_t> & StatusPacket::get_raw_packet() const
 {
   return rxpacket;
 }
 
 bool StatusPacket::is_success() const
 {
-  return rxpacket != nullptr;
+  return rxpacket_length != 0;
+}
+
+int StatusPacket::get_read_data(uint8_t data_length) const
+{
+  if (data_length == 1) {
+    return parameters[0];
+  } else if (data_length == 2 && parameters.size() > 1) {
+    return Word::make_word(parameters[0], parameters[1]);
+  }
+
+  return -1;
 }
 
 }  // namespace tachimawari::control::protocol_1

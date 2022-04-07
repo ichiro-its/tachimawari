@@ -23,8 +23,10 @@ find_package(tachimawari_interfaces REQUIRED)
 add_library(${PROJECT_NAME} SHARED
   "src/${PROJECT_NAME}/control/controller/module/cm740.cpp"
   "src/${PROJECT_NAME}/control/controller/platform/linux.cpp"
+  "src/${PROJECT_NAME}/control/controller/utils/timer.cpp"
   "src/${PROJECT_NAME}/control/manager/control_manager.cpp"
   "src/${PROJECT_NAME}/control/packet/protocol_1/instruction/bulk_read_packet.cpp"
+  "src/${PROJECT_NAME}/control/packet/protocol_1/instruction/read_packet.cpp"
   "src/${PROJECT_NAME}/control/packet/protocol_1/instruction/sync_write_packet.cpp"
   "src/${PROJECT_NAME}/control/packet/protocol_1/instruction/write_packet.cpp"
   "src/${PROJECT_NAME}/control/packet/protocol_1/model/packet.cpp"
@@ -68,11 +70,17 @@ target_include_directories(check_joints PUBLIC
   $<INSTALL_INTERFACE:include>)
 target_link_libraries(check_joints ${PROJECT_NAME})
 
-add_executable(move_joint "src/move_joint_main.cpp")
-target_include_directories(move_joint PUBLIC
+add_executable(init_joints "src/init_joints_main.cpp")
+target_include_directories(init_joints PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
-target_link_libraries(move_joint ${PROJECT_NAME})
+target_link_libraries(init_joints ${PROJECT_NAME})
+
+add_executable(read_joints "src/read_joints_main.cpp")
+target_include_directories(read_joints PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+target_link_libraries(read_joints ${PROJECT_NAME})
 
 add_executable(tachimawari_main "src/tachimawari_main.cpp")
 target_include_directories(tachimawari_main PUBLIC
@@ -82,7 +90,8 @@ target_link_libraries(tachimawari_main ${PROJECT_NAME})
 
 install(TARGETS
   check_joints
-  move_joint
+  init_joints
+  read_joints
   tachimawari_main
   DESTINATION lib/${PROJECT_NAME})
 

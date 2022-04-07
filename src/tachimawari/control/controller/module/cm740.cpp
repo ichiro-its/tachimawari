@@ -28,9 +28,9 @@
 #include "tachimawari/control/controller/module/cm740_address.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/bulk_read_packet.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
+#include "tachimawari/control/packet/protocol_1/instruction/read_packet.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/sync_write_packet.hpp"
 #include "tachimawari/control/packet/protocol_1/instruction/write_packet.hpp"
-#include "tachimawari/control/packet/protocol_1/model/packet_id.hpp"
 #include "tachimawari/control/packet/protocol_1/status/bulk_read_data.hpp"
 #include "tachimawari/control/packet/protocol_1/status/status_packet.hpp"
 #include "tachimawari/control/packet/protocol_1/utils/word.hpp"
@@ -53,17 +53,21 @@ namespace tachimawari::control
 CM740::CM740(
   const std::string & port_name, int baudrate,
   float protocol_version)
-: ControlManager(port_name, protocol_version, baudrate), byte_transfer_time(0.0),
-  platform(std::make_shared<Linux>()),
+: ControlManager(port_name, protocol_version, baudrate), platform(std::make_shared<Linux>()),
+  // byte transfer rate
+  packet_timer((1000.0 / baudrate) * 12.0),
   bulk_data(std::make_shared<std::map<uint8_t, protocol_1::BulkReadData>>())
 {
+}
+
+void CM740::set_port(const std::string & port_name)
+{
+  this->port_name = port_name;
 }
 
 bool CM740::connect()
 {
   if (platform->open_port(port_name, baudrate)) {
-    byte_transfer_time = (1000.0 / baudrate) * 12.0;
-
     return dxl_power_on();
   }
 
@@ -72,9 +76,12 @@ bool CM740::connect()
 
 bool CM740::dxl_power_on()
 {
-  if (write_packet(CM740Address::DXL_POWER, 1)) {
+  if (write_packet(CONTROLLER, CM740Address::DXL_POWER, 1)) {
     if (protocol_version == 1.0) {
-      write_packet(CM740Address::LED_HEAD_L, protocol_1::Word::make_color(255, 128, 0), 2);
+      write_packet(
+        CONTROLLER, CM740Address::LED_HEAD_L, protocol_1::Word::make_color(
+          255, 128,
+          0), 2);
     }
 
     return true;
@@ -85,49 +92,53 @@ bool CM740::dxl_power_on()
 
 protocol_1::StatusPacket CM740::send_packet(protocol_1::Packet packet)
 {
-  {
-    using protocol_1::StatusPacket;
+  using protocol_1::StatusPacket;
 
-    std::vector<uint8_t> txpacket = packet.get_packet();
+  int get_length = 0;
+  int expected_length = packet.get_expected_length();
+  auto rxpacket = std::make_shared<std::vector<uint8_t>>(expected_length * 2, 0x00);
 
-    if (platform->write_port(txpacket) == txpacket.size()) {
-      // set packet timeout;
-      int get_length = 0;
-      int expected_length = packet.get_expected_length();
-      auto rxpacket = std::make_shared<std::vector<uint8_t>>(MAX_PACKET_SIZE, 0x00);
+  std::vector<uint8_t> txpacket(packet.get_packet());
+  StatusPacket status_packet(*rxpacket, get_length);
 
-      while (true) {
-        get_length += platform->read_port(rxpacket, expected_length - get_length, get_length);
+  if (platform->write_port(txpacket) == txpacket.size()) {
+    packet_timer.set_timeout(expected_length);
 
-        if (get_length == expected_length) {
-          int new_get_length = StatusPacket::validate(rxpacket, get_length);
+    while (true) {
+      get_length += platform->read_port(rxpacket, expected_length - get_length, get_length);
 
-          if (new_get_length == get_length) {
-            return StatusPacket(rxpacket, get_length);
-          } else if (new_get_length != 0) {
-            // TODO(maroqijalil): will be used for logging
-            // is packet timeout ? so RX_TIMEOUT
-            get_length = new_get_length;
-          } else {
-            // TODO(maroqijalil): will be used for logging
-            // so RX_CORRUPT
-            return StatusPacket(nullptr, 0);
-          }
-        } else {
+      if (get_length == expected_length) {
+        int new_get_length = StatusPacket::validate(rxpacket, get_length);
+
+        if (new_get_length == get_length) {
+          status_packet = StatusPacket(*rxpacket, new_get_length);
+
+          return status_packet;
+        } else if (new_get_length != 0) {
           // TODO(maroqijalil): will be used for logging
           // is packet timeout ? so RX_TIMEOUT
-          if (get_length > expected_length) {
-            break;
-          }
+          get_length = new_get_length;
+        } else {
+          // TODO(maroqijalil): will be used for logging
+          // so RX_CORRUPT
+          return status_packet;
+        }
+      } else {
+        // TODO(maroqijalil): will be used for logging
+        // is packet timeout ? so RX_TIMEOUT
+        if (packet_timer.is_timeout()) {
+          break;
+        } else if (get_length > expected_length) {
+          break;
         }
       }
-    } else {
-      // TODO(maroqijalil): will be used for logging
-      // so TX_FAIL
     }
-
-    return StatusPacket(nullptr, 0);
+  } else {
+    // TODO(maroqijalil): will be used for logging
+    // so TX_FAIL
   }
+
+  return status_packet;
 }
 
 bool CM740::send_bulk_read_packet(protocol_1::BulkReadPacket packet)
@@ -135,16 +146,17 @@ bool CM740::send_bulk_read_packet(protocol_1::BulkReadPacket packet)
   {
     using protocol_1::BulkReadData;
 
-    std::vector<uint8_t> txpacket = packet.get_packet();
+    std::vector<uint8_t> txpacket(packet.get_packet());
 
     if (platform->write_port(txpacket) == txpacket.size()) {
       int data_number = packet.get_data_number();
       BulkReadData::insert_all(bulk_data, packet);
 
-      // set packet timeout;
       int get_length = 0;
       int expected_length = packet.get_expected_length();
-      auto rxpacket = std::make_shared<std::vector<uint8_t>>(MAX_PACKET_SIZE, 0x00);
+      auto rxpacket = std::make_shared<std::vector<uint8_t>>(expected_length * 2, 0x00);
+
+      packet_timer.set_timeout(expected_length);
 
       while (true) {
         get_length += platform->read_port(rxpacket, expected_length - get_length, get_length);
@@ -153,16 +165,7 @@ bool CM740::send_bulk_read_packet(protocol_1::BulkReadPacket packet)
           int new_get_length = BulkReadData::validate(rxpacket, get_length);
 
           if (new_get_length == get_length) {
-            data_number = BulkReadData::update_all(bulk_data, rxpacket, get_length, data_number);
-
-            if (data_number == 0) {
-              return true;
-            } else {
-              // TODO(maroqijalil): will be used for logging
-              // is packet timeout ? so RX_TIMEOUT
-              // or RX_CORRUPT / data is inclompete if data number more than 0
-              return false;
-            }
+            break;
           } else {
             // TODO(maroqijalil): will be used for logging
             // is packet timeout ? so RX_TIMEOUT
@@ -171,10 +174,20 @@ bool CM740::send_bulk_read_packet(protocol_1::BulkReadPacket packet)
         } else {
           // TODO(maroqijalil): will be used for logging
           // is packet timeout ? so RX_TIMEOUT
-          if (get_length > expected_length) {
+          if (packet_timer.is_timeout()) {
+            break;
+          } else if (get_length > expected_length) {
             break;
           }
         }
+      }
+
+      if (BulkReadData::update_all(bulk_data, *rxpacket, get_length, data_number) == 0) {
+        return true;
+      } else {
+        // TODO(maroqijalil): will be used for logging
+        // is packet timeout ? so RX_TIMEOUT
+        // or RX_CORRUPT / data is inclompete if data number more than 0
       }
     } else {
       // TODO(maroqijalil): will be used for logging
@@ -189,29 +202,8 @@ bool CM740::ping(uint8_t id)
 {
   if (protocol_version == 1.0) {
     protocol_1::Packet instruction_packet(id, protocol_1::Instruction::PING);
-    auto status_packet = send_packet(instruction_packet);
 
-    return status_packet.is_success();
-  }
-
-  return false;
-}
-
-bool CM740::write_packet(
-  uint8_t address, int value,
-  int data_length)
-{
-  if (protocol_version == 1.0) {
-    protocol_1::WritePacket instruction_packet;
-
-    if (data_length == 1) {
-      instruction_packet.create(address, static_cast<uint8_t>(value));
-    } else if (data_length == 2) {
-      instruction_packet.create(address, static_cast<uint16_t>(value));
-    }
-
-    auto status_packet = send_packet(instruction_packet);
-    return status_packet.is_success();
+    return send_packet(instruction_packet).is_success();
   }
 
   return false;
@@ -230,11 +222,29 @@ bool CM740::write_packet(
       instruction_packet.create(id, address, static_cast<uint16_t>(value));
     }
 
-    auto status_packet = send_packet(instruction_packet);
-    return status_packet.is_success();
+    return send_packet(instruction_packet).is_success();
   }
 
   return false;
+}
+
+int CM740::read_packet(
+  uint8_t id, uint8_t address, int data_length)
+{
+  using ReadPacket = protocol_1::ReadPacket;
+
+  if (protocol_version == 1.0) {
+    ReadPacket instruction_packet;
+    instruction_packet.create(id, address, data_length);
+
+    auto status_packet = send_packet(instruction_packet);
+
+    if (status_packet.is_success() && ReadPacket::is_match(instruction_packet, status_packet)) {
+      return status_packet.get_read_data(data_length);
+    }
+  }
+
+  return -1;
 }
 
 bool CM740::sync_write_packet(const std::vector<joint::Joint> & joints, bool with_pid)
@@ -248,6 +258,7 @@ bool CM740::sync_write_packet(const std::vector<joint::Joint> & joints, bool wit
       tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
 
     std::vector<uint8_t> txpacket = instruction_packet.get_packet();
+
     return platform->write_port(txpacket) == txpacket.size();
   }
 
@@ -259,28 +270,8 @@ bool CM740::bulk_read_packet()
   if (protocol_version == 1.0) {
     protocol_1::BulkReadPacket instruction_packet;
 
-    if (ping(protocol_1::PacketId::CONTROLLER)) {
-      instruction_packet.add(
-        protocol_1::PacketId::CONTROLLER, CM740Address::DXL_POWER, 30u);
-    }
-
-    if (instruction_packet.is_parameters_filled()) {
-      return send_bulk_read_packet(instruction_packet);
-    } else {
-      return false;
-    }
-  }
-
-  return false;
-}
-
-bool CM740::bulk_read_packet(const std::vector<joint::Joint> & joints)
-{
-  if (protocol_version == 1.0) {
-    protocol_1::BulkReadPacket instruction_packet;
-
-    if (joints.size()) {
-      instruction_packet.add(joints);
+    if (ping(CONTROLLER)) {
+      instruction_packet.add(CONTROLLER, CM740Address::DXL_POWER, 30u);
     }
 
     if (instruction_packet.is_parameters_filled()) {
@@ -303,8 +294,6 @@ int CM740::get_bulk_data(
     } else if (data_length == 2) {
       return bulk_data->at(id).get(static_cast<uint16_t>(address));
     }
-  } else {
-    return -1;
   }
 
   return -1;
@@ -313,7 +302,7 @@ int CM740::get_bulk_data(
 void CM740::disconnect()
 {
   if (protocol_version == 1.0) {
-    write_packet(CM740Address::LED_HEAD_L, protocol_1::Word::make_color(0, 255, 0), 2);
+    write_packet(CONTROLLER, CM740Address::LED_HEAD_L, protocol_1::Word::make_color(0, 255, 0), 2);
   }
 
   platform->close_port();
