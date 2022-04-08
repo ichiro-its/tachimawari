@@ -23,13 +23,13 @@
 #include <string>
 #include <vector>
 
-#include "tachimawari/control/sdk/utils/protocol_1/group_bulk_read.hpp"
+#include "tachimawari/control/sdk/packet/model/group_bulk_read.hpp"
 
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
 #include "dynamixel_sdk/dynamixel_sdk.h"
 
-namespace tachimawari::control::sdk::protocol_1
+namespace tachimawari::control::sdk
 {
 
 void GroupBulkRead::insert_all(
@@ -99,4 +99,4 @@ GroupBulkRead::~GroupBulkRead()
 }
 
 
-}  // namespace tachimawari::control::sdk::protocol_1
+}  // namespace tachimawari::control::sdk

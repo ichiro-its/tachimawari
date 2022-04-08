@@ -18,11 +18,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__SDK__UTILS__PROTOCOL_1__GROUP_BULK_READ_HPP_
-#define TACHIMAWARI__CONTROL__SDK__UTILS__PROTOCOL_1__GROUP_BULK_READ_HPP_
+#ifndef TACHIMAWARI__CONTROL__SDK__PACKET__PROTOCOL_1__GROUP_SYNC_WRITE_HPP_
+#define TACHIMAWARI__CONTROL__SDK__PACKET__PROTOCOL_1__GROUP_SYNC_WRITE_HPP_
 
-#include <map>
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -34,39 +32,23 @@
 namespace tachimawari::control::sdk::protocol_1
 {
 
-class GroupBulkRead
+class GroupSyncWrite
 {
 public:
-  static void insert_all(
-    std::shared_ptr<std::map<uint8_t, GroupBulkRead>> bulk_data,
-    GroupBulkRead group_bulk_read);
-
-  GroupBulkRead(
+  GroupSyncWrite(
     dynamixel::PortHandler * port_handler,
     dynamixel::PacketHandler * packet_handler);
-  ~GroupBulkRead();
 
-  void add(
-    uint8_t id, uint16_t starting_address,
-    uint16_t data_length);
-
-  void add(
-    const std::vector<tachimawari::joint::Joint> & joints);
-
-  int send();
-
-  int get(uint8_t id, uint16_t address, uint16_t data_length);
-
-  std::vector<uint8_t> get_parameters_id() const;
-
-  bool is_parameters_filled() const;
+  dynamixel::GroupSyncWrite create(
+    const std::vector<tachimawari::joint::Joint> & joints,
+    uint8_t starting_address =
+    tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
 
 private:
-  dynamixel::GroupBulkRead group_bulk_read;
-
-  std::vector<uint8_t> parameters_id;
+  dynamixel::PortHandler * port_handler;
+  dynamixel::PacketHandler * packet_handler;
 };
 
 }  // namespace tachimawari::control::sdk::protocol_1
 
-#endif  // TACHIMAWARI__CONTROL__SDK__UTILS__PROTOCOL_1__GROUP_BULK_READ_HPP_
+#endif  // TACHIMAWARI__CONTROL__SDK__PACKET__PROTOCOL_1__GROUP_SYNC_WRITE_HPP_

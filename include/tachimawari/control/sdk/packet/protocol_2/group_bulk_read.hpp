@@ -18,37 +18,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__SDK__UTILS__PROTOCOL_2__GROUP_SYNC_WRITE_HPP_
-#define TACHIMAWARI__CONTROL__SDK__UTILS__PROTOCOL_2__GROUP_SYNC_WRITE_HPP_
+#ifndef TACHIMAWARI__CONTROL__SDK__PACKET__PROTOCOL_1__GROUP_BULK_READ_HPP_
+#define TACHIMAWARI__CONTROL__SDK__PACKET__PROTOCOL_1__GROUP_BULK_READ_HPP_
 
+#include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
+#include "tachimawari/control/sdk/utils/packet/group_bulk_read.hpp"
 #include "tachimawari/joint/model/joint.hpp"
-#include "tachimawari/joint/protocol_2/mx28_address.hpp"
 
 #include "dynamixel_sdk/dynamixel_sdk.h"
 
-namespace tachimawari::control::sdk::protocol_2
+namespace tachimawari::control::sdk::protocol_1
 {
 
-class GroupSyncWrite
+class GroupBulkRead : public tachimawari::control::sdk::GroupBulkRead
 {
 public:
-  GroupSyncWrite(
+  GroupBulkRead(
     dynamixel::PortHandler * port_handler,
     dynamixel::PacketHandler * packet_handler);
+  ~GroupBulkRead();
 
-  dynamixel::GroupSyncWrite create(
-    const std::vector<tachimawari::joint::Joint> & joints,
-    uint8_t starting_address =
-    tachimawari::joint::protocol_2::MX28Address::GOAL_POSITION);
+  void add(
+    uint8_t id, uint16_t starting_address,
+    uint16_t data_length);
 
-private:
-  dynamixel::PortHandler * port_handler;
-  dynamixel::PacketHandler * packet_handler;
+  void add(
+    const std::vector<tachimawari::joint::Joint> & joints) override;
 };
 
-}  // namespace tachimawari::control::sdk::protocol_2
+}  // namespace tachimawari::control::sdk::protocol_1
 
-#endif  // TACHIMAWARI__CONTROL__SDK__UTILS__PROTOCOL_2__GROUP_SYNC_WRITE_HPP_
+#endif  // TACHIMAWARI__CONTROL__SDK__PACKET__PROTOCOL_1__GROUP_BULK_READ_HPP_
