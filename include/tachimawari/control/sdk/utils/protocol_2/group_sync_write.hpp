@@ -18,35 +18,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#ifndef TACHIMAWARI__CONTROL__SDK__UTILS__PROTOCOL_2__GROUP_SYNC_WRITE_HPP_
+#define TACHIMAWARI__CONTROL__SDK__UTILS__PROTOCOL_2__GROUP_SYNC_WRITE_HPP_
+
 #include <string>
 #include <vector>
 
-#include "tachimawari/control/controller/packet/protocol_1/instruction/read_packet.hpp"
+#include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari/joint/protocol_2/mx28_address.hpp"
 
-#include "tachimawari/control/manager/control_manager.hpp"
-#include "tachimawari/control/controller/packet/protocol_1/instruction/instruction.hpp"
-#include "tachimawari/control/controller/packet/protocol_1/model/packet.hpp"
+#include "dynamixel_sdk/dynamixel_sdk.h"
 
-namespace tachimawari::control::protocol_1
+namespace tachimawari::control::sdk::protocol_2
 {
 
-bool ReadPacket::is_match(const Packet & instruction_packet, const Packet & status_packet)
+class GroupSyncWrite
 {
-  return (instruction_packet.get_packet_id() == status_packet.get_packet_id()) &&
-         (static_cast<size_t>(instruction_packet.get_parameters()[1]) ==
-         status_packet.get_parameters().size());
-}
+public:
+  GroupSyncWrite(
+    dynamixel::PortHandler * port_handler,
+    dynamixel::PacketHandler * packet_handler);
 
-ReadPacket::ReadPacket()
-: Packet(tachimawari::control::ControlManager::CONTROLLER, Instruction::READ)
-{
-}
+  dynamixel::GroupSyncWrite create(
+    const std::vector<tachimawari::joint::Joint> & joints,
+    uint8_t starting_address =
+    tachimawari::joint::protocol_2::MX28Address::GOAL_POSITION);
 
-void ReadPacket::create(uint8_t id, uint8_t address, uint8_t data_length)
-{
-  packet_id = id;
-  parameters.push_back(address);
-  parameters.push_back(data_length);
-}
+private:
+  dynamixel::PortHandler * port_handler;
+  dynamixel::PacketHandler * packet_handler;
+};
 
-}  // namespace tachimawari::control::protocol_1
+}  // namespace tachimawari::control::sdk::protocol_2
+
+#endif  // TACHIMAWARI__CONTROL__SDK__UTILS__PROTOCOL_2__GROUP_SYNC_WRITE_HPP_

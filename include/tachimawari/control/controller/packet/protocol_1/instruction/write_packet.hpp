@@ -18,30 +18,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__SYNC_WRITE_PACKET_HPP_
-#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__SYNC_WRITE_PACKET_HPP_
+#ifndef TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__INSTRUCTION__WRITE_PACKET_HPP_
+#define TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__INSTRUCTION__WRITE_PACKET_HPP_
 
 #include <string>
 #include <vector>
 
-#include "tachimawari/control/packet/protocol_1/model/packet.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/model/packet.hpp"
 #include "tachimawari/joint/model/joint.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
 namespace tachimawari::control::protocol_1
 {
 
-class SyncWritePacket : public Packet
+class WritePacket : public Packet
 {
 public:
-  SyncWritePacket();
+  WritePacket();
 
-  void create(
-    const std::vector<tachimawari::joint::Joint> & joints,
-    uint8_t starting_address =
-    tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
+  void create(uint8_t id, uint8_t address, uint8_t value);
+
+  void create(uint8_t id, uint8_t address, uint16_t value);
 };
 
 }  // namespace tachimawari::control::protocol_1
 
-#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__SYNC_WRITE_PACKET_HPP_
+#endif  // TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__INSTRUCTION__WRITE_PACKET_HPP_

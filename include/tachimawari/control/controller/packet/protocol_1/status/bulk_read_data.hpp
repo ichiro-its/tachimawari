@@ -18,74 +18,59 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#ifndef TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__STATUS__BULK_READ_DATA_HPP_
+#define TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__STATUS__BULK_READ_DATA_HPP_
+
+#include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
+#include "tachimawari/control/controller/packet/protocol_1/instruction/bulk_read_packet.hpp"
 #include "tachimawari/control/controller/packet/protocol_1/model/packet.hpp"
-
-#include "tachimawari/control/controller/packet/protocol_1/instruction/instruction.hpp"
+#include "tachimawari/joint/model/joint.hpp"
 
 namespace tachimawari::control::protocol_1
 {
 
-Packet::Packet(uint8_t packet_id, uint8_t instruction)
-: info(instruction), checksum(0x00), packet_id(packet_id)
+class BulkReadData : public Packet
 {
-  packet.push_back(0xFF);
-  packet.push_back(0xFF);
-}
+public:
+  enum
+  {
+    MAX_LENGTH = 255
+  };
 
-uint8_t Packet::get_packet_id() const
-{
-  return packet_id;
-}
+  static void insert_all(
+    std::shared_ptr<std::map<uint8_t, BulkReadData>> bulk_data,
+    const BulkReadPacket & bulk_read_packet);
 
-uint8_t Packet::get_info() const
-{
-  return info;
-}
+  static int validate(
+    std::shared_ptr<std::vector<uint8_t>> rxpacket,
+    int packet_length);
 
-uint8_t Packet::get_data_length() const
-{
-  return static_cast<uint8_t>(parameters.size() + 2);
-}
+  static int update_all(
+    std::shared_ptr<std::map<uint8_t, BulkReadData>> bulk_data,
+    std::vector<uint8_t> rxpacket, int packet_length, int data_number);
 
-int Packet::get_expected_length() const
-{
-  if (info == Instruction::READ) {
-    return parameters[1] + 6;
-  } else {
-    return 6;
-  }
-}
+  explicit BulkReadData(uint8_t id, int data_length = MAX_LENGTH);
 
-void Packet::calculate_checksum()
-{
-  checksum = packet_id + get_data_length() + info;
-  for (auto parameter : parameters) {
-    checksum += parameter;
-  }
-  checksum = ~checksum;
-}
+  void set_starting_address(uint8_t start_address);
 
-const std::vector<uint8_t> & Packet::get_parameters() const
-{
-  return parameters;
-}
+  bool is_valid(std::vector<uint8_t> rxpacket);
 
-const std::vector<uint8_t> & Packet::get_packet()
-{
-  packet.push_back(packet_id);
+  bool is_filled() const;
 
-  packet.push_back(get_data_length());
+  int get(uint8_t address) const;
+  int get(uint16_t address) const;
 
-  packet.push_back(info);
-  packet.insert(packet.end(), parameters.begin(), parameters.end());
+private:
+  uint8_t start_address;
 
-  calculate_checksum();
-  packet.push_back(checksum);
-
-  return packet;
-}
+  std::vector<uint8_t> data;
+  std::vector<bool> marker;
+};
 
 }  // namespace tachimawari::control::protocol_1
+
+#endif  // TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__STATUS__BULK_READ_DATA_HPP_

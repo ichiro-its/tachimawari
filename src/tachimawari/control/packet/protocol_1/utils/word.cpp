@@ -20,7 +20,7 @@
 
 #include <string>
 
-#include "tachimawari/control/packet/protocol_1/utils/word.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/utils/word.hpp"
 
 namespace tachimawari::control::protocol_1
 {

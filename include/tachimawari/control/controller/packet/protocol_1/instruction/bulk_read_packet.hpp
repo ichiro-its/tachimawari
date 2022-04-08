@@ -18,29 +18,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__WRITE_PACKET_HPP_
-#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__WRITE_PACKET_HPP_
+#ifndef TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__INSTRUCTION__BULK_READ_PACKET_HPP_
+#define TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__INSTRUCTION__BULK_READ_PACKET_HPP_
 
-#include <string>
 #include <vector>
 
-#include "tachimawari/control/packet/protocol_1/model/packet.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/model/packet.hpp"
 #include "tachimawari/joint/model/joint.hpp"
-#include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
 namespace tachimawari::control::protocol_1
 {
 
-class WritePacket : public Packet
+class BulkReadPacket : public Packet
 {
 public:
-  WritePacket();
+  BulkReadPacket();
 
-  void create(uint8_t id, uint8_t address, uint8_t value);
+  int get_expected_length() const override;
 
-  void create(uint8_t id, uint8_t address, uint16_t value);
+  int get_data_number() const;
+
+  bool is_parameters_filled() const;
+
+  void add(
+    uint8_t id, uint8_t starting_address,
+    uint8_t data_length);
 };
 
 }  // namespace tachimawari::control::protocol_1
 
-#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__WRITE_PACKET_HPP_
+#endif  // TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__INSTRUCTION__BULK_READ_PACKET_HPP_

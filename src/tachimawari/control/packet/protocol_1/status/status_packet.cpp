@@ -22,11 +22,11 @@
 #include <string>
 #include <vector>
 
-#include "tachimawari/control/packet/protocol_1/status/status_packet.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/status/status_packet.hpp"
 
-#include "tachimawari/control/packet/protocol_1/model/packet_index.hpp"
-#include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
-#include "tachimawari/control/packet/protocol_1/utils/word.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/model/packet_index.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/instruction/instruction.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/utils/word.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
 namespace tachimawari::control::protocol_1

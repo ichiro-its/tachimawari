@@ -24,7 +24,7 @@
 
 #include "tachimawari/control/controller/controller.hpp"
 #include "tachimawari/joint/joint.hpp"
-#include "tachimawari/control/packet/protocol_1/protocol_1.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/protocol_1.hpp"
 
 int main(int argc, char * argv[])
 {

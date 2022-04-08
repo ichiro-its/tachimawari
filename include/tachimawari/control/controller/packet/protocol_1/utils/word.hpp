@@ -18,33 +18,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__BULK_READ_PACKET_HPP_
-#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__BULK_READ_PACKET_HPP_
+#ifndef TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__UTILS__WORD_HPP_
+#define TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__UTILS__WORD_HPP_
 
-#include <vector>
-
-#include "tachimawari/control/packet/protocol_1/model/packet.hpp"
-#include "tachimawari/joint/model/joint.hpp"
+#include <string>
 
 namespace tachimawari::control::protocol_1
 {
 
-class BulkReadPacket : public Packet
+class Word
 {
 public:
-  BulkReadPacket();
+  static uint8_t get_low_byte(int word);
+  static uint8_t get_high_byte(int word);
 
-  int get_expected_length() const override;
+  static uint16_t make_word(uint8_t lowbyte, uint8_t highbyte);
 
-  int get_data_number() const;
-
-  bool is_parameters_filled() const;
-
-  void add(
-    uint8_t id, uint8_t starting_address,
-    uint8_t data_length);
+  static uint16_t make_color(uint8_t red, uint8_t green, uint8_t blue);
 };
 
 }  // namespace tachimawari::control::protocol_1
 
-#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__INSTRUCTION__BULK_READ_PACKET_HPP_
+#endif  // TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__UTILS__WORD_HPP_

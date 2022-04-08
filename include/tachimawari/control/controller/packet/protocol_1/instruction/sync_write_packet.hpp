@@ -18,47 +18,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__MODEL__PACKET_HPP_
-#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__MODEL__PACKET_HPP_
+#ifndef TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__INSTRUCTION__SYNC_WRITE_PACKET_HPP_
+#define TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__INSTRUCTION__SYNC_WRITE_PACKET_HPP_
 
 #include <string>
 #include <vector>
 
-#include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/model/packet.hpp"
+#include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
 namespace tachimawari::control::protocol_1
 {
 
-class Packet
+class SyncWritePacket : public Packet
 {
 public:
-  Packet(uint8_t packet_id, uint8_t instruction);
+  SyncWritePacket();
 
-  uint8_t get_packet_id() const;
-
-  uint8_t get_info() const;
-
-  virtual uint8_t get_data_length() const;
-
-  virtual int get_expected_length() const;
-
-  const std::vector<uint8_t> & get_parameters() const;
-
-  const std::vector<uint8_t> & get_packet();
-
-protected:
-  void calculate_checksum();
-
-  std::vector<uint8_t> packet;
-
-  uint8_t packet_id;
-  uint8_t info;
-
-  std::vector<uint8_t> parameters;
-
-  uint8_t checksum;
+  void create(
+    const std::vector<tachimawari::joint::Joint> & joints,
+    uint8_t starting_address =
+    tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
 };
 
 }  // namespace tachimawari::control::protocol_1
 
-#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__MODEL__PACKET_HPP_
+#endif  // TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__INSTRUCTION__SYNC_WRITE_PACKET_HPP_

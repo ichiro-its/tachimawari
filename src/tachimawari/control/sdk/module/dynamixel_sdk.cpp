@@ -26,11 +26,13 @@
 #include "tachimawari/control/sdk/module/dynamixel_sdk.hpp"
 
 #include "tachimawari/control/controller/module/cm740_address.hpp"
-#include "tachimawari/control/packet/protocol_1/utils/word.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/utils/word.hpp"
 #include "tachimawari/control/sdk/utils/protocol_1/group_bulk_read.hpp"
 #include "tachimawari/control/sdk/utils/protocol_1/group_sync_write.hpp"
+#include "tachimawari/control/sdk/utils/protocol_2/group_sync_write.hpp"
 #include "tachimawari/joint/model/joint.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
+#include "tachimawari/joint/protocol_2/mx28_address.hpp"
 
 #include "dynamixel_sdk/dynamixel_sdk.h"
 
@@ -188,22 +190,50 @@ bool DynamixelSDK::sync_write_packet(
   const std::vector<joint::Joint> & joints,
   bool with_pid)
 {
+  int result = TX_FAIL;
+
   if (protocol_version == 1.0) {
     auto group_sync_write = sdk::protocol_1::GroupSyncWrite(port_handler, packet_handler).create(
       joints, with_pid ? tachimawari::joint::protocol_1::MX28Address::D_GAIN :
       tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
 
-    int result = group_sync_write.txPacket();
-    if (result != COMM_SUCCESS) {
+    result = group_sync_write.txPacket();
+    if (result != SUCCESS) {
       // TODO(maroqijalil): will be used for logging
       // packet_handler->getTxRxResult(result);
     }
-    group_sync_write.clearParam();
 
-    return result == COMM_SUCCESS;
+    group_sync_write.clearParam();
+  } else if (protocol_version == 2.0) {
+    using sdk::protocol_2::GroupSyncWrite;
+    using tachimawari::joint::protocol_2::MX28Address;
+
+    if (with_pid) {
+      auto pid_sync_write = GroupSyncWrite(port_handler, packet_handler).create(
+        joints, MX28Address::POSITION_D_GAIN);
+
+      result = pid_sync_write.txPacket();
+      if (result != SUCCESS) {
+        // TODO(maroqijalil): will be used for logging
+        // packet_handler->getTxRxResult(result);
+      }
+
+      pid_sync_write.clearParam();
+    }
+
+    auto position_sync_write = GroupSyncWrite(port_handler, packet_handler).create(
+      joints, MX28Address::GOAL_POSITION);
+
+    result = position_sync_write.txPacket();
+    if (result != SUCCESS) {
+      // TODO(maroqijalil): will be used for logging
+      // packet_handler->getTxRxResult(result);
+    }
+
+    position_sync_write.clearParam();
   }
 
-  return false;
+  return result == SUCCESS;
 }
 
 bool DynamixelSDK::bulk_read_packet()

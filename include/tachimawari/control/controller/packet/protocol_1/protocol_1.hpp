@@ -18,12 +18,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__PROTOCOL_1_HPP_
-#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__PROTOCOL_1_HPP_
+#ifndef TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__PROTOCOL_1_HPP_
+#define TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__PROTOCOL_1_HPP_
 
-#include "tachimawari/control/packet/protocol_1/instruction/bulk_read_packet.hpp"
-#include "tachimawari/control/packet/protocol_1/instruction/instruction.hpp"
-#include "tachimawari/control/packet/protocol_1/instruction/sync_write_packet.hpp"
-#include "tachimawari/control/packet/protocol_1/instruction/write_packet.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/instruction/bulk_read_packet.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/instruction/instruction.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/instruction/sync_write_packet.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/instruction/write_packet.hpp"
 
-#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__PROTOCOL_1_HPP_
+#endif  // TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__PROTOCOL_1_HPP_

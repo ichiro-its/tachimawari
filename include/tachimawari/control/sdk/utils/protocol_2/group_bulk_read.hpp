@@ -18,45 +18,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__STATUS__STATUS_PACKET_HPP_
-#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__STATUS__STATUS_PACKET_HPP_
+#ifndef TACHIMAWARI__CONTROL__SDK__UTILS__PROTOCOL_1__GROUP_BULK_READ_HPP_
+#define TACHIMAWARI__CONTROL__SDK__UTILS__PROTOCOL_1__GROUP_BULK_READ_HPP_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "tachimawari/control/packet/protocol_1/model/packet.hpp"
+#include "tachimawari/control/sdk/utils/packet/group_bulk_read.hpp"
 #include "tachimawari/joint/model/joint.hpp"
-#include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
-namespace tachimawari::control::protocol_1
+#include "dynamixel_sdk/dynamixel_sdk.h"
+
+namespace tachimawari::control::sdk::protocol_1
 {
 
-class StatusPacket : public Packet
+class GroupBulkRead : public tachimawari::control::sdk::GroupBulkRead
 {
 public:
-  static int validate(
-    std::shared_ptr<std::vector<uint8_t>> rxpacket,
-    int packet_length);
+  GroupBulkRead(
+    dynamixel::PortHandler * port_handler,
+    dynamixel::PacketHandler * packet_handler);
+  ~GroupBulkRead();
 
-  explicit StatusPacket(const std::vector<uint8_t> & rxpacket, int packet_length);
+  void add(
+    uint8_t id, uint16_t starting_address,
+    uint16_t data_length);
 
-  bool is_valid();
-
-  bool is_success() const;
-
-  const std::vector<uint8_t> & get_raw_packet() const;
-
-  uint8_t get_data_length() const override;
-
-  int get_read_data(uint8_t data_length) const;
-
-private:
-  std::vector<uint8_t> rxpacket;
-
-  int rxpacket_length;
+  void add(
+    const std::vector<tachimawari::joint::Joint> & joints) override;
 };
 
-}  // namespace tachimawari::control::protocol_1
+}  // namespace tachimawari::control::sdk::protocol_1
 
-#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__STATUS__STATUS_PACKET_HPP_
+#endif  // TACHIMAWARI__CONTROL__SDK__UTILS__PROTOCOL_1__GROUP_BULK_READ_HPP_

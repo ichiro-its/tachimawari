@@ -18,25 +18,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__UTILS__WORD_HPP_
-#define TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__UTILS__WORD_HPP_
+#ifndef TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__INSTRUCTION__READ_PACKET_HPP_
+#define TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__INSTRUCTION__READ_PACKET_HPP_
 
 #include <string>
+
+#include "tachimawari/control/controller/packet/protocol_1/model/packet.hpp"
 
 namespace tachimawari::control::protocol_1
 {
 
-class Word
+class ReadPacket : public Packet
 {
 public:
-  static uint8_t get_low_byte(int word);
-  static uint8_t get_high_byte(int word);
+  static bool is_match(const Packet & instruction_packet, const Packet & status_packet);
 
-  static uint16_t make_word(uint8_t lowbyte, uint8_t highbyte);
+  ReadPacket();
 
-  static uint16_t make_color(uint8_t red, uint8_t green, uint8_t blue);
+  void create(uint8_t id, uint8_t address, uint8_t data_length);
 };
 
 }  // namespace tachimawari::control::protocol_1
 
-#endif  // TACHIMAWARI__CONTROL__PACKET__PROTOCOL_1__UTILS__WORD_HPP_
+#endif  // TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__INSTRUCTION__READ_PACKET_HPP_
