@@ -27,6 +27,7 @@
 
 #include "tachimawari/control/controller/module/cm740_address.hpp"
 #include "tachimawari/control/controller/packet/protocol_1/utils/word.hpp"
+#include "tachimawari/control/sdk/packet/model/group_bulk_read.hpp"
 #include "tachimawari/control/sdk/packet/protocol_1/group_bulk_read.hpp"
 #include "tachimawari/control/sdk/packet/protocol_1/group_sync_write.hpp"
 #include "tachimawari/control/sdk/packet/protocol_2/group_sync_write.hpp"
@@ -45,7 +46,7 @@ DynamixelSDK::DynamixelSDK(
 : ControlManager(port_name, protocol_version, baudrate),
   port_handler(dynamixel::PortHandler::getPortHandler(port_name.c_str())),
   packet_handler(dynamixel::PacketHandler::getPacketHandler(protocol_version)),
-  bulk_data(std::make_shared<std::map<uint8_t, sdk::protocol_1::GroupBulkRead>>())
+  bulk_data(std::make_shared<std::map<uint8_t, sdk::GroupBulkRead>>())
 {
 }
 
@@ -70,10 +71,10 @@ bool DynamixelSDK::connect()
   return true;
 }
 
-bool DynamixelSDK::send_bulk_read_packet(sdk::protocol_1::GroupBulkRead group_bulk_read)
+bool DynamixelSDK::send_bulk_read_packet(sdk::GroupBulkRead group_bulk_read)
 {
   if (group_bulk_read.send() == SUCCESS) {
-    sdk::protocol_1::GroupBulkRead::insert_all(bulk_data, group_bulk_read);
+    sdk::GroupBulkRead::insert_all(bulk_data, group_bulk_read);
   } else {
     // TODO(maroqijalil): will be used for logging
     // packet_handler->getTxRxResult(result);
@@ -239,7 +240,7 @@ bool DynamixelSDK::sync_write_packet(
 bool DynamixelSDK::bulk_read_packet()
 {
   if (protocol_version == 1.0) {
-    sdk::protocol_1::GroupBulkRead group_bulk_read(port_handler, packet_handler);
+    sdk::GroupBulkRead group_bulk_read(port_handler, packet_handler);
 
     if (ping(CONTROLLER)) {
       group_bulk_read.add(CONTROLLER, CM740Address::DXL_POWER, 30u);
