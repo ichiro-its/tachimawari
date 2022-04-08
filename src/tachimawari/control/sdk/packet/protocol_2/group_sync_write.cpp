@@ -43,7 +43,7 @@ dynamixel::GroupSyncWrite GroupSyncWrite::create(
 {
   // check does the request need pid to be included
   bool is_pid = starting_address == tachimawari::joint::protocol_2::MX28Address::POSITION_D_GAIN;
-  int data_length = is_pid ? 3 : 4;
+  int data_length = is_pid ? 6 : 4;
 
   dynamixel::GroupSyncWrite group_sync_write(port_handler, packet_handler,
     starting_address, data_length);
@@ -52,9 +52,12 @@ dynamixel::GroupSyncWrite GroupSyncWrite::create(
 
   for (const auto & joint : joints) {
     if (is_pid) {
-      param_data.push_back(joint.get_pid_gain()[2]);
-      param_data.push_back(joint.get_pid_gain()[1]);
-      param_data.push_back(joint.get_pid_gain()[0]);
+      param_data.push_back(DXL_LOBYTE(joint.get_pid_gain()[2]));
+      param_data.push_back(DXL_HIBYTE(joint.get_pid_gain()[2]));
+      param_data.push_back(DXL_LOBYTE(joint.get_pid_gain()[1]));
+      param_data.push_back(DXL_HIBYTE(joint.get_pid_gain()[1]));
+      param_data.push_back(DXL_LOBYTE(joint.get_pid_gain()[0]));
+      param_data.push_back(DXL_HIBYTE(joint.get_pid_gain()[0]));
     } else {
       param_data.push_back(DXL_LOBYTE(DXL_LOWORD(joint.get_position_value())));
       param_data.push_back(DXL_HIBYTE(DXL_LOWORD(joint.get_position_value())));

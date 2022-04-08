@@ -18,38 +18,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__SDK__PACKET__PROTOCOL_1__GROUP_BULK_READ_HPP_
-#define TACHIMAWARI__CONTROL__SDK__PACKET__PROTOCOL_1__GROUP_BULK_READ_HPP_
+#ifndef TACHIMAWARI__CONTROL__SDK__PACKET__PROTOCOL_2__GROUP_BULK_READ_HPP_
+#define TACHIMAWARI__CONTROL__SDK__PACKET__PROTOCOL_2__GROUP_BULK_READ_HPP_
 
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "tachimawari/control/sdk/utils/packet/group_bulk_read.hpp"
+#include "tachimawari/control/sdk/packet/model/group_bulk_read.hpp"
 #include "tachimawari/joint/model/joint.hpp"
 
 #include "dynamixel_sdk/dynamixel_sdk.h"
 
-namespace tachimawari::control::sdk::protocol_1
+namespace tachimawari::control::sdk::protocol_2
 {
 
-class GroupBulkRead : public tachimawari::control::sdk::GroupBulkRead
+class GroupBulkRead
 {
 public:
-  GroupBulkRead(
+  tachimawari::control::sdk::GroupBulkRead create(
     dynamixel::PortHandler * port_handler,
-    dynamixel::PacketHandler * packet_handler);
-  ~GroupBulkRead();
-
-  void add(
-    uint8_t id, uint16_t starting_address,
-    uint16_t data_length);
-
-  void add(
-    const std::vector<tachimawari::joint::Joint> & joints) override;
+    dynamixel::PacketHandler * packet_handler,
+    const std::vector<tachimawari::joint::Joint> & joints);
 };
 
-}  // namespace tachimawari::control::sdk::protocol_1
+}  // namespace tachimawari::control::sdk::protocol_2
 
-#endif  // TACHIMAWARI__CONTROL__SDK__PACKET__PROTOCOL_1__GROUP_BULK_READ_HPP_
+#endif  // TACHIMAWARI__CONTROL__SDK__PACKET__PROTOCOL_2__GROUP_BULK_READ_HPP_
