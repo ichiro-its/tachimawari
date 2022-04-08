@@ -22,7 +22,7 @@
 #define TACHIMAWARI__CONTROL__SDK__SDK_HPP_
 
 #include "tachimawari/control/sdk/module/dynamixel_sdk.hpp"
-#include "tachimawari/control/sdk/utils/protocol_1/group_bulk_read.hpp"
-#include "tachimawari/control/sdk/utils/protocol_1/group_sync_write.hpp"
+#include "tachimawari/control/sdk/packet/protocol_1/group_bulk_read.hpp"
+#include "tachimawari/control/sdk/packet/protocol_1/group_sync_write.hpp"
 
 #endif  // TACHIMAWARI__CONTROL__SDK__SDK_HPP_

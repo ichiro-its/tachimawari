@@ -23,7 +23,7 @@
 #include <string>
 #include <vector>
 
-#include "tachimawari/control/sdk/utils/protocol_1/group_bulk_read.hpp"
+#include "tachimawari/control/sdk/packet/protocol_1/group_bulk_read.hpp"
 
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 

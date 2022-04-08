@@ -21,7 +21,7 @@
 #include <string>
 #include <vector>
 
-#include "tachimawari/control/sdk/utils/protocol_1/group_sync_write.hpp"
+#include "tachimawari/control/sdk/packet/protocol_1/group_sync_write.hpp"
 
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 

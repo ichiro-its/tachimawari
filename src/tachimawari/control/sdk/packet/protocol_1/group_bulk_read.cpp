@@ -23,7 +23,8 @@
 #include <string>
 #include <vector>
 
-#include "tachimawari/control/sdk/utils/protocol_1/group_bulk_read.hpp"
+#include "tachimawari/control/sdk/packet/model/group_bulk_read.hpp"
+#include "tachimawari/control/sdk/packet/protocol_1/group_bulk_read.hpp"
 
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
@@ -32,85 +33,20 @@
 namespace tachimawari::control::sdk::protocol_1
 {
 
-void GroupBulkRead::insert_all(
-  std::shared_ptr<std::map<uint8_t, GroupBulkRead>> bulk_data,
-  GroupBulkRead group_bulk_read)
-{
-  for (auto id : group_bulk_read.get_parameters_id()) {
-    if (bulk_data->find(id) != bulk_data->end()) {
-      bulk_data->insert({id, group_bulk_read});
-    }
-  }
-}
-
-GroupBulkRead::GroupBulkRead(
+tachimawari::control::sdk::GroupBulkRead GroupBulkRead::create(
   dynamixel::PortHandler * port_handler,
-  dynamixel::PacketHandler * packet_handler)
-: group_bulk_read(port_handler, packet_handler), parameters_id({})
+  dynamixel::PacketHandler * packet_handler,
+  const std::vector<tachimawari::joint::Joint> & joints)
 {
-}
+  tachimawari::control::sdk::GroupBulkRead group_bulk_read(
+    port_handler, packet_handler);
 
-void GroupBulkRead::add(
-  uint8_t id, uint16_t starting_address,
-  uint16_t data_length)
-{
-  if (group_bulk_read.addParam(id, starting_address, data_length)) {
-    parameters_id.push_back(id);
-  } else {
-    // TODO(maroqijalil): will be used for logging
-    // add param failed
-  }
-}
-
-void GroupBulkRead::add(const std::vector<tachimawari::joint::Joint> & joints)
-{
   for (const auto & joint : joints) {
-    if (group_bulk_read.addParam(
-        joint.get_id(), tachimawari::joint::protocol_1::GOAL_POSITION_L, 2u))
-    {
-      parameters_id.push_back(joint.get_id());
-    } else {
-      // TODO(maroqijalil): will be used for logging
-      // addparam failed
-    }
-  }
-}
-
-int GroupBulkRead::send()
-{
-  return group_bulk_read.txRxPacket();
-}
-
-int GroupBulkRead::get(uint8_t id, uint16_t address, uint16_t data_length)
-{
-  bool is_available = group_bulk_read.isAvailable(id, address, data_length);
-
-  if (is_available) {
-    uint32_t result = group_bulk_read.getData(id, address, data_length);
-
-    return static_cast<int>(result);
-  } else {
-    // TODO(maroqijalil): will be used for logging
-    // data is not found
+    group_bulk_read.add(
+        joint.get_id(), tachimawari::joint::protocol_1::GOAL_POSITION_L, 2u);
   }
 
-  return -1;
+  return group_bulk_read;
 }
-
-std::vector<uint8_t> GroupBulkRead::get_parameters_id() const
-{
-  return parameters_id;
-}
-
-bool GroupBulkRead::is_parameters_filled() const
-{
-  return parameters_id.size() > 0;
-}
-
-GroupBulkRead::~GroupBulkRead()
-{
-  group_bulk_read.clearParam();
-}
-
 
 }  // namespace tachimawari::control::sdk::protocol_1

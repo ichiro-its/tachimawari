@@ -26,8 +26,8 @@
 #include <string>
 #include <vector>
 
+#include "tachimawari/control/sdk/packet/model/group_bulk_read.hpp"
 #include "tachimawari/joint/model/joint.hpp"
-#include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
 #include "dynamixel_sdk/dynamixel_sdk.h"
 
@@ -37,34 +37,10 @@ namespace tachimawari::control::sdk::protocol_1
 class GroupBulkRead
 {
 public:
-  static void insert_all(
-    std::shared_ptr<std::map<uint8_t, GroupBulkRead>> bulk_data,
-    GroupBulkRead group_bulk_read);
-
-  GroupBulkRead(
+  tachimawari::control::sdk::GroupBulkRead create(
     dynamixel::PortHandler * port_handler,
-    dynamixel::PacketHandler * packet_handler);
-  ~GroupBulkRead();
-
-  void add(
-    uint8_t id, uint16_t starting_address,
-    uint16_t data_length);
-
-  void add(
+    dynamixel::PacketHandler * packet_handler,
     const std::vector<tachimawari::joint::Joint> & joints);
-
-  int send();
-
-  int get(uint8_t id, uint16_t address, uint16_t data_length);
-
-  std::vector<uint8_t> get_parameters_id() const;
-
-  bool is_parameters_filled() const;
-
-private:
-  dynamixel::GroupBulkRead group_bulk_read;
-
-  std::vector<uint8_t> parameters_id;
 };
 
 }  // namespace tachimawari::control::sdk::protocol_1

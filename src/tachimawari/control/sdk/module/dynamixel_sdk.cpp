@@ -27,9 +27,9 @@
 
 #include "tachimawari/control/controller/module/cm740_address.hpp"
 #include "tachimawari/control/controller/packet/protocol_1/utils/word.hpp"
-#include "tachimawari/control/sdk/utils/protocol_1/group_bulk_read.hpp"
-#include "tachimawari/control/sdk/utils/protocol_1/group_sync_write.hpp"
-#include "tachimawari/control/sdk/utils/protocol_2/group_sync_write.hpp"
+#include "tachimawari/control/sdk/packet/protocol_1/group_bulk_read.hpp"
+#include "tachimawari/control/sdk/packet/protocol_1/group_sync_write.hpp"
+#include "tachimawari/control/sdk/packet/protocol_2/group_sync_write.hpp"
 #include "tachimawari/joint/model/joint.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 #include "tachimawari/joint/protocol_2/mx28_address.hpp"
