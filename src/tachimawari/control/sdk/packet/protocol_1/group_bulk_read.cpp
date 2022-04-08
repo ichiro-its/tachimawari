@@ -43,7 +43,7 @@ tachimawari::control::sdk::GroupBulkRead GroupBulkRead::create(
 
   for (const auto & joint : joints) {
     group_bulk_read.add(
-        joint.get_id(), tachimawari::joint::protocol_1::GOAL_POSITION_L, 2u);
+      joint.get_id(), tachimawari::joint::protocol_1::GOAL_POSITION_L, 2u);
   }
 
   return group_bulk_read;
