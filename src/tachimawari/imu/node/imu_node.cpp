@@ -44,16 +44,16 @@ void ImuNode::update_imu()
 {
   auto unit_msg = kansei_interfaces::msg::Unit();
 
-  keisan::Vector<3> gyro = imu_provider->get_gyro();
-  keisan::Vector<3> accelero = imu_provider->get_accelero();
+  auto gyro = imu_provider->get_gyro();
+  auto accelero = imu_provider->get_accelero();
 
-  unit_msg.gyro.roll = gyro[0];
-  unit_msg.gyro.pitch = gyro[1];
-  unit_msg.gyro.yaw = gyro[2];
+  unit_msg.gyro.roll = gyro.roll.degree();
+  unit_msg.gyro.pitch = gyro.pitch.degree();
+  unit_msg.gyro.yaw = gyro.yaw.degree();
 
-  unit_msg.accelero.roll = accelero[0];
-  unit_msg.accelero.pitch = accelero[1];
-  unit_msg.accelero.yaw = accelero[2];
+  unit_msg.accelero.x = accelero.x;
+  unit_msg.accelero.y = accelero.y;
+  unit_msg.accelero.z = accelero.z;
 
   unit_publisher->publish(unit_msg);
 }

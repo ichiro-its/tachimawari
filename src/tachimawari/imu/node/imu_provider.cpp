@@ -35,7 +35,7 @@ ImuProvider::ImuProvider(std::shared_ptr<tachimawari::control::ControlManager> c
 {
 }
 
-const keisan::Vector<3> & ImuProvider::get_gyro() const
+const keisan::Euler<double> & ImuProvider::get_gyro() const
 {
   if (control_manager->get_protocol_version() == 1.0) {
     {
@@ -52,18 +52,21 @@ const keisan::Vector<3> & ImuProvider::get_gyro() const
         ControlManager::CONTROLLER,
         CM740Address::GYRO_Z_L, 2);
 
-      return keisan::Vector<3>(
-        (gyro_x == -1) ? 0 : gyro_x,
-        (gyro_y == -1) ? 0 : gyro_y,
-        (gyro_z == -1) ? 0 : gyro_z
+      return keisan::Euler<double>(
+        keisan::make_degree((gyro_x == -1) ? 0 : gyro_x),
+        keisan::make_degree((gyro_y == -1) ? 0 : gyro_y),
+        keisan::make_degree((gyro_z == -1) ? 0 : gyro_z)
       );
     }
   }
 
-  return keisan::Vector<3>::zero();
+  return keisan::Euler<double>(
+    keisan::make_degree(0),
+    keisan::make_degree(0),
+    keisan::make_degree(0));
 }
 
-const keisan::Vector<3> & ImuProvider::get_accelero() const
+const keisan::Point3 & ImuProvider::get_accelero() const
 {
   if (control_manager->get_protocol_version() == 1.0) {
     {
@@ -80,7 +83,7 @@ const keisan::Vector<3> & ImuProvider::get_accelero() const
         ControlManager::CONTROLLER,
         CM740Address::ACCEL_Z_L, 2);
 
-      return keisan::Vector<3>(
+      return keisan::Point3(
         (accel_x == -1) ? 0 : accel_x,
         (accel_y == -1) ? 0 : accel_y,
         (accel_z == -1) ? 0 : accel_z
@@ -88,7 +91,7 @@ const keisan::Vector<3> & ImuProvider::get_accelero() const
     }
   }
 
-  return keisan::Vector<3>::zero();
+  return keisan::Point3::zero();
 }
 
 }  // namespace tachimawari::imu
