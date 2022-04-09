@@ -38,6 +38,11 @@ namespace tachimawari::joint
 class JointNode
 {
 public:
+  using ControlJoints = tachimawari_interfaces::msg::ControlJoints;
+  using GetJoints = tachimawari_interfaces::srv::GetJoints;
+  using SetJoints = tachimawari_interfaces::msg::SetJoints;
+  using SetTorques = tachimawari_interfaces::msg::SetTorques;
+
   JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager);
 
   void update();
@@ -49,16 +54,12 @@ private:
 
   Middleware middleware;
 
-  rclcpp::Subscription<tachimawari_interfaces::msg::ControlJoints>::SharedPtr
-    control_joints_subscriber;
+  rclcpp::Subscription<ControlJoints>::SharedPtr control_joints_subscriber;
 
-  rclcpp::Service<tachimawari_interfaces::srv::GetJoints>::SharedPtr
-    get_joints_server;
-  rclcpp::Subscription<tachimawari_interfaces::msg::SetJoints>::SharedPtr
-    set_joints_subscriber;
+  rclcpp::Service<GetJoints>::SharedPtr get_joints_server;
+  rclcpp::Subscription<SetJoints>::SharedPtr set_joints_subscriber;
 
-  rclcpp::Subscription<tachimawari_interfaces::msg::SetTorques>::SharedPtr
-    set_torques_subscriber;
+  rclcpp::Subscription<SetTorques>::SharedPtr set_torques_subscriber;
 };
 
 }  // namespace tachimawari::joint
