@@ -43,6 +43,7 @@ add_library(${PROJECT_NAME} SHARED
   "src/${PROJECT_NAME}/joint/node/joint_manager.cpp"
   "src/${PROJECT_NAME}/joint/node/joint_node.cpp"
   "src/${PROJECT_NAME}/joint/utils/middleware.cpp"
+  "src/${PROJECT_NAME}/joint/utils/node_control.cpp"
   "src/${PROJECT_NAME}/node/tachimawari_node.cpp")
 
 target_include_directories(${PROJECT_NAME} PUBLIC

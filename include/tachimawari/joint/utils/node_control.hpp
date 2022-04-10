@@ -18,75 +18,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <string>
-#include <vector>
+#ifndef TACHIMAWARI__JOINT__UTILS__NODE_CONTROL_HPP_
+#define TACHIMAWARI__JOINT__UTILS__NODE_CONTROL_HPP_
 
-#include "keisan/angle/angle.hpp"
+#include <string>
+
 #include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari_interfaces/msg/joint.hpp"
 
 namespace tachimawari::joint
 {
 
-int Joint::angle_to_value(const keisan::Angle<double> & angle)
+class NodeControl
 {
-  return angle.degree() / 360.0 * 4096;
-}
+public:
+  explicit NodeControl(double time_limit, double time_unit);
 
-keisan::Angle<double> Joint::value_to_angle(int value)
-{
-  return keisan::make_degree(value / 4096 * 360.0);
-}
+  void update();
+  bool is_controlling() const;
 
-Joint::Joint(uint8_t joint_id, float position)
-: id(joint_id), position(keisan::make_degree(position)), p_gain(30.0), i_gain(30.0), d_gain(30.0)
-{
-}
+  void operator++();
 
-Joint::Joint(uint8_t joint_id, keisan::Angle<float> position)
-: Joint(joint_id, position.degree())
-{
-}
+private:
+  double time_limit;
+  double time_unit;
 
-void Joint::set_position(float position)
-{
-  this->position = keisan::make_degree(position);
-}
-
-void Joint::set_position(keisan::Angle<float> position)
-{
-  this->position = position;
-}
-
-void Joint::set_pid_gain(float p, float i, float d)
-{
-  p_gain = p;
-  i_gain = i;
-  d_gain = d;
-}
-
-uint8_t Joint::get_id() const
-{
-  return id;
-}
-
-float Joint::get_position() const
-{
-  return position.normalize().degree();
-}
-
-std::vector<float> Joint::get_pid_gain() const
-{
-  return {p_gain, i_gain, d_gain};
-}
-
-void Joint::set_position_value(int value)
-{
-  position = Joint::value_to_angle(value - CENTER_VALUE).normalize();
-}
-
-int Joint::get_position_value() const
-{
-  return Joint::angle_to_value(position) + CENTER_VALUE;
-}
+  bool control_status;
+  int value;
+  int counter;
+  double timer;
+};
 
 }  // namespace tachimawari::joint
+
+#endif  // TACHIMAWARI__JOINT__UTILS__NODE_CONTROL_HPP_

@@ -19,74 +19,46 @@
 // THE SOFTWARE.
 
 #include <string>
-#include <vector>
 
-#include "keisan/angle/angle.hpp"
+#include "tachimawari/joint/utils/node_control.hpp"
+
 #include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari_interfaces/msg/joint.hpp"
 
 namespace tachimawari::joint
 {
 
-int Joint::angle_to_value(const keisan::Angle<double> & angle)
-{
-  return angle.degree() / 360.0 * 4096;
-}
-
-keisan::Angle<double> Joint::value_to_angle(int value)
-{
-  return keisan::make_degree(value / 4096 * 360.0);
-}
-
-Joint::Joint(uint8_t joint_id, float position)
-: id(joint_id), position(keisan::make_degree(position)), p_gain(30.0), i_gain(30.0), d_gain(30.0)
+NodeControl::NodeControl(double time_limit, double time_unit)
+: time_limit(time_limit), time_unit(time_unit), control_status(false),
+  value(0), counter(0), timer(0)
 {
 }
 
-Joint::Joint(uint8_t joint_id, keisan::Angle<float> position)
-: Joint(joint_id, position.degree())
+void NodeControl::update()
 {
+  if (counter == value) {
+    timer += time_unit;
+
+    if (timer > time_limit) {
+      control_status = false;
+      counter = 0;
+      value = 0;
+    }
+  } else {
+    timer = 0.0;
+    value = counter;
+    control_status = true;
+  }
 }
 
-void Joint::set_position(float position)
+bool NodeControl::is_controlling() const
 {
-  this->position = keisan::make_degree(position);
+  return control_status;
 }
 
-void Joint::set_position(keisan::Angle<float> position)
+void NodeControl::operator++()
 {
-  this->position = position;
-}
-
-void Joint::set_pid_gain(float p, float i, float d)
-{
-  p_gain = p;
-  i_gain = i;
-  d_gain = d;
-}
-
-uint8_t Joint::get_id() const
-{
-  return id;
-}
-
-float Joint::get_position() const
-{
-  return position.normalize().degree();
-}
-
-std::vector<float> Joint::get_pid_gain() const
-{
-  return {p_gain, i_gain, d_gain};
-}
-
-void Joint::set_position_value(int value)
-{
-  position = Joint::value_to_angle(value - CENTER_VALUE).normalize();
-}
-
-int Joint::get_position_value() const
-{
-  return Joint::angle_to_value(position) + CENTER_VALUE;
+  ++counter;
 }
 
 }  // namespace tachimawari::joint

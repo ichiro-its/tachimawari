@@ -32,10 +32,9 @@ namespace tachimawari::joint
 {
 
 Middleware::Middleware(double time_limit, std::chrono::milliseconds time_unit)
-: time_limit(time_limit), time_unit(time_unit.count() / 1000.0), is_action_controlling(false),
-  action_value(0), action_counter(0), action_timer(0), is_head_controlling(false), head_value(0),
-  head_counter(0), head_timer(0), is_walking_controlling(false), walking_value(0),
-  walking_counter(0), walking_timer(0)
+: action_control(time_limit, time_unit.count() / 1000.0),
+  head_control(time_limit, time_unit.count() / 1000.0),
+  walking_control(time_limit, time_unit.count() / 1000.0)
 {
   reset_ids();
 }
@@ -60,43 +59,45 @@ void Middleware::set_rules(int control_type, const std::vector<uint8_t> & ids)
 
   std::vector<uint8_t> excluded_ids(ids);
   if (ids.size()) {
-    if (control_type == FOR_ACTION) {
-      action_ids = ids;
-    } else if (control_type == FOR_HEAD) {
-      head_ids = ids;
-    } else if (control_type == FOR_WALKING) {
-      walking_ids = ids;
+    switch (control_type) {
+      case FOR_ACTION: action_ids = ids; break;
+      case FOR_HEAD: head_ids = ids; break;
+      case FOR_WALKING: walking_ids = ids; break;
     }
   } else {
-    if (control_type == FOR_ACTION) {
-      excluded_ids.assign(action_ids.begin(), action_ids.end());
-    } else if (control_type == FOR_HEAD) {
-      excluded_ids.assign(head_ids.begin(), head_ids.end());
-    } else if (control_type == FOR_WALKING) {
-      excluded_ids.assign(walking_ids.begin(), walking_ids.end());
+    switch (control_type) {
+      case FOR_ACTION:
+        excluded_ids.assign(action_ids.begin(), action_ids.end());
+        break;
+
+      case FOR_HEAD:
+        excluded_ids.assign(head_ids.begin(), head_ids.end());
+        break;
+
+      case FOR_WALKING:
+        excluded_ids.assign(walking_ids.begin(), walking_ids.end());
+        break;
     }
   }
 
-  if (control_type != FOR_ACTION) {
-    action_ids.erase(
-      std::remove_if(
-        action_ids.begin(), action_ids.end(), [&](uint8_t id) {
-          return std::find(excluded_ids.begin(), excluded_ids.end(), id) != excluded_ids.end();
-        }), action_ids.end());
-  }
-  if (control_type != FOR_HEAD) {
-    head_ids.erase(
-      std::remove_if(
-        head_ids.begin(), head_ids.end(), [&](uint8_t id) {
-          return std::find(excluded_ids.begin(), excluded_ids.end(), id) != excluded_ids.end();
-        }), head_ids.end());
-  }
-  if (control_type != FOR_WALKING) {
-    walking_ids.erase(
-      std::remove_if(
-        walking_ids.begin(), walking_ids.end(), [&](uint8_t id) {
-          return std::find(excluded_ids.begin(), excluded_ids.end(), id) != excluded_ids.end();
-        }), walking_ids.end());
+  for (const auto control : {FOR_ACTION, FOR_HEAD, FOR_WALKING}) {
+    if (control_type != control) {
+      std::vector<uint8_t> * ids = nullptr;
+
+      switch (control_type) {
+        case FOR_ACTION: ids = &action_ids; break;
+        case FOR_HEAD: ids = &head_ids; break;
+        case FOR_WALKING: ids = &walking_ids; break;
+      }
+
+      if (ids != nullptr) {
+        ids->erase(
+          std::remove_if(
+            ids->begin(), ids->end(), [&](uint8_t id) {
+              return std::find(excluded_ids.begin(), excluded_ids.end(), id) != excluded_ids.end();
+            }), ids->end());
+      }
+    }
   }
 }
 
@@ -104,12 +105,12 @@ bool Middleware::validate(int control_type)
 {
   if (control_rule == DEFAULT && control_type != FORCE) {
     if (control_type == FOR_ACTION) {
-      action_counter++;
-    } else if (!is_action_controlling) {
+      ++action_control;
+    } else if (!action_control.is_controlling()) {
       if (control_type == FOR_HEAD) {
-        head_counter++;
+        ++head_control;
       } else if (control_type == FOR_WALKING) {
-        walking_counter++;
+        ++walking_control;
       }
     } else {
       return false;
@@ -134,27 +135,22 @@ std::vector<Joint> Middleware::filter_joints(
 
     if (control_type == FOR_ACTION) {
       return joints;
-    } else if (!is_action_controlling || control_type == FORCE) {
+    } else if (!action_control.is_controlling() || control_type == FORCE) {
       return joints;
     }
   } else {
     std::vector<Joint> joints;
+    std::vector<uint8_t> * ids = nullptr;
 
-    if (control_type == FOR_ACTION) {
+    switch (control_type) {
+      case FOR_ACTION: ids = &action_ids; break;
+      case FOR_HEAD: ids = &head_ids; break;
+      case FOR_WALKING: ids = &walking_ids; break;
+    }
+
+    if (ids != nullptr) {
       for (const auto & joint : joints_message) {
-        if (std::find(action_ids.begin(), action_ids.end(), joint.id) != action_ids.end()) {
-          joints.push_back(Joint(joint.id, joint.position));
-        }
-      }
-    } else if (control_type == FOR_HEAD) {
-      for (const auto & joint : joints_message) {
-        if (std::find(head_ids.begin(), head_ids.end(), joint.id) != head_ids.end()) {
-          joints.push_back(Joint(joint.id, joint.position));
-        }
-      }
-    } else if (control_type == FOR_WALKING) {
-      for (const auto & joint : joints_message) {
-        if (std::find(walking_ids.begin(), walking_ids.end(), joint.id) != walking_ids.end()) {
+        if (std::find(ids->begin(), ids->end(), joint.id) != ids->end()) {
           joints.push_back(Joint(joint.id, joint.position));
         }
       }
@@ -168,50 +164,12 @@ std::vector<Joint> Middleware::filter_joints(
 
 void Middleware::update()
 {
-  if (action_counter == action_value) {
-    action_timer += time_unit;
+  action_control.update();
+  head_control.update();
+  walking_control.update();
 
-    if (action_timer > time_limit) {
-      is_action_controlling = false;
-      action_counter = 0;
-      action_value = 0;
-    }
-  } else {
-    action_timer = 0.0;
-    action_value = action_counter;
-    is_action_controlling = true;
-
-    if (control_rule == FOR_ACTION) {
-      reset_ids();
-    }
-  }
-
-  if (head_counter == head_value) {
-    head_timer += time_unit;
-
-    if (head_timer > time_limit) {
-      is_head_controlling = false;
-      head_counter = 0;
-      head_value = 0;
-    }
-  } else {
-    head_timer = 0.0;
-    head_value = head_counter;
-    is_head_controlling = true;
-  }
-
-  if (walking_counter == walking_value) {
-    walking_timer += time_unit;
-
-    if (walking_timer > time_limit) {
-      is_walking_controlling = false;
-      walking_counter = 0;
-      walking_value = 0;
-    }
-  } else {
-    walking_timer = 0.0;
-    walking_value = walking_counter;
-    is_walking_controlling = true;
+  if (!action_control.is_controlling() && control_rule == FOR_ACTION) {
+    reset_ids();
   }
 }
 

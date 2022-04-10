@@ -33,6 +33,11 @@ namespace tachimawari::joint
 class Joint
 {
 public:
+  enum
+  {
+    CENTER_VALUE = 2048
+  };
+
   static int angle_to_value(const keisan::Angle<double> & angle);
   static keisan::Angle<double> value_to_angle(int value);
 
