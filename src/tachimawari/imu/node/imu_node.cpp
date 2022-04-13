@@ -47,13 +47,13 @@ void ImuNode::update_imu()
   auto gyro = imu_provider->get_gyro();
   auto accelero = imu_provider->get_accelero();
 
-  unit_msg.gyro.roll = gyro.roll.degree();
-  unit_msg.gyro.pitch = gyro.pitch.degree();
-  unit_msg.gyro.yaw = gyro.yaw.degree();
+  unit_msg.gyro.roll = gyro[0];
+  unit_msg.gyro.pitch = gyro[1];
+  unit_msg.gyro.yaw = gyro[2];
 
-  unit_msg.accelero.x = accelero.x;
-  unit_msg.accelero.y = accelero.y;
-  unit_msg.accelero.z = accelero.z;
+  unit_msg.accelero.x = accelero[0];
+  unit_msg.accelero.y = accelero[1];
+  unit_msg.accelero.z = accelero[2];
 
   unit_publisher->publish(unit_msg);
 }
