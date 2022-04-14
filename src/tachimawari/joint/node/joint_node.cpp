@@ -21,6 +21,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include "tachimawari/joint/node/joint_node.hpp"
 
@@ -30,7 +31,6 @@
 #include "tachimawari_interfaces/msg/joint.hpp"
 #include "tachimawari_interfaces/msg/set_joints.hpp"
 #include "tachimawari_interfaces/msg/set_torques.hpp"
-#include "tachimawari_interfaces/srv/get_joints.hpp"
 
 namespace tachimawari::joint
 {
@@ -38,6 +38,9 @@ namespace tachimawari::joint
 JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager)
 : joint_manager(joint_manager), middleware()
 {
+  current_joints_publisher = node->create_publisher<tachimawari_interfaces::msg::CurrentJoints>(
+    get_node_prefix() + "/current_joints", 10);
+
   {
     using tachimawari_interfaces::msg::ControlJoints;
 
@@ -78,28 +81,6 @@ JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager>
       }
     );
   }
-
-  {
-    using tachimawari_interfaces::srv::GetJoints;
-
-    get_joints_server = node->create_service<GetJoints>(
-      get_node_prefix() + "/get_joints",
-      [this](GetJoints::Request::SharedPtr request, GetJoints::Response::SharedPtr response) {
-        {
-          using tachimawari_interfaces::msg::Joint;
-
-          const auto & current_joints = this->joint_manager->get_current_joints();
-          auto & joints = response->joints;
-
-          joints.resize(current_joints.size());
-          for (size_t i = 0; i < joints.size() && i < current_joints.size(); ++i) {
-            joints[i].id = current_joints[i].get_id();
-            joints[i].position = current_joints[i].get_position();
-          }
-        }
-      }
-    );
-  }
 }
 
 void JointNode::update()
@@ -110,6 +91,21 @@ void JointNode::update()
 std::string JointNode::get_node_prefix() const
 {
   return "joint";
+}
+
+void JointNode::publish_current_joints()
+{
+  const auto & current_joints = this->joint_manager->get_current_joints();
+  auto msg_joints = tachimawari_interfaces::msg::CurrentJoints();
+  auto & joints = msg_joints.joints;
+
+  joints.resize(current_joints.size());
+  for (size_t i = 0; i < joints.size() && i < current_joints.size(); ++i) {
+    joints[i].id = current_joints[i].get_id();
+    joints[i].position = current_joints[i].get_position();
+  }
+
+  current_joints_publisher->publish(msg_joints);
 }
 
 }  // namespace tachimawari::joint
