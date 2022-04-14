@@ -56,8 +56,6 @@ private:
   rclcpp::Subscription<tachimawari_interfaces::msg::ControlJoints>::SharedPtr
     control_joints_subscriber;
 
-  rclcpp::Service<tachimawari_interfaces::srv::GetJoints>::SharedPtr
-    get_joints_server;
   rclcpp::Subscription<tachimawari_interfaces::msg::SetJoints>::SharedPtr
     set_joints_subscriber;
 
