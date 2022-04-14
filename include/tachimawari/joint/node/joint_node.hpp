@@ -31,7 +31,6 @@
 #include "tachimawari_interfaces/msg/control_joints.hpp"
 #include "tachimawari_interfaces/msg/set_joints.hpp"
 #include "tachimawari_interfaces/msg/set_torques.hpp"
-#include "tachimawari_interfaces/srv/get_joints.hpp"
 
 namespace tachimawari::joint
 {
