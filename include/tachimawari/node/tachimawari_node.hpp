@@ -35,13 +35,13 @@ namespace tachimawari
 class TachimawariNode
 {
 public:
-  explicit TachimawariNode(rclcpp::Node::SharedPtr node);
+  explicit TachimawariNode(
+    rclcpp::Node::SharedPtr node,
+    std::shared_ptr<control::ControlManager> control_manager);
 
   void activate_joint_manager();
 
   void activate_imu_provider();
-
-  void set_control_manager(std::shared_ptr<control::ControlManager> control_manager);
 
 private:
   rclcpp::Node::SharedPtr node;

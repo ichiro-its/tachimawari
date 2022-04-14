@@ -21,7 +21,6 @@
 #include <chrono>
 #include <memory>
 #include <string>
-#include <iostream>
 
 #include "tachimawari/node/tachimawari_node.hpp"
 
@@ -36,8 +35,10 @@ using namespace std::chrono_literals;
 namespace tachimawari
 {
 
-TachimawariNode::TachimawariNode(rclcpp::Node::SharedPtr node)
-: node(node), control_manager(nullptr), joint_node(nullptr), imu_node(nullptr)
+TachimawariNode::TachimawariNode(
+  rclcpp::Node::SharedPtr node,
+  std::shared_ptr<control::ControlManager> control_manager)
+: node(node), control_manager(control_manager), joint_node(nullptr), imu_node(nullptr)
 {
   node_timer = node->create_wall_timer(
     8ms,
@@ -46,7 +47,7 @@ TachimawariNode::TachimawariNode(rclcpp::Node::SharedPtr node)
         if (this->imu_node) {
           this->control_manager->bulk_read_packet();
 
-          this->imu_node->update_imu();
+          this->imu_node->update_imu();  // to do(finesaaa): need to check
         }
 
         if (this->joint_node) {
@@ -71,12 +72,6 @@ void TachimawariNode::activate_imu_provider()
   imu_node = std::make_shared<imu::ImuNode>(
     node,
     std::make_shared<imu::ImuProvider>(control_manager));
-}
-
-void TachimawariNode::set_control_manager(
-  std::shared_ptr<control::ControlManager> control_manager)
-{
-  this->control_manager = control_manager;
 }
 
 }  // namespace tachimawari

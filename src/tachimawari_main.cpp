@@ -39,9 +39,8 @@ int main(int argc, char * argv[])
   }
 
   auto node = std::make_shared<rclcpp::Node>("tachimawari_node");
-  auto tachimawari_node = std::make_shared<tachimawari::TachimawariNode>(node);
+  auto tachimawari_node = std::make_shared<tachimawari::TachimawariNode>(node, cm740);
 
-  tachimawari_node->set_control_manager(cm740);
   tachimawari_node->activate_joint_manager();
   tachimawari_node->activate_imu_provider();
 

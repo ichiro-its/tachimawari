@@ -21,7 +21,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <iostream>
 
 #include "tachimawari/joint/node/joint_node.hpp"
 
