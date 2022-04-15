@@ -29,12 +29,12 @@ namespace tachimawari::joint
 
 int Joint::angle_to_value(const keisan::Angle<double> & angle)
 {
-  return angle.degree() / 360.0 * 4096;
+  return angle.degree() / 360.0 * 4096.0;
 }
 
 keisan::Angle<double> Joint::value_to_angle(int value)
 {
-  return keisan::make_degree(value / 4096 * 360.0);
+  return keisan::make_degree(value / 4096.0 * 360.0);
 }
 
 Joint::Joint(uint8_t joint_id, float position)
@@ -81,7 +81,7 @@ std::vector<float> Joint::get_pid_gain() const
 
 void Joint::set_position_value(int value)
 {
-  position = Joint::value_to_angle(value - CENTER_VALUE).normalize();
+  position = Joint::value_to_angle(value - CENTER_VALUE);
 }
 
 int Joint::get_position_value() const
