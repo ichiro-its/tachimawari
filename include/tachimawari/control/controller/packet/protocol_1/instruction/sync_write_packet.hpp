@@ -1,4 +1,4 @@
-// Copyright (c) 2021 ICHIRO ITS
+// Copyright (c) 2021 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,11 +18,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__SDK__SDK_HPP_
-#define TACHIMAWARI__CONTROL__SDK__SDK_HPP_
+#ifndef TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__INSTRUCTION__SYNC_WRITE_PACKET_HPP_
+#define TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__INSTRUCTION__SYNC_WRITE_PACKET_HPP_
 
-#include "tachimawari/control/sdk/module/dynamixel_sdk.hpp"
-#include "tachimawari/control/sdk/packet/protocol_1/group_bulk_read.hpp"
-#include "tachimawari/control/sdk/packet/protocol_1/group_sync_write.hpp"
+#include <string>
+#include <vector>
 
-#endif  // TACHIMAWARI__CONTROL__SDK__SDK_HPP_
+#include "tachimawari/control/controller/packet/protocol_1/model/packet.hpp"
+#include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari/joint/protocol_1/mx28_address.hpp"
+
+namespace tachimawari::control::protocol_1
+{
+
+class SyncWritePacket : public Packet
+{
+public:
+  SyncWritePacket();
+
+  void create(
+    const std::vector<tachimawari::joint::Joint> & joints,
+    uint8_t starting_address =
+    tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
+};
+
+}  // namespace tachimawari::control::protocol_1
+
+#endif  // TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__INSTRUCTION__SYNC_WRITE_PACKET_HPP_

@@ -18,40 +18,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <iostream>
+#ifndef TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__STATUS__STATUS_PACKET_HPP_
+#define TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__STATUS__STATUS_PACKET_HPP_
+
 #include <memory>
+#include <string>
 #include <vector>
 
-#include "tachimawari/control/controller/controller.hpp"
-#include "tachimawari/joint/joint.hpp"
-#include "tachimawari/control/controller/packet/protocol_1/protocol_1.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/model/packet.hpp"
+#include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
-int main(int argc, char * argv[])
+namespace tachimawari::control::protocol_1
 {
-  auto cm740 = std::make_shared<tachimawari::control::CM740>("/dev/ttyUSB0");
-  if (!cm740->connect()) {
-    cm740->set_port("/dev/ttyUSB1");
 
-    if (!cm740->connect()) {
-      std::cout << "failed to connect CM740\n";
-      return 1;
-    }
-  }
+class StatusPacket : public Packet
+{
+public:
+  static int validate(
+    std::shared_ptr<std::vector<uint8_t>> rxpacket,
+    int packet_length);
 
-  auto joint_manager = std::make_shared<tachimawari::joint::JointManager>(cm740);
+  explicit StatusPacket(const std::vector<uint8_t> & rxpacket, int packet_length);
 
-  if (!joint_manager->torque_enable(true)) {
-    std::vector<tachimawari::joint::Joint> joints;
-    for (auto id : tachimawari::joint::JointId::list) {
-      joints.push_back(tachimawari::joint::Joint(id, 0.0));
-    }
+  bool is_valid();
 
-    if (!joint_manager->set_joints(joints)) {
-      std::cout << "failed to sync write\n";
-    }
-  } else {
-    std::cout << "failed to torque enable\n";
-  }
+  bool is_success() const;
 
-  return 0;
-}
+  const std::vector<uint8_t> & get_raw_packet() const;
+
+  uint8_t get_data_length() const override;
+
+  int get_read_data(uint8_t data_length) const;
+
+private:
+  std::vector<uint8_t> rxpacket;
+
+  int rxpacket_length;
+};
+
+}  // namespace tachimawari::control::protocol_1
+
+#endif  // TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__STATUS__STATUS_PACKET_HPP_

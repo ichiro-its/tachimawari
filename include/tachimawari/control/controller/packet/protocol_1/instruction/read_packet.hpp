@@ -1,4 +1,4 @@
-// Copyright (c) 2021 ICHIRO ITS
+// Copyright (c) 2021 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,11 +18,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__SDK__SDK_HPP_
-#define TACHIMAWARI__CONTROL__SDK__SDK_HPP_
+#ifndef TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__INSTRUCTION__READ_PACKET_HPP_
+#define TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__INSTRUCTION__READ_PACKET_HPP_
 
-#include "tachimawari/control/sdk/module/dynamixel_sdk.hpp"
-#include "tachimawari/control/sdk/packet/protocol_1/group_bulk_read.hpp"
-#include "tachimawari/control/sdk/packet/protocol_1/group_sync_write.hpp"
+#include <string>
 
-#endif  // TACHIMAWARI__CONTROL__SDK__SDK_HPP_
+#include "tachimawari/control/controller/packet/protocol_1/model/packet.hpp"
+
+namespace tachimawari::control::protocol_1
+{
+
+class ReadPacket : public Packet
+{
+public:
+  static bool is_match(const Packet & instruction_packet, const Packet & status_packet);
+
+  ReadPacket();
+
+  void create(uint8_t id, uint8_t address, uint8_t data_length);
+};
+
+}  // namespace tachimawari::control::protocol_1
+
+#endif  // TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__INSTRUCTION__READ_PACKET_HPP_

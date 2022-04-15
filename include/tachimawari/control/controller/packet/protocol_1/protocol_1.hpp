@@ -18,11 +18,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__SDK__SDK_HPP_
-#define TACHIMAWARI__CONTROL__SDK__SDK_HPP_
+#ifndef TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__PROTOCOL_1_HPP_
+#define TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__PROTOCOL_1_HPP_
 
-#include "tachimawari/control/sdk/module/dynamixel_sdk.hpp"
-#include "tachimawari/control/sdk/packet/protocol_1/group_bulk_read.hpp"
-#include "tachimawari/control/sdk/packet/protocol_1/group_sync_write.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/instruction/bulk_read_packet.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/instruction/instruction.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/instruction/sync_write_packet.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/instruction/write_packet.hpp"
 
-#endif  // TACHIMAWARI__CONTROL__SDK__SDK_HPP_
+#endif  // TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__PROTOCOL_1_HPP_

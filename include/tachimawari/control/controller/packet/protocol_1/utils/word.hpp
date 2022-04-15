@@ -1,4 +1,4 @@
-// Copyright (c) 2021 ICHIRO ITS
+// Copyright (c) 2021 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,11 +18,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__SDK__SDK_HPP_
-#define TACHIMAWARI__CONTROL__SDK__SDK_HPP_
+#ifndef TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__UTILS__WORD_HPP_
+#define TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__UTILS__WORD_HPP_
 
-#include "tachimawari/control/sdk/module/dynamixel_sdk.hpp"
-#include "tachimawari/control/sdk/packet/protocol_1/group_bulk_read.hpp"
-#include "tachimawari/control/sdk/packet/protocol_1/group_sync_write.hpp"
+#include <string>
 
-#endif  // TACHIMAWARI__CONTROL__SDK__SDK_HPP_
+namespace tachimawari::control::protocol_1
+{
+
+class Word
+{
+public:
+  static uint8_t get_low_byte(int word);
+  static uint8_t get_high_byte(int word);
+
+  static uint16_t make_word(uint8_t lowbyte, uint8_t highbyte);
+
+  static uint16_t make_color(uint8_t red, uint8_t green, uint8_t blue);
+};
+
+}  // namespace tachimawari::control::protocol_1
+
+#endif  // TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__UTILS__WORD_HPP_
