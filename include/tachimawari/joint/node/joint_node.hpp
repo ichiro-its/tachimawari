@@ -26,9 +26,9 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "tachimawari/joint/node/joint_manager.hpp"
-#include "tachimawari_interfaces/msg/current_joints.hpp"
 #include "tachimawari/joint/utils/middleware.hpp"
 #include "tachimawari_interfaces/msg/control_joints.hpp"
+#include "tachimawari_interfaces/msg/current_joints.hpp"
 #include "tachimawari_interfaces/msg/set_joints.hpp"
 #include "tachimawari_interfaces/msg/set_torques.hpp"
 
@@ -39,6 +39,7 @@ class JointNode
 {
 public:
   using ControlJoints = tachimawari_interfaces::msg::ControlJoints;
+  using CurrentJoints = tachimawari_interfaces::msg::CurrentJoints;
   using SetJoints = tachimawari_interfaces::msg::SetJoints;
   using SetTorques = tachimawari_interfaces::msg::SetTorques;
 

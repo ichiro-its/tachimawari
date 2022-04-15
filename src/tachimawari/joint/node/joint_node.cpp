@@ -67,7 +67,7 @@ JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager>
     }
   );
 
-  current_joints_publisher = node->create_publisher<tachimawari_interfaces::msg::CurrentJoints>(
+  current_joints_publisher = node->create_publisher<CurrentJoints>(
     get_node_prefix() + "/current_joints", 10);
 }
 
@@ -84,7 +84,7 @@ std::string JointNode::get_node_prefix() const
 void JointNode::publish_current_joints()
 {
   const auto & current_joints = this->joint_manager->get_current_joints();
-  auto msg_joints = tachimawari_interfaces::msg::CurrentJoints();
+  auto msg_joints = CurrentJoints();
   auto & joints = msg_joints.joints;
 
   joints.resize(current_joints.size());
