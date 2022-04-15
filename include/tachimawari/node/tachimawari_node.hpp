@@ -39,9 +39,9 @@ public:
     rclcpp::Node::SharedPtr node,
     std::shared_ptr<control::ControlManager> control_manager);
 
-  void activate_joint_manager();
+  void run_joint_manager();
 
-  void activate_imu_provider();
+  void run_imu_provider();
 
 private:
   rclcpp::Node::SharedPtr node;

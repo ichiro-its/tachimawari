@@ -60,14 +60,14 @@ TachimawariNode::TachimawariNode(
   );
 }
 
-void TachimawariNode::activate_joint_manager()
+void TachimawariNode::run_joint_manager()
 {
   joint_node = std::make_shared<joint::JointNode>(
     node,
     std::make_shared<joint::JointManager>(control_manager));
 }
 
-void TachimawariNode::activate_imu_provider()
+void TachimawariNode::run_imu_provider()
 {
   imu_node = std::make_shared<imu::ImuNode>(
     node,
