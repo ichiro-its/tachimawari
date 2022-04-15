@@ -26,7 +26,7 @@
 namespace tachimawari::joint::protocol_2
 {
 
-enum MXP2Address : uint8_t
+enum MX28Address : uint8_t
 {
   // EEPROM Area
   MODEL_NUMBER              = 0,

@@ -18,40 +18,51 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <iostream>
+#ifndef TACHIMAWARI__CONTROL__SDK__PACKET__MODEL__GROUP_BULK_READ_HPP_
+#define TACHIMAWARI__CONTROL__SDK__PACKET__MODEL__GROUP_BULK_READ_HPP_
+
+#include <map>
 #include <memory>
+#include <string>
 #include <vector>
 
-#include "tachimawari/control/controller/controller.hpp"
-#include "tachimawari/joint/joint.hpp"
-#include "tachimawari/control/controller/packet/protocol_1/protocol_1.hpp"
+#include "tachimawari/joint/model/joint.hpp"
 
-int main(int argc, char * argv[])
+#include "dynamixel_sdk/dynamixel_sdk.h"
+
+namespace tachimawari::control::sdk
 {
-  auto cm740 = std::make_shared<tachimawari::control::CM740>("/dev/ttyUSB0");
-  if (!cm740->connect()) {
-    cm740->set_port("/dev/ttyUSB1");
 
-    if (!cm740->connect()) {
-      std::cout << "failed to connect CM740\n";
-      return 1;
-    }
-  }
+class GroupBulkRead
+{
+public:
+  static void insert_all(
+    std::shared_ptr<std::map<uint8_t, GroupBulkRead>> bulk_data,
+    GroupBulkRead group_bulk_read);
 
-  auto joint_manager = std::make_shared<tachimawari::joint::JointManager>(cm740);
+  GroupBulkRead(
+    dynamixel::PortHandler * port_handler,
+    dynamixel::PacketHandler * packet_handler);
+  ~GroupBulkRead();
 
-  if (!joint_manager->torque_enable(true)) {
-    std::vector<tachimawari::joint::Joint> joints;
-    for (auto id : tachimawari::joint::JointId::list) {
-      joints.push_back(tachimawari::joint::Joint(id, 0.0));
-    }
+  void add(
+    uint8_t id, uint16_t starting_address,
+    uint16_t data_length);
 
-    if (!joint_manager->set_joints(joints)) {
-      std::cout << "failed to sync write\n";
-    }
-  } else {
-    std::cout << "failed to torque enable\n";
-  }
+  int send();
 
-  return 0;
-}
+  int get(uint8_t id, uint16_t address, uint16_t data_length);
+
+  std::vector<uint8_t> get_parameters_id() const;
+
+  bool is_parameters_filled() const;
+
+protected:
+  dynamixel::GroupBulkRead group_bulk_read;
+
+  std::vector<uint8_t> parameters_id;
+};
+
+}  // namespace tachimawari::control::sdk
+
+#endif  // TACHIMAWARI__CONTROL__SDK__PACKET__MODEL__GROUP_BULK_READ_HPP_

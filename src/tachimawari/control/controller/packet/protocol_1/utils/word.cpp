@@ -1,4 +1,4 @@
-// Copyright (c) 2021 ICHIRO ITS
+// Copyright (c) 2021 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,11 +18,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__SDK__SDK_HPP_
-#define TACHIMAWARI__CONTROL__SDK__SDK_HPP_
+#include <string>
 
-#include "tachimawari/control/sdk/module/dynamixel_sdk.hpp"
-#include "tachimawari/control/sdk/packet/protocol_1/group_bulk_read.hpp"
-#include "tachimawari/control/sdk/packet/protocol_1/group_sync_write.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/utils/word.hpp"
 
-#endif  // TACHIMAWARI__CONTROL__SDK__SDK_HPP_
+namespace tachimawari::control::protocol_1
+{
+
+uint8_t Word::get_low_byte(int word)
+{
+  return static_cast<uint8_t>(word & 0x00FF);
+}
+
+uint8_t Word::get_high_byte(int word)
+{
+  return static_cast<uint8_t>(((word & 0xFF00) >> 8));
+}
+
+uint16_t Word::make_word(uint8_t lowbyte, uint8_t highbyte)
+{
+  uint16_t word;
+
+  word = highbyte;
+  word = word << 8;
+  word = word | lowbyte;
+
+  return word;
+}
+
+uint16_t Word::make_color(uint8_t red, uint8_t green, uint8_t blue)
+{
+  u_int16_t r = (red & 0xFF) >> 3;
+  u_int16_t g = (green & 0xFF) >> 3;
+  u_int16_t b = (blue & 0xFF) >> 3;
+
+  return (b << 10) | (g << 5) | r;
+}
+
+}  // namespace tachimawari::control::protocol_1
