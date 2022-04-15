@@ -30,7 +30,6 @@
 #include "tachimawari_interfaces/msg/control_joints.hpp"
 #include "tachimawari_interfaces/msg/set_joints.hpp"
 #include "tachimawari_interfaces/msg/set_torques.hpp"
-#include "tachimawari_interfaces/srv/get_joints.hpp"
 
 namespace tachimawari::joint
 {
@@ -39,7 +38,6 @@ class JointNode
 {
 public:
   using ControlJoints = tachimawari_interfaces::msg::ControlJoints;
-  using GetJoints = tachimawari_interfaces::srv::GetJoints;
   using SetJoints = tachimawari_interfaces::msg::SetJoints;
   using SetTorques = tachimawari_interfaces::msg::SetTorques;
 
@@ -56,7 +54,6 @@ private:
 
   rclcpp::Subscription<ControlJoints>::SharedPtr control_joints_subscriber;
 
-  rclcpp::Service<GetJoints>::SharedPtr get_joints_server;
   rclcpp::Subscription<SetJoints>::SharedPtr set_joints_subscriber;
 
   rclcpp::Subscription<SetTorques>::SharedPtr set_torques_subscriber;

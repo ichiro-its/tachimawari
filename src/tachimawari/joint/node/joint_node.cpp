@@ -30,7 +30,6 @@
 #include "tachimawari_interfaces/msg/joint.hpp"
 #include "tachimawari_interfaces/msg/set_joints.hpp"
 #include "tachimawari_interfaces/msg/set_torques.hpp"
-#include "tachimawari_interfaces/srv/get_joints.hpp"
 
 namespace tachimawari::joint
 {
@@ -64,24 +63,6 @@ JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager>
         std::back_inserter(joints), [](uint8_t id) -> Joint {return Joint(id, 0);});
 
       this->joint_manager->torque_enable(joints, message->torque_enable);
-    }
-  );
-
-  get_joints_server = node->create_service<GetJoints>(
-    get_node_prefix() + "/get_joints",
-    [this](GetJoints::Request::SharedPtr request, GetJoints::Response::SharedPtr response) {
-      {
-        using tachimawari_interfaces::msg::Joint;
-
-        const auto & current_joints = this->joint_manager->get_current_joints();
-        auto & joints = response->joints;
-
-        joints.resize(current_joints.size());
-        for (size_t i = 0; i < joints.size() && i < current_joints.size(); ++i) {
-          joints[i].id = current_joints[i].get_id();
-          joints[i].position = current_joints[i].get_position();
-        }
-      }
     }
   );
 }
