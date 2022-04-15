@@ -18,42 +18,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
-#define TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
+#ifndef TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__STATUS__STATUS_PACKET_HPP_
+#define TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__STATUS__STATUS_PACKET_HPP_
 
 #include <memory>
 #include <string>
+#include <vector>
 
-#include "rclcpp/rclcpp.hpp"
-#include "tachimawari/control/manager/control_manager.hpp"
-#include "tachimawari/imu/node/imu_node.hpp"
-#include "tachimawari/joint/node/joint_node.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/model/packet.hpp"
+#include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
-namespace tachimawari
+namespace tachimawari::control::protocol_1
 {
 
-class TachimawariNode
+class StatusPacket : public Packet
 {
 public:
-  explicit TachimawariNode(rclcpp::Node::SharedPtr node);
+  static int validate(
+    std::shared_ptr<std::vector<uint8_t>> rxpacket,
+    int packet_length);
 
-  void activate_joint_manager();
+  explicit StatusPacket(const std::vector<uint8_t> & rxpacket, int packet_length);
 
-  void activate_imu_provider();
+  bool is_valid();
 
-  void set_control_manager(std::shared_ptr<control::ControlManager> control_manager);
+  bool is_success() const;
+
+  const std::vector<uint8_t> & get_raw_packet() const;
+
+  uint8_t get_data_length() const override;
+
+  int get_read_data(uint8_t data_length) const;
 
 private:
-  rclcpp::Node::SharedPtr node;
-  rclcpp::TimerBase::SharedPtr node_timer;
+  std::vector<uint8_t> rxpacket;
 
-  std::shared_ptr<control::ControlManager> control_manager;
-
-  std::shared_ptr<joint::JointNode> joint_node;
-
-  std::shared_ptr<imu::ImuNode> imu_node;
+  int rxpacket_length;
 };
 
-}  // namespace tachimawari
+}  // namespace tachimawari::control::protocol_1
 
-#endif  // TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
+#endif  // TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__STATUS__STATUS_PACKET_HPP_

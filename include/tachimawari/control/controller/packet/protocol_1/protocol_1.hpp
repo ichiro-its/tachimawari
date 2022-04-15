@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ichiro ITS
+// Copyright (c) 2021 ICHIRO ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,42 +18,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
-#define TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
+#ifndef TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__PROTOCOL_1_HPP_
+#define TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__PROTOCOL_1_HPP_
 
-#include <memory>
-#include <string>
+#include "tachimawari/control/controller/packet/protocol_1/instruction/bulk_read_packet.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/instruction/instruction.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/instruction/sync_write_packet.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/instruction/write_packet.hpp"
 
-#include "rclcpp/rclcpp.hpp"
-#include "tachimawari/control/manager/control_manager.hpp"
-#include "tachimawari/imu/node/imu_node.hpp"
-#include "tachimawari/joint/node/joint_node.hpp"
-
-namespace tachimawari
-{
-
-class TachimawariNode
-{
-public:
-  explicit TachimawariNode(rclcpp::Node::SharedPtr node);
-
-  void activate_joint_manager();
-
-  void activate_imu_provider();
-
-  void set_control_manager(std::shared_ptr<control::ControlManager> control_manager);
-
-private:
-  rclcpp::Node::SharedPtr node;
-  rclcpp::TimerBase::SharedPtr node_timer;
-
-  std::shared_ptr<control::ControlManager> control_manager;
-
-  std::shared_ptr<joint::JointNode> joint_node;
-
-  std::shared_ptr<imu::ImuNode> imu_node;
-};
-
-}  // namespace tachimawari
-
-#endif  // TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
+#endif  // TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__PROTOCOL_1_HPP_

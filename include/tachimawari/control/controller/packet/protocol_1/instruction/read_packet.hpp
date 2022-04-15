@@ -18,42 +18,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
-#define TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
+#ifndef TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__INSTRUCTION__READ_PACKET_HPP_
+#define TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__INSTRUCTION__READ_PACKET_HPP_
 
-#include <memory>
 #include <string>
 
-#include "rclcpp/rclcpp.hpp"
-#include "tachimawari/control/manager/control_manager.hpp"
-#include "tachimawari/imu/node/imu_node.hpp"
-#include "tachimawari/joint/node/joint_node.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/model/packet.hpp"
 
-namespace tachimawari
+namespace tachimawari::control::protocol_1
 {
 
-class TachimawariNode
+class ReadPacket : public Packet
 {
 public:
-  explicit TachimawariNode(rclcpp::Node::SharedPtr node);
+  static bool is_match(const Packet & instruction_packet, const Packet & status_packet);
 
-  void activate_joint_manager();
+  ReadPacket();
 
-  void activate_imu_provider();
-
-  void set_control_manager(std::shared_ptr<control::ControlManager> control_manager);
-
-private:
-  rclcpp::Node::SharedPtr node;
-  rclcpp::TimerBase::SharedPtr node_timer;
-
-  std::shared_ptr<control::ControlManager> control_manager;
-
-  std::shared_ptr<joint::JointNode> joint_node;
-
-  std::shared_ptr<imu::ImuNode> imu_node;
+  void create(uint8_t id, uint8_t address, uint8_t data_length);
 };
 
-}  // namespace tachimawari
+}  // namespace tachimawari::control::protocol_1
 
-#endif  // TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
+#endif  // TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__INSTRUCTION__READ_PACKET_HPP_

@@ -18,42 +18,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
-#define TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
-
+#include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
-#include "rclcpp/rclcpp.hpp"
-#include "tachimawari/control/manager/control_manager.hpp"
-#include "tachimawari/imu/node/imu_node.hpp"
-#include "tachimawari/joint/node/joint_node.hpp"
+#include "tachimawari/control/sdk/packet/model/group_bulk_read.hpp"
+#include "tachimawari/control/sdk/packet/protocol_2/group_bulk_read.hpp"
 
-namespace tachimawari
+#include "tachimawari/joint/protocol_2/mx28_address.hpp"
+
+#include "dynamixel_sdk/dynamixel_sdk.h"
+
+namespace tachimawari::control::sdk::protocol_2
 {
 
-class TachimawariNode
+tachimawari::control::sdk::GroupBulkRead GroupBulkRead::create(
+  dynamixel::PortHandler * port_handler,
+  dynamixel::PacketHandler * packet_handler,
+  const std::vector<tachimawari::joint::Joint> & joints)
 {
-public:
-  explicit TachimawariNode(rclcpp::Node::SharedPtr node);
+  tachimawari::control::sdk::GroupBulkRead group_bulk_read(
+    port_handler, packet_handler);
 
-  void activate_joint_manager();
+  for (const auto & joint : joints) {
+    group_bulk_read.add(
+      joint.get_id(), tachimawari::joint::protocol_2::GOAL_POSITION, 4u);
+  }
 
-  void activate_imu_provider();
+  return group_bulk_read;
+}
 
-  void set_control_manager(std::shared_ptr<control::ControlManager> control_manager);
-
-private:
-  rclcpp::Node::SharedPtr node;
-  rclcpp::TimerBase::SharedPtr node_timer;
-
-  std::shared_ptr<control::ControlManager> control_manager;
-
-  std::shared_ptr<joint::JointNode> joint_node;
-
-  std::shared_ptr<imu::ImuNode> imu_node;
-};
-
-}  // namespace tachimawari
-
-#endif  // TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
+}  // namespace tachimawari::control::sdk::protocol_2

@@ -24,7 +24,7 @@
 
 #include "tachimawari/control/controller/platform/linux.hpp"
 
-#include "tachimawari/control/packet/protocol_1/instruction/write_packet.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/instruction/write_packet.hpp"
 
 #include "errno.h"  // NOLINT
 #include "fcntl.h"  // NOLINT

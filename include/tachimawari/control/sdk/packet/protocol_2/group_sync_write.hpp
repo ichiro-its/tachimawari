@@ -18,42 +18,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
-#define TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
+#ifndef TACHIMAWARI__CONTROL__SDK__PACKET__PROTOCOL_2__GROUP_SYNC_WRITE_HPP_
+#define TACHIMAWARI__CONTROL__SDK__PACKET__PROTOCOL_2__GROUP_SYNC_WRITE_HPP_
 
-#include <memory>
 #include <string>
+#include <vector>
 
-#include "rclcpp/rclcpp.hpp"
-#include "tachimawari/control/manager/control_manager.hpp"
-#include "tachimawari/imu/node/imu_node.hpp"
-#include "tachimawari/joint/node/joint_node.hpp"
+#include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari/joint/protocol_2/mx28_address.hpp"
 
-namespace tachimawari
+#include "dynamixel_sdk/dynamixel_sdk.h"
+
+namespace tachimawari::control::sdk::protocol_2
 {
 
-class TachimawariNode
+class GroupSyncWrite
 {
 public:
-  explicit TachimawariNode(rclcpp::Node::SharedPtr node);
+  GroupSyncWrite(
+    dynamixel::PortHandler * port_handler,
+    dynamixel::PacketHandler * packet_handler);
 
-  void activate_joint_manager();
-
-  void activate_imu_provider();
-
-  void set_control_manager(std::shared_ptr<control::ControlManager> control_manager);
+  dynamixel::GroupSyncWrite create(
+    const std::vector<tachimawari::joint::Joint> & joints,
+    uint8_t starting_address =
+    tachimawari::joint::protocol_2::MX28Address::GOAL_POSITION);
 
 private:
-  rclcpp::Node::SharedPtr node;
-  rclcpp::TimerBase::SharedPtr node_timer;
-
-  std::shared_ptr<control::ControlManager> control_manager;
-
-  std::shared_ptr<joint::JointNode> joint_node;
-
-  std::shared_ptr<imu::ImuNode> imu_node;
+  dynamixel::PortHandler * port_handler;
+  dynamixel::PacketHandler * packet_handler;
 };
 
-}  // namespace tachimawari
+}  // namespace tachimawari::control::sdk::protocol_2
 
-#endif  // TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
+#endif  // TACHIMAWARI__CONTROL__SDK__PACKET__PROTOCOL_2__GROUP_SYNC_WRITE_HPP_

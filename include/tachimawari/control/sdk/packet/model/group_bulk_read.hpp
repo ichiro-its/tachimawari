@@ -18,42 +18,51 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
-#define TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
+#ifndef TACHIMAWARI__CONTROL__SDK__PACKET__MODEL__GROUP_BULK_READ_HPP_
+#define TACHIMAWARI__CONTROL__SDK__PACKET__MODEL__GROUP_BULK_READ_HPP_
 
+#include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
-#include "rclcpp/rclcpp.hpp"
-#include "tachimawari/control/manager/control_manager.hpp"
-#include "tachimawari/imu/node/imu_node.hpp"
-#include "tachimawari/joint/node/joint_node.hpp"
+#include "tachimawari/joint/model/joint.hpp"
 
-namespace tachimawari
+#include "dynamixel_sdk/dynamixel_sdk.h"
+
+namespace tachimawari::control::sdk
 {
 
-class TachimawariNode
+class GroupBulkRead
 {
 public:
-  explicit TachimawariNode(rclcpp::Node::SharedPtr node);
+  static void insert_all(
+    std::shared_ptr<std::map<uint8_t, GroupBulkRead>> bulk_data,
+    GroupBulkRead group_bulk_read);
 
-  void activate_joint_manager();
+  GroupBulkRead(
+    dynamixel::PortHandler * port_handler,
+    dynamixel::PacketHandler * packet_handler);
+  ~GroupBulkRead();
 
-  void activate_imu_provider();
+  void add(
+    uint8_t id, uint16_t starting_address,
+    uint16_t data_length);
 
-  void set_control_manager(std::shared_ptr<control::ControlManager> control_manager);
+  int send();
 
-private:
-  rclcpp::Node::SharedPtr node;
-  rclcpp::TimerBase::SharedPtr node_timer;
+  int get(uint8_t id, uint16_t address, uint16_t data_length);
 
-  std::shared_ptr<control::ControlManager> control_manager;
+  std::vector<uint8_t> get_parameters_id() const;
 
-  std::shared_ptr<joint::JointNode> joint_node;
+  bool is_parameters_filled() const;
 
-  std::shared_ptr<imu::ImuNode> imu_node;
+protected:
+  dynamixel::GroupBulkRead group_bulk_read;
+
+  std::vector<uint8_t> parameters_id;
 };
 
-}  // namespace tachimawari
+}  // namespace tachimawari::control::sdk
 
-#endif  // TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
+#endif  // TACHIMAWARI__CONTROL__SDK__PACKET__MODEL__GROUP_BULK_READ_HPP_

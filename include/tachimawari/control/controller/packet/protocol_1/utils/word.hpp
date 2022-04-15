@@ -18,42 +18,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
-#define TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
+#ifndef TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__UTILS__WORD_HPP_
+#define TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__UTILS__WORD_HPP_
 
-#include <memory>
 #include <string>
 
-#include "rclcpp/rclcpp.hpp"
-#include "tachimawari/control/manager/control_manager.hpp"
-#include "tachimawari/imu/node/imu_node.hpp"
-#include "tachimawari/joint/node/joint_node.hpp"
-
-namespace tachimawari
+namespace tachimawari::control::protocol_1
 {
 
-class TachimawariNode
+class Word
 {
 public:
-  explicit TachimawariNode(rclcpp::Node::SharedPtr node);
+  static uint8_t get_low_byte(int word);
+  static uint8_t get_high_byte(int word);
 
-  void activate_joint_manager();
+  static uint16_t make_word(uint8_t lowbyte, uint8_t highbyte);
 
-  void activate_imu_provider();
-
-  void set_control_manager(std::shared_ptr<control::ControlManager> control_manager);
-
-private:
-  rclcpp::Node::SharedPtr node;
-  rclcpp::TimerBase::SharedPtr node_timer;
-
-  std::shared_ptr<control::ControlManager> control_manager;
-
-  std::shared_ptr<joint::JointNode> joint_node;
-
-  std::shared_ptr<imu::ImuNode> imu_node;
+  static uint16_t make_color(uint8_t red, uint8_t green, uint8_t blue);
 };
 
-}  // namespace tachimawari
+}  // namespace tachimawari::control::protocol_1
 
-#endif  // TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
+#endif  // TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__UTILS__WORD_HPP_

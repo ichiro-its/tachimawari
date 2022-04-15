@@ -18,42 +18,47 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
-#define TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
+#ifndef TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__MODEL__PACKET_HPP_
+#define TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__MODEL__PACKET_HPP_
 
-#include <memory>
 #include <string>
+#include <vector>
 
-#include "rclcpp/rclcpp.hpp"
-#include "tachimawari/control/manager/control_manager.hpp"
-#include "tachimawari/imu/node/imu_node.hpp"
-#include "tachimawari/joint/node/joint_node.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/instruction/instruction.hpp"
 
-namespace tachimawari
+namespace tachimawari::control::protocol_1
 {
 
-class TachimawariNode
+class Packet
 {
 public:
-  explicit TachimawariNode(rclcpp::Node::SharedPtr node);
+  Packet(uint8_t packet_id, uint8_t instruction);
 
-  void activate_joint_manager();
+  uint8_t get_packet_id() const;
 
-  void activate_imu_provider();
+  uint8_t get_info() const;
 
-  void set_control_manager(std::shared_ptr<control::ControlManager> control_manager);
+  virtual uint8_t get_data_length() const;
 
-private:
-  rclcpp::Node::SharedPtr node;
-  rclcpp::TimerBase::SharedPtr node_timer;
+  virtual int get_expected_length() const;
 
-  std::shared_ptr<control::ControlManager> control_manager;
+  const std::vector<uint8_t> & get_parameters() const;
 
-  std::shared_ptr<joint::JointNode> joint_node;
+  const std::vector<uint8_t> & get_packet();
 
-  std::shared_ptr<imu::ImuNode> imu_node;
+protected:
+  void calculate_checksum();
+
+  std::vector<uint8_t> packet;
+
+  uint8_t packet_id;
+  uint8_t info;
+
+  std::vector<uint8_t> parameters;
+
+  uint8_t checksum;
 };
 
-}  // namespace tachimawari
+}  // namespace tachimawari::control::protocol_1
 
-#endif  // TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
+#endif  // TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__MODEL__PACKET_HPP_

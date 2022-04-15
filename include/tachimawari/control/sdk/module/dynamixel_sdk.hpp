@@ -27,8 +27,9 @@
 #include <vector>
 
 #include "tachimawari/control/manager/control_manager.hpp"
-#include "tachimawari/control/sdk/utils/protocol_1/group_bulk_read.hpp"
-#include "tachimawari/control/sdk/utils/protocol_1/group_sync_write.hpp"
+#include "tachimawari/control/sdk/packet/model/group_bulk_read.hpp"
+#include "tachimawari/control/sdk/packet/protocol_1/group_bulk_read.hpp"
+#include "tachimawari/control/sdk/packet/protocol_1/group_sync_write.hpp"
 
 #include "dynamixel_sdk/dynamixel_sdk.h"
 
@@ -72,12 +73,12 @@ public:
     int data_length = 1) override;
 
 private:
-  bool send_bulk_read_packet(sdk::protocol_1::GroupBulkRead packet);
+  bool send_bulk_read_packet(sdk::GroupBulkRead packet);
 
   dynamixel::PortHandler * port_handler;
   dynamixel::PacketHandler * packet_handler;
 
-  std::shared_ptr<std::map<uint8_t, sdk::protocol_1::GroupBulkRead>> bulk_data;
+  std::shared_ptr<std::map<uint8_t, sdk::GroupBulkRead>> bulk_data;
 };
 
 }  // namespace tachimawari::control

@@ -18,42 +18,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
-#define TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
+#ifndef TACHIMAWARI__CONTROL__SDK__PACKET__PROTOCOL_2__GROUP_BULK_READ_HPP_
+#define TACHIMAWARI__CONTROL__SDK__PACKET__PROTOCOL_2__GROUP_BULK_READ_HPP_
 
+#include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
-#include "rclcpp/rclcpp.hpp"
-#include "tachimawari/control/manager/control_manager.hpp"
-#include "tachimawari/imu/node/imu_node.hpp"
-#include "tachimawari/joint/node/joint_node.hpp"
+#include "tachimawari/control/sdk/packet/model/group_bulk_read.hpp"
+#include "tachimawari/joint/model/joint.hpp"
 
-namespace tachimawari
+#include "dynamixel_sdk/dynamixel_sdk.h"
+
+namespace tachimawari::control::sdk::protocol_2
 {
 
-class TachimawariNode
+class GroupBulkRead
 {
 public:
-  explicit TachimawariNode(rclcpp::Node::SharedPtr node);
-
-  void activate_joint_manager();
-
-  void activate_imu_provider();
-
-  void set_control_manager(std::shared_ptr<control::ControlManager> control_manager);
-
-private:
-  rclcpp::Node::SharedPtr node;
-  rclcpp::TimerBase::SharedPtr node_timer;
-
-  std::shared_ptr<control::ControlManager> control_manager;
-
-  std::shared_ptr<joint::JointNode> joint_node;
-
-  std::shared_ptr<imu::ImuNode> imu_node;
+  tachimawari::control::sdk::GroupBulkRead create(
+    dynamixel::PortHandler * port_handler,
+    dynamixel::PacketHandler * packet_handler,
+    const std::vector<tachimawari::joint::Joint> & joints);
 };
 
-}  // namespace tachimawari
+}  // namespace tachimawari::control::sdk::protocol_2
 
-#endif  // TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
+#endif  // TACHIMAWARI__CONTROL__SDK__PACKET__PROTOCOL_2__GROUP_BULK_READ_HPP_

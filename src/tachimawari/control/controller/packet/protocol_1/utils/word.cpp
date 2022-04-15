@@ -18,42 +18,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
-#define TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
-
-#include <memory>
 #include <string>
 
-#include "rclcpp/rclcpp.hpp"
-#include "tachimawari/control/manager/control_manager.hpp"
-#include "tachimawari/imu/node/imu_node.hpp"
-#include "tachimawari/joint/node/joint_node.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/utils/word.hpp"
 
-namespace tachimawari
+namespace tachimawari::control::protocol_1
 {
 
-class TachimawariNode
+uint8_t Word::get_low_byte(int word)
 {
-public:
-  explicit TachimawariNode(rclcpp::Node::SharedPtr node);
+  return static_cast<uint8_t>(word & 0x00FF);
+}
 
-  void activate_joint_manager();
+uint8_t Word::get_high_byte(int word)
+{
+  return static_cast<uint8_t>(((word & 0xFF00) >> 8));
+}
 
-  void activate_imu_provider();
+uint16_t Word::make_word(uint8_t lowbyte, uint8_t highbyte)
+{
+  uint16_t word;
 
-  void set_control_manager(std::shared_ptr<control::ControlManager> control_manager);
+  word = highbyte;
+  word = word << 8;
+  word = word | lowbyte;
 
-private:
-  rclcpp::Node::SharedPtr node;
-  rclcpp::TimerBase::SharedPtr node_timer;
+  return word;
+}
 
-  std::shared_ptr<control::ControlManager> control_manager;
+uint16_t Word::make_color(uint8_t red, uint8_t green, uint8_t blue)
+{
+  u_int16_t r = (red & 0xFF) >> 3;
+  u_int16_t g = (green & 0xFF) >> 3;
+  u_int16_t b = (blue & 0xFF) >> 3;
 
-  std::shared_ptr<joint::JointNode> joint_node;
+  return (b << 10) | (g << 5) | r;
+}
 
-  std::shared_ptr<imu::ImuNode> imu_node;
-};
-
-}  // namespace tachimawari
-
-#endif  // TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
+}  // namespace tachimawari::control::protocol_1

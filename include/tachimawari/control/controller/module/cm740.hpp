@@ -29,9 +29,9 @@
 #include "tachimawari/control/controller/platform/linux.hpp"
 #include "tachimawari/control/controller/utils/timer.hpp"
 #include "tachimawari/control/manager/control_manager.hpp"
-#include "tachimawari/control/packet/protocol_1/instruction/bulk_read_packet.hpp"
-#include "tachimawari/control/packet/protocol_1/status/bulk_read_data.hpp"
-#include "tachimawari/control/packet/protocol_1/status/status_packet.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/instruction/bulk_read_packet.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/status/bulk_read_data.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/status/status_packet.hpp"
 #include "tachimawari/joint/model/joint.hpp"
 
 namespace tachimawari::control

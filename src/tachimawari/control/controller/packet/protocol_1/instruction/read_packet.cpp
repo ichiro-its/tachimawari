@@ -18,42 +18,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
-#define TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
-
-#include <memory>
 #include <string>
+#include <vector>
 
-#include "rclcpp/rclcpp.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/instruction/read_packet.hpp"
+
 #include "tachimawari/control/manager/control_manager.hpp"
-#include "tachimawari/imu/node/imu_node.hpp"
-#include "tachimawari/joint/node/joint_node.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/instruction/instruction.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/model/packet.hpp"
 
-namespace tachimawari
+namespace tachimawari::control::protocol_1
 {
 
-class TachimawariNode
+bool ReadPacket::is_match(const Packet & instruction_packet, const Packet & status_packet)
 {
-public:
-  explicit TachimawariNode(rclcpp::Node::SharedPtr node);
+  return (instruction_packet.get_packet_id() == status_packet.get_packet_id()) &&
+         (static_cast<size_t>(instruction_packet.get_parameters()[1]) ==
+         status_packet.get_parameters().size());
+}
 
-  void activate_joint_manager();
+ReadPacket::ReadPacket()
+: Packet(tachimawari::control::ControlManager::CONTROLLER, Instruction::READ)
+{
+}
 
-  void activate_imu_provider();
+void ReadPacket::create(uint8_t id, uint8_t address, uint8_t data_length)
+{
+  packet_id = id;
+  parameters.push_back(address);
+  parameters.push_back(data_length);
+}
 
-  void set_control_manager(std::shared_ptr<control::ControlManager> control_manager);
-
-private:
-  rclcpp::Node::SharedPtr node;
-  rclcpp::TimerBase::SharedPtr node_timer;
-
-  std::shared_ptr<control::ControlManager> control_manager;
-
-  std::shared_ptr<joint::JointNode> joint_node;
-
-  std::shared_ptr<imu::ImuNode> imu_node;
-};
-
-}  // namespace tachimawari
-
-#endif  // TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
+}  // namespace tachimawari::control::protocol_1

@@ -18,42 +18,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
-#define TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
-
-#include <memory>
 #include <string>
+#include <vector>
 
-#include "rclcpp/rclcpp.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/instruction/write_packet.hpp"
+
 #include "tachimawari/control/manager/control_manager.hpp"
-#include "tachimawari/imu/node/imu_node.hpp"
-#include "tachimawari/joint/node/joint_node.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/instruction/instruction.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/utils/word.hpp"
+#include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
-namespace tachimawari
+namespace tachimawari::control::protocol_1
 {
 
-class TachimawariNode
+WritePacket::WritePacket()
+: Packet(tachimawari::control::ControlManager::CONTROLLER, Instruction::WRITE)
 {
-public:
-  explicit TachimawariNode(rclcpp::Node::SharedPtr node);
+}
 
-  void activate_joint_manager();
+void WritePacket::create(uint8_t id, uint8_t address, uint8_t value)
+{
+  packet_id = id;
+  parameters.push_back(address);
+  parameters.push_back(value);
+}
 
-  void activate_imu_provider();
+void WritePacket::create(uint8_t id, uint8_t address, uint16_t value)
+{
+  packet_id = id;
+  parameters.push_back(address);
+  parameters.push_back(Word::get_low_byte(value));
+  parameters.push_back(Word::get_high_byte(value));
+}
 
-  void set_control_manager(std::shared_ptr<control::ControlManager> control_manager);
-
-private:
-  rclcpp::Node::SharedPtr node;
-  rclcpp::TimerBase::SharedPtr node_timer;
-
-  std::shared_ptr<control::ControlManager> control_manager;
-
-  std::shared_ptr<joint::JointNode> joint_node;
-
-  std::shared_ptr<imu::ImuNode> imu_node;
-};
-
-}  // namespace tachimawari
-
-#endif  // TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
+}  // namespace tachimawari::control::protocol_1
