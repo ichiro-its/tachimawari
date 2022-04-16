@@ -27,6 +27,8 @@
 #include "tachimawari/control/manager/control_manager.hpp"
 #include "tachimawari/control/controller/module/cm740_address.hpp"
 
+using keisan::literals::operator""_deg;
+
 namespace tachimawari::imu
 {
 

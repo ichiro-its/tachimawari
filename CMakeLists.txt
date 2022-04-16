@@ -46,6 +46,7 @@ add_library(${PROJECT_NAME} SHARED
   "src/${PROJECT_NAME}/joint/node/joint_manager.cpp"
   "src/${PROJECT_NAME}/joint/node/joint_node.cpp"
   "src/${PROJECT_NAME}/joint/utils/middleware.cpp"
+  "src/${PROJECT_NAME}/joint/utils/node_control.cpp"
   "src/${PROJECT_NAME}/node/tachimawari_node.cpp")
 
 target_include_directories(${PROJECT_NAME} PUBLIC
@@ -79,23 +80,23 @@ target_include_directories(init_joints PUBLIC
   $<INSTALL_INTERFACE:include>)
 target_link_libraries(init_joints ${PROJECT_NAME})
 
+add_executable(main "src/tachimawari_main.cpp")
+target_include_directories(main PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+target_link_libraries(main ${PROJECT_NAME})
+
 add_executable(read_joints "src/read_joints_main.cpp")
 target_include_directories(read_joints PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 target_link_libraries(read_joints ${PROJECT_NAME})
 
-add_executable(tachimawari_main "src/tachimawari_main.cpp")
-target_include_directories(tachimawari_main PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
-target_link_libraries(tachimawari_main ${PROJECT_NAME})
-
 install(TARGETS
   check_joints
   init_joints
+  main
   read_joints
-  tachimawari_main
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)

@@ -18,49 +18,47 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <memory>
 #include <string>
-#include <vector>
 
-#include "tachimawari/imu/node/imu_node.hpp"
+#include "tachimawari/joint/utils/node_control.hpp"
 
-#include "rclcpp/rclcpp.hpp"
-#include "kansei_interfaces/msg/unit.hpp"
-#include "kansei_interfaces/msg/axis.hpp"
-#include "keisan/keisan.hpp"
-#include "tachimawari/imu/node/imu_provider.hpp"
+#include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari_interfaces/msg/joint.hpp"
 
-namespace tachimawari::imu
+namespace tachimawari::joint
 {
 
-ImuNode::ImuNode(rclcpp::Node::SharedPtr node, std::shared_ptr<ImuProvider> imu_provider)
-: imu_provider(imu_provider)
+NodeControl::NodeControl(double time_limit, double time_unit)
+: time_limit(time_limit), time_unit(time_unit), control_status(false),
+  value(0), counter(0), timer(0)
 {
-  unit_publisher = node->create_publisher<kansei_interfaces::msg::Unit>(
-    get_node_prefix() + "/unit", 10);
 }
 
-void ImuNode::update_imu()
+void NodeControl::update()
 {
-  auto unit_msg = kansei_interfaces::msg::Unit();
+  if (counter == value) {
+    timer += time_unit;
 
-  auto gyro = imu_provider->get_gyro();
-  auto accelero = imu_provider->get_accelero();
-
-  unit_msg.gyro.roll = gyro[0];
-  unit_msg.gyro.pitch = gyro[1];
-  unit_msg.gyro.yaw = gyro[2];
-
-  unit_msg.accelero.x = accelero[0];
-  unit_msg.accelero.y = accelero[1];
-  unit_msg.accelero.z = accelero[2];
-
-  unit_publisher->publish(unit_msg);
+    if (timer > time_limit) {
+      control_status = false;
+      counter = 0;
+      value = 0;
+    }
+  } else {
+    timer = 0.0;
+    value = counter;
+    control_status = true;
+  }
 }
 
-std::string ImuNode::get_node_prefix() const
+bool NodeControl::is_controlling() const
 {
-  return "imu";
+  return control_status;
 }
 
-}  // namespace tachimawari::imu
+void NodeControl::operator++()
+{
+  ++counter;
+}
+
+}  // namespace tachimawari::joint
