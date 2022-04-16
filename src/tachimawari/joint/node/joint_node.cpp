@@ -37,49 +37,37 @@ namespace tachimawari::joint
 JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager)
 : joint_manager(joint_manager), middleware()
 {
-  current_joints_publisher = node->create_publisher<tachimawari_interfaces::msg::CurrentJoints>(
+  control_joints_subscriber = node->create_subscription<ControlJoints>(
+    get_node_prefix() + "/control_joints", 10,
+    [this](const ControlJoints::SharedPtr message) {
+      this->middleware.set_rules(message->control_type, message->ids);
+    }
+  );
+
+  set_joints_subscriber = node->create_subscription<SetJoints>(
+    get_node_prefix() + "/set_joints", 10,
+    [this](const SetJoints::SharedPtr message) {
+      if (this->middleware.validate(message->control_type)) {
+        this->joint_manager->set_joints(
+          this->middleware.filter_joints(message->control_type, message->joints));
+      }
+    }
+  );
+
+  set_torques_subscriber = node->create_subscription<SetTorques>(
+    get_node_prefix() + "/set_torques", 10,
+    [this](const SetTorques::SharedPtr message) {
+      std::vector<Joint> joints;
+      std::transform(
+        message->ids.begin(), message->ids.end(),
+        std::back_inserter(joints), [](uint8_t id) -> Joint {return Joint(id, 0);});
+
+      this->joint_manager->torque_enable(joints, message->torque_enable);
+    }
+  );
+
+  current_joints_publisher = node->create_publisher<CurrentJoints>(
     get_node_prefix() + "/current_joints", 10);
-
-  {
-    using tachimawari_interfaces::msg::ControlJoints;
-
-    control_joints_subscriber = node->create_subscription<ControlJoints>(
-      get_node_prefix() + "/control_joints", 10,
-      [this](const ControlJoints::SharedPtr message) {
-        this->middleware.set_rules(message->control_type, message->ids);
-      }
-    );
-  }
-
-  {
-    using tachimawari_interfaces::msg::SetJoints;
-
-    set_joints_subscriber = node->create_subscription<SetJoints>(
-      get_node_prefix() + "/set_joints", 10,
-      [this](const SetJoints::SharedPtr message) {
-        if (this->middleware.validate(message->control_type)) {
-          this->joint_manager->set_joints(
-            this->middleware.filter_joints(message->control_type, message->joints));
-        }
-      }
-    );
-  }
-
-  {
-    using tachimawari_interfaces::msg::SetTorques;
-
-    set_torques_subscriber = node->create_subscription<SetTorques>(
-      get_node_prefix() + "/set_torques", 10,
-      [this](const SetTorques::SharedPtr message) {
-        std::vector<Joint> joints;
-        std::transform(
-          message->ids.begin(), message->ids.end(),
-          std::back_inserter(joints), [](uint8_t id) -> Joint {return Joint(id, 0);});
-
-        this->joint_manager->torque_enable(joints, message->torque_enable);
-      }
-    );
-  }
 }
 
 void JointNode::update()
@@ -95,7 +83,7 @@ std::string JointNode::get_node_prefix() const
 void JointNode::publish_current_joints()
 {
   const auto & current_joints = this->joint_manager->get_current_joints();
-  auto msg_joints = tachimawari_interfaces::msg::CurrentJoints();
+  auto msg_joints = CurrentJoints();
   auto & joints = msg_joints.joints;
 
   joints.resize(current_joints.size());

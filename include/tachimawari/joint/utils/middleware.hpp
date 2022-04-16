@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari/joint/utils/node_control.hpp"
 #include "tachimawari_interfaces/msg/joint.hpp"
 
 using namespace std::chrono_literals;  // NOLINT
@@ -60,25 +61,14 @@ private:
   void reset_ids();
 
   int control_rule;
-  double time_limit;
-  double time_unit;
 
-  bool is_action_controlling;
-  int action_value;
-  int action_counter;
-  double action_timer;
+  NodeControl action_control;
   std::vector<uint8_t> action_ids;
 
-  bool is_head_controlling;
-  int head_value;
-  int head_counter;
-  double head_timer;
+  NodeControl head_control;
   std::vector<uint8_t> head_ids;
 
-  bool is_walking_controlling;
-  int walking_value;
-  int walking_counter;
-  double walking_timer;
+  NodeControl walking_control;
   std::vector<uint8_t> walking_ids;
 };
 
