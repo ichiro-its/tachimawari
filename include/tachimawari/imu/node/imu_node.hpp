@@ -24,9 +24,9 @@
 #include <memory>
 #include <string>
 
-#include "rclcpp/rclcpp.hpp"
 #include "kansei_interfaces/msg/unit.hpp"
 #include "tachimawari/imu/node/imu_provider.hpp"
+#include "rclcpp/rclcpp.hpp"
 
 namespace tachimawari::imu
 {
@@ -34,17 +34,19 @@ namespace tachimawari::imu
 class ImuNode
 {
 public:
+  using Unit = kansei_interfaces::msg::Unit;
+
+  static std::string get_node_prefix();
+  static std::string unit_topic();
+
   ImuNode(rclcpp::Node::SharedPtr node, std::shared_ptr<ImuProvider> imu_provider);
 
   void update_imu();
 
 private:
-  std::string get_node_prefix() const;
-
   std::shared_ptr<ImuProvider> imu_provider;
 
-  rclcpp::Publisher<kansei_interfaces::msg::Unit>::SharedPtr
-    unit_publisher;
+  rclcpp::Publisher<Unit>::SharedPtr unit_publisher;
 };
 
 }  // namespace tachimawari::imu

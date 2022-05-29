@@ -34,18 +34,43 @@
 namespace tachimawari::joint
 {
 
+std::string JointNode::get_node_prefix()
+{
+  return "joint";
+}
+
+std::string JointNode::control_joints_topic()
+{
+  return get_node_prefix() + "/control_joints";
+}
+
+std::string JointNode::set_joints_topic()
+{
+  return get_node_prefix() + "/set_joints";
+}
+
+std::string JointNode::set_torques_topic()
+{
+  return get_node_prefix() + "/set_joints";
+}
+
+std::string JointNode::current_joints_topic()
+{
+  return get_node_prefix() + "/current_joints";
+}
+
 JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager)
 : joint_manager(joint_manager), middleware()
 {
   control_joints_subscriber = node->create_subscription<ControlJoints>(
-    get_node_prefix() + "/control_joints", 10,
+    control_joints_topic(), 10,
     [this](const ControlJoints::SharedPtr message) {
       this->middleware.set_rules(message->control_type, message->ids);
     }
   );
 
   set_joints_subscriber = node->create_subscription<SetJoints>(
-    get_node_prefix() + "/set_joints", 10,
+    set_joints_topic(), 10,
     [this](const SetJoints::SharedPtr message) {
       if (this->middleware.validate(message->control_type)) {
         this->joint_manager->set_joints(
@@ -55,7 +80,7 @@ JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager>
   );
 
   set_torques_subscriber = node->create_subscription<SetTorques>(
-    get_node_prefix() + "/set_torques", 10,
+    set_torques_topic(), 10,
     [this](const SetTorques::SharedPtr message) {
       std::vector<Joint> joints;
       std::transform(
@@ -67,17 +92,12 @@ JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager>
   );
 
   current_joints_publisher = node->create_publisher<CurrentJoints>(
-    get_node_prefix() + "/current_joints", 10);
+    current_joints_topic(), 10);
 }
 
 void JointNode::update()
 {
   middleware.update();
-}
-
-std::string JointNode::get_node_prefix() const
-{
-  return "joint";
 }
 
 void JointNode::publish_current_joints()
