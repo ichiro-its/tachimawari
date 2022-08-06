@@ -30,12 +30,12 @@ int main(int argc, char * argv[])
 {
   auto sdk = std::make_shared<tachimawari::control::DynamixelSDK>("/dev/ttyUSB0");
   if (!sdk->connect()) {
-    // sdk->set_port("/dev/ttyUSB1");
+    sdk->set_port("/dev/ttyUSB1");
 
-    // if (!sdk->connect()) {
+    if (!sdk->connect()) {
       std::cout << "failed to connect CM740\n";
       return 1;
-    // }
+    }
   }
 
   auto joint_manager = std::make_shared<tachimawari::joint::JointManager>(sdk);

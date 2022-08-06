@@ -50,6 +50,11 @@ DynamixelSDK::DynamixelSDK(
 {
 }
 
+void DynamixelSDK::set_port(const std::string & port_name)
+{
+  port_handler = dynamixel::PortHandler::getPortHandler(port_name.c_str());
+}
+
 bool DynamixelSDK::connect()
 {
   if (!port_handler->openPort()) {
@@ -64,8 +69,8 @@ bool DynamixelSDK::connect()
 
   if (protocol_version == 1.0) {
     write_packet(
-      CONTROLLER, CM740Address::LED_HEAD_L, protocol_1::Word::make_color(255, 128, 0),
-      2);
+      CONTROLLER, CM740Address::LED_HEAD_L,
+      protocol_1::Word::make_color(255, 128, 0), 2);
   }
 
   return true;

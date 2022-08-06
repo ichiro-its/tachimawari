@@ -21,16 +21,16 @@
 #include <iostream>
 #include <memory>
 
-#include "tachimawari/control/controller/controller.hpp"
+#include "tachimawari/control/control.hpp"
 #include "tachimawari/joint/model/joint_id.hpp"
 
 int main(int argc, char * argv[])
 {
-  auto cm740 = std::make_shared<tachimawari::control::CM740>("/dev/ttyUSB0");
-  if (!cm740->connect()) {
-    cm740->set_port("/dev/ttyUSB1");
+  auto sdk = std::make_shared<tachimawari::control::DynamixelSDK>("/dev/ttyUSB0");
+  if (!sdk->connect()) {
+    sdk->set_port("/dev/ttyUSB1");
 
-    if (!cm740->connect()) {
+    if (!sdk->connect()) {
       std::cout << "failed to connect CM740\n";
       return 1;
     }
@@ -41,7 +41,7 @@ int main(int argc, char * argv[])
 
     for (const auto & [key, value] : JointId::by_name) {
       std::cout << "ping " << key << ": ";
-      if (cm740->ping(value)) {
+      if (sdk->ping(value)) {
         std::cout << "success\n";
       } else {
         std::cout << "failed\n";
