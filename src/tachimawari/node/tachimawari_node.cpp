@@ -44,11 +44,11 @@ TachimawariNode::TachimawariNode(
     8ms,
     [this]() {
       if (this->control_manager) {
-        if (this->imu_node) {
-          this->control_manager->bulk_read_packet();
+        // if (this->imu_node) {
+        //   this->control_manager->bulk_read_packet();
 
-          this->imu_node->update_imu();  // to do(finesaaa): need to check
-        }
+        //   this->imu_node->update_imu();  // to do(finesaaa): need to check
+        // }
 
         if (this->joint_node) {
           this->joint_node->update();

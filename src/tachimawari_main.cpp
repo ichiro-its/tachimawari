@@ -20,7 +20,7 @@
 
 #include <memory>
 
-#include "tachimawari/control/controller/controller.hpp"
+#include "tachimawari/control/control.hpp"
 #include "tachimawari/node/tachimawari_node.hpp"
 #include "rclcpp/rclcpp.hpp"
 
@@ -28,18 +28,18 @@ int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
 
-  auto cm740 = std::make_shared<tachimawari::control::CM740>("/dev/ttyUSB0");
-  if (!cm740->connect()) {
-    cm740->set_port("/dev/ttyUSB1");
+  auto sdk = std::make_shared<tachimawari::control::DynamixelSDK>("/dev/ttyUSB0");
+  if (!sdk->connect()) {
+    // sdk->set_port("/dev/ttyUSB1");
 
-    if (!cm740->connect()) {
+    // if (!sdk->connect()) {
       std::cout << "failed to connect CM740\n";
       return 1;
-    }
+    // }
   }
 
   auto node = std::make_shared<rclcpp::Node>("tachimawari_node");
-  auto tachimawari_node = std::make_shared<tachimawari::TachimawariNode>(node, cm740);
+  auto tachimawari_node = std::make_shared<tachimawari::TachimawariNode>(node, sdk);
 
   tachimawari_node->run_joint_manager();
   tachimawari_node->run_imu_provider();

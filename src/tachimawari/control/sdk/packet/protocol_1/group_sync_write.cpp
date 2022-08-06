@@ -48,9 +48,10 @@ dynamixel::GroupSyncWrite GroupSyncWrite::create(
   dynamixel::GroupSyncWrite group_sync_write(port_handler, packet_handler,
     starting_address, data_length);
 
-  std::vector<uint8_t> param_data;
 
   for (const auto & joint : joints) {
+    std::vector<uint8_t> param_data;
+
     if (is_include_pid) {
       param_data.push_back(joint.get_pid_gain()[2]);
       param_data.push_back(joint.get_pid_gain()[1]);
