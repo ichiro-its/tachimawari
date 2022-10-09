@@ -50,6 +50,11 @@ DynamixelSDK::DynamixelSDK(
 {
 }
 
+void DynamixelSDK::set_port(const std::string & port_name)
+{
+  port_handler = dynamixel::PortHandler::getPortHandler(port_name.c_str());
+}
+
 bool DynamixelSDK::connect()
 {
   if (!port_handler->openPort()) {
@@ -64,8 +69,8 @@ bool DynamixelSDK::connect()
 
   if (protocol_version == 1.0) {
     write_packet(
-      CONTROLLER, CM740Address::LED_HEAD_L, protocol_1::Word::make_color(255, 128, 0),
-      2);
+      CONTROLLER, CM740Address::LED_HEAD_L,
+      protocol_1::Word::make_color(255, 128, 0), 2);
   }
 
   return true;
@@ -73,7 +78,8 @@ bool DynamixelSDK::connect()
 
 bool DynamixelSDK::send_bulk_read_packet(sdk::GroupBulkRead group_bulk_read)
 {
-  if (group_bulk_read.send() == SUCCESS) {
+  int result = group_bulk_read.send();
+  if (result == SUCCESS) {
     sdk::GroupBulkRead::insert_all(bulk_data, group_bulk_read);
   } else {
     // TODO(maroqijalil): will be used for logging
@@ -90,7 +96,8 @@ bool DynamixelSDK::ping(uint8_t id)
   uint8_t error = 0;
   uint16_t model_number;
 
-  if (packet_handler->ping(port_handler, id, &model_number, &error) != SUCCESS) {
+  int result = packet_handler->ping(port_handler, id, &model_number, &error);
+  if (result != SUCCESS) {
     // TODO(maroqijalil): will be used for logging
     // packet_handler->getTxRxResult(result);
 

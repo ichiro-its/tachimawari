@@ -43,18 +43,21 @@ public:
   using SetJoints = tachimawari_interfaces::msg::SetJoints;
   using SetTorques = tachimawari_interfaces::msg::SetTorques;
 
+  static std::string get_node_prefix();
+  static std::string control_joints_topic();
+  static std::string set_joints_topic();
+  static std::string set_torques_topic();
+  static std::string current_joints_topic();
+
   JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager);
 
   void publish_current_joints();
   void update();
 
 private:
-  std::string get_node_prefix() const;
-
   std::shared_ptr<JointManager> joint_manager;
 
-  rclcpp::Publisher<tachimawari_interfaces::msg::CurrentJoints>::SharedPtr
-    current_joints_publisher;
+  rclcpp::Publisher<CurrentJoints>::SharedPtr current_joints_publisher;
 
   rclcpp::Subscription<SetJoints>::SharedPtr set_joints_subscriber;
 

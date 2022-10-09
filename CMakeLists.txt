@@ -22,9 +22,6 @@ find_package(tachimawari_interfaces REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
   "src/${PROJECT_NAME}/control/controller/module/cm740.cpp"
-  "src/${PROJECT_NAME}/control/controller/platform/linux.cpp"
-  "src/${PROJECT_NAME}/control/controller/utils/timer.cpp"
-  "src/${PROJECT_NAME}/control/manager/control_manager.cpp"
   "src/${PROJECT_NAME}/control/controller/packet/protocol_1/instruction/bulk_read_packet.cpp"
   "src/${PROJECT_NAME}/control/controller/packet/protocol_1/instruction/read_packet.cpp"
   "src/${PROJECT_NAME}/control/controller/packet/protocol_1/instruction/sync_write_packet.cpp"
@@ -33,12 +30,15 @@ add_library(${PROJECT_NAME} SHARED
   "src/${PROJECT_NAME}/control/controller/packet/protocol_1/status/bulk_read_data.cpp"
   "src/${PROJECT_NAME}/control/controller/packet/protocol_1/status/status_packet.cpp"
   "src/${PROJECT_NAME}/control/controller/packet/protocol_1/utils/word.cpp"
+  "src/${PROJECT_NAME}/control/controller/platform/linux.cpp"
+  "src/${PROJECT_NAME}/control/controller/utils/timer.cpp"
+  "src/${PROJECT_NAME}/control/manager/control_manager.cpp"
   "src/${PROJECT_NAME}/control/sdk/module/dynamixel_sdk.cpp"
   "src/${PROJECT_NAME}/control/sdk/packet/model/group_bulk_read.cpp"
-  "src/${PROJECT_NAME}/control/sdk/packet/protocol_1/group_sync_write.cpp"
   "src/${PROJECT_NAME}/control/sdk/packet/protocol_1/group_bulk_read.cpp"
-  "src/${PROJECT_NAME}/control/sdk/packet/protocol_2/group_sync_write.cpp"
+  "src/${PROJECT_NAME}/control/sdk/packet/protocol_1/group_sync_write.cpp"
   "src/${PROJECT_NAME}/control/sdk/packet/protocol_2/group_bulk_read.cpp"
+  "src/${PROJECT_NAME}/control/sdk/packet/protocol_2/group_sync_write.cpp"
   "src/${PROJECT_NAME}/imu/node/imu_node.cpp"
   "src/${PROJECT_NAME}/imu/node/imu_provider.cpp"
   "src/${PROJECT_NAME}/joint/model/joint_id.cpp"
@@ -86,6 +86,12 @@ target_include_directories(main PUBLIC
   $<INSTALL_INTERFACE:include>)
 target_link_libraries(main ${PROJECT_NAME})
 
+add_executable(read_buttons "src/read_buttons_main.cpp")
+target_include_directories(read_buttons PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+target_link_libraries(read_buttons ${PROJECT_NAME})
+
 add_executable(read_joints "src/read_joints_main.cpp")
 target_include_directories(read_joints PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -96,6 +102,7 @@ install(TARGETS
   check_joints
   init_joints
   main
+  read_buttons
   read_joints
   DESTINATION lib/${PROJECT_NAME})
 

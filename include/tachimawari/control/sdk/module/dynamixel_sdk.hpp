@@ -50,6 +50,8 @@ public:
     float protocol_version = 1.0);
   ~DynamixelSDK();
 
+  void set_port(const std::string & port_name) override;
+
   bool connect() override;
   void disconnect() override;
 

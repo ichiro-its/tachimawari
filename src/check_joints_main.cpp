@@ -20,18 +20,35 @@
 
 #include <iostream>
 #include <memory>
+#include <string>
 
-#include "tachimawari/control/controller/controller.hpp"
+#include "tachimawari/control/control.hpp"
 #include "tachimawari/joint/model/joint_id.hpp"
 
 int main(int argc, char * argv[])
 {
-  auto cm740 = std::make_shared<tachimawari::control::CM740>("/dev/ttyUSB0");
-  if (!cm740->connect()) {
-    cm740->set_port("/dev/ttyUSB1");
+  if (argc < 2) {
+    std::cerr << "Please specify the mode! [sdk / cm740]" << std::endl;
+    return 0;
+  }
 
-    if (!cm740->connect()) {
-      std::cout << "failed to connect CM740\n";
+  std::string mode = argv[1];
+  std::shared_ptr<tachimawari::control::ControlManager> controller;
+
+  if (mode == "sdk") {
+    controller = std::make_shared<tachimawari::control::DynamixelSDK>("/dev/ttyUSB0");
+  } else if (mode == "cm740") {
+    controller = std::make_shared<tachimawari::control::CM740>("/dev/ttyUSB0");
+  } else {
+    std::cerr << "Mode doesn't exist, select the correct mode! [sdk / cm740]" << std::endl;
+    return 0;
+  }
+
+  if (!controller->connect()) {
+    controller->set_port("/dev/ttyUSB1");
+
+    if (!controller->connect()) {
+      std::cout << "failed to connect controller\n";
       return 1;
     }
   }
@@ -41,7 +58,7 @@ int main(int argc, char * argv[])
 
     for (const auto & [key, value] : JointId::by_name) {
       std::cout << "ping " << key << ": ";
-      if (cm740->ping(value)) {
+      if (controller->ping(value)) {
         std::cout << "success\n";
       } else {
         std::cout << "failed\n";

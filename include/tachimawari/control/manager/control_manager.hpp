@@ -44,6 +44,8 @@ public:
 
   float get_protocol_version() const;
 
+  virtual void set_port(const std::string & port_name) {}
+
   virtual bool connect() {}
   virtual void disconnect() {}
 
