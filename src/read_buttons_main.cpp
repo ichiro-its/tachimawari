@@ -18,11 +18,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <iostream>
 #include <memory>
 #include <string>
 
 #include "tachimawari/control/control.hpp"
-#include "tachimawari/node/tachimawari_node.hpp"
+#include "tachimawari/joint/joint.hpp"
 #include "rclcpp/rclcpp.hpp"
 
 int main(int argc, char * argv[])
@@ -55,14 +56,20 @@ int main(int argc, char * argv[])
     }
   }
 
-  auto node = std::make_shared<rclcpp::Node>("tachimawari_node");
-  auto tachimawari_node = std::make_shared<tachimawari::TachimawariNode>(node, controller);
+  rclcpp::Rate rcl_rate(8ms);
+  while (rclcpp::ok()) {
+    rcl_rate.sleep();
 
-  tachimawari_node->run_joint_manager();
-  tachimawari_node->run_imu_provider();
+    if (!controller->bulk_read_packet()) {
+      std::cout << "bulk read packet failed\n";
+      return 1;
+    }
 
-  rclcpp::spin(node);
-  rclcpp::shutdown();
+    int start = controller->get_bulk_data(tachimawari::control::CM740::CONTROLLER, 40, 2);
+    int stop = controller->get_bulk_data(tachimawari::control::CM740::CONTROLLER, 44, 2);
+
+    std::cout << "start: " << start << ", stop: " << stop << "\n";
+  }
 
   return 0;
 }

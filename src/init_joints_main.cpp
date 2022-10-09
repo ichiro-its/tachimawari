@@ -20,25 +20,41 @@
 
 #include <iostream>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "tachimawari/control/control.hpp"
 #include "tachimawari/joint/joint.hpp"
-#include "tachimawari/control/controller/packet/protocol_1/protocol_1.hpp"
 
 int main(int argc, char * argv[])
 {
-  auto sdk = std::make_shared<tachimawari::control::DynamixelSDK>("/dev/ttyUSB0");
-  if (!sdk->connect()) {
-    sdk->set_port("/dev/ttyUSB1");
+  if (argc < 2) {
+    std::cerr << "Please specify the mode! [sdk / cm740]" << std::endl;
+    return 0;
+  }
 
-    if (!sdk->connect()) {
-      std::cout << "failed to connect CM740\n";
+  std::string mode = argv[1];
+  std::shared_ptr<tachimawari::control::ControlManager> controller;
+
+  if (mode == "sdk") {
+    controller = std::make_shared<tachimawari::control::DynamixelSDK>("/dev/ttyUSB0");
+  } else if (mode == "cm740") {
+    controller = std::make_shared<tachimawari::control::CM740>("/dev/ttyUSB0");
+  } else {
+    std::cerr << "Mode doesn't exist, select the correct mode! [sdk / cm740]" << std::endl;
+    return 0;
+  }
+
+  if (!controller->connect()) {
+    controller->set_port("/dev/ttyUSB1");
+
+    if (!controller->connect()) {
+      std::cout << "failed to connect controller\n";
       return 1;
     }
   }
 
-  auto joint_manager = std::make_shared<tachimawari::joint::JointManager>(sdk);
+  auto joint_manager = std::make_shared<tachimawari::joint::JointManager>(controller);
 
   std::vector<tachimawari::joint::Joint> joints;
   for (auto id : tachimawari::joint::JointId::list) {
