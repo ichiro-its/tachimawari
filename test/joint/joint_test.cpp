@@ -20,41 +20,41 @@
 
 #include "gtest/gtest.h"
 
-#include "../comparison/joint.hpp"
+#include "joint.hpp"
 
 namespace tmw = tachimawari::joint;
 namespace ksn = keisan;
 
 TEST(JointTest, MakeDegree)
 {
-    EXPECT_FLOAT_EQ(ksn::make_degree(100.0f).degree(), 100.0f);
-    EXPECT_DOUBLE_EQ(ksn::make_degree(-75.0).degree(), -75.0);
-    EXPECT_DOUBLE_EQ(ksn::make_degree(25.0l).degree(), 25.0l);
+  EXPECT_FLOAT_EQ(ksn::make_degree(100.0f).degree(), 100.0f);
+  EXPECT_DOUBLE_EQ(ksn::make_degree(-75.0).degree(), -75.0);
+  EXPECT_DOUBLE_EQ(ksn::make_degree(25.0l).degree(), 25.0l);
 }
 
 TEST(JointTest, AngleToValue)
 {
-    EXPECT_EQ(tmw::Joint::angle_to_value(ksn::Angle<double>(ksn::make_degree(100.0))), 1137);
-    EXPECT_EQ(tmw::Joint::angle_to_value(ksn::Angle<double>(ksn::make_degree(-75.0))), -853);
-    EXPECT_EQ(tmw::Joint::angle_to_value(ksn::Angle<double>(ksn::make_degree(25.0))), 284);
+  EXPECT_EQ(tmw::Joint::angle_to_value(ksn::Angle<double>(ksn::make_degree(100.0))), 1137);
+  EXPECT_EQ(tmw::Joint::angle_to_value(ksn::Angle<double>(ksn::make_degree(-75.0))), -853);
+  EXPECT_EQ(tmw::Joint::angle_to_value(ksn::Angle<double>(ksn::make_degree(25.0))), 284);
 }
 
 TEST(JointTest, ValueToAngle)
 {
-    EXPECT_EQ(tmw::Joint::value_to_angle(1137), ksn::Angle<double>(ksn::make_degree(100.0)));
-    EXPECT_EQ(tmw::Joint::value_to_angle(-853), ksn::Angle<double>(ksn::make_degree(-75.0)));
-    EXPECT_EQ(tmw::Joint::value_to_angle(284), ksn::Angle<double>(ksn::make_degree(25.0)));
+  EXPECT_EQ(tmw::Joint::value_to_angle(1137), ksn::Angle<double>(ksn::make_degree(100.0)));
+  EXPECT_EQ(tmw::Joint::value_to_angle(-853), ksn::Angle<double>(ksn::make_degree(-75.0)));
+  EXPECT_EQ(tmw::Joint::value_to_angle(284), ksn::Angle<double>(ksn::make_degree(25.0)));
 }
 
 TEST(JointTest, GetPosition)
 {
-    tmw::Joint obj(1, 0.0);
+  tmw::Joint obj(1, 0.0);
 
-    //Set and get position using value
-    obj.set_position_value(2018);
-    EXPECT_EQ(obj.get_position_value(), 2018);
-    
-    // Set and get position using degree
-    obj.set_position(0.0);
-    EXPECT_EQ(obj.get_position(), 0.0);
+  // Set and get position using value
+  obj.set_position_value(2018);
+  EXPECT_EQ(obj.get_position_value(), 2018);
+
+  // Set and get position using degree
+  obj.set_position(0.0);
+  EXPECT_EQ(obj.get_position(), 0.0);
 }

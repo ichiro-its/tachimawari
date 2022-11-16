@@ -18,20 +18,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef COMPARISON__ALMOST_EQUAL_HPP_
-#define COMPARISON__ALMOST_EQUAL_HPP_
+#ifndef JOINT__JOINT_HPP_
+#define JOINT__JOINT_HPP_
 
-#include "gtest/gtest.h"
+#include "tachimawari/control/control.hpp"
+#include "keisan/angle/angle.hpp"
 
-namespace testing
-{
-
-template<typename T>
-bool almost_equal(const T & a, const T & b)
-{
-    return internal::FloatingPoint<T>(a).AlmostEquals(internal::FloatingPoint<T>(b));
-}
-
-} // namespace testing
-
-#endif
+#endif  //  JOINT__JOINT_HPP_
