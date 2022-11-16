@@ -58,3 +58,10 @@ TEST(JointTest, GetPosition)
   obj.set_position(0.0);
   EXPECT_EQ(obj.get_position(), 0.0);
 }
+
+TEST(JointTest, PIDTest)
+{
+  tmw::Joint obj(1, 0.0);
+  obj.set_pid_gain(0.0, 1.0, 2.0);
+  EXPECT_EQ(obj.get_pid_gain(), {0.0, 1.0, 2.0});
+}
