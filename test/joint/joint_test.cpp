@@ -48,20 +48,20 @@ TEST(JointTest, ValueToAngle)
 
 TEST(JointTest, GetPosition)
 {
-  tmw::Joint obj(1, 0.0);
+  tmw::Joint joint(1, 0.0);
 
   // Set and get position using value
-  obj.set_position_value(2018);
-  EXPECT_EQ(obj.get_position_value(), 2018);
+  joint.set_position_value(2018);
+  EXPECT_EQ(joint.get_position_value(), 2018);
 
   // Set and get position using degree
-  obj.set_position(0.0);
-  EXPECT_EQ(obj.get_position(), 0.0);
+  joint.set_position(0.0);
+  EXPECT_EQ(joint.get_position(), 0.0);
 }
 
 TEST(JointTest, PIDTest)
 {
-  tmw::Joint obj(1, 0.0);
-  obj.set_pid_gain(0.0, 1.0, 2.0);
-  EXPECT_EQ(obj.get_pid_gain(), {0.0, 1.0, 2.0});
+  tmw::Joint joint(1, 0.0);
+  joint.set_pid_gain(0.0, 1.0, 2.0);
+  EXPECT_EQ(joint.get_pid_gain(), {0.0, 1.0, 2.0});
 }
