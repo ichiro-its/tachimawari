@@ -34,6 +34,7 @@
 #include "tachimawari/control/controller/packet/protocol_1/status/bulk_read_data.hpp"
 #include "tachimawari/control/controller/packet/protocol_1/status/status_packet.hpp"
 #include "tachimawari/control/controller/packet/protocol_1/utils/word.hpp"
+#include "tachimawari/control/manager/control_manager.hpp"
 #include "tachimawari/joint/model/joint.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
@@ -67,8 +68,12 @@ void CM740::set_port(const std::string & port_name)
 
 bool CM740::connect()
 {
-  if (platform->open_port(port_name, baudrate)) {
-    return dxl_power_on();
+  if (platform->open_port(port_name, baudrate) && dxl_power_on()) {
+    if (dxl_power_on()) {
+      return ControlManager::connect();
+    }
+
+    disconnect();
   }
 
   return false;
@@ -213,6 +218,7 @@ bool CM740::write_packet(
   uint8_t id, uint8_t address, int value,
   int data_length)
 {
+  std::cout << int(address) << "\n";
   if (protocol_version == 1.0) {
     protocol_1::WritePacket instruction_packet;
 

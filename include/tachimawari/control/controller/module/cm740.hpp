@@ -56,7 +56,7 @@ public:
 
   void set_port(const std::string & port_name) override;
 
-  bool connect() override;
+  bool connect();
   void disconnect() override;
 
   bool ping(uint8_t id) override;

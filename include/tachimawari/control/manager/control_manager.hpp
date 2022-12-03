@@ -46,7 +46,7 @@ public:
 
   virtual void set_port(const std::string & port_name) {}
 
-  virtual bool connect() {}
+  bool connect();
   virtual void disconnect() {}
 
   virtual bool ping(uint8_t id) {}

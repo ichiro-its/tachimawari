@@ -27,6 +27,7 @@
 
 #include "tachimawari/control/controller/module/cm740_address.hpp"
 #include "tachimawari/control/controller/packet/protocol_1/utils/word.hpp"
+#include "tachimawari/control/manager/control_manager.hpp"
 #include "tachimawari/control/sdk/packet/model/group_bulk_read.hpp"
 #include "tachimawari/control/sdk/packet/protocol_1/group_bulk_read.hpp"
 #include "tachimawari/control/sdk/packet/protocol_1/group_sync_write.hpp"
@@ -68,6 +69,12 @@ bool DynamixelSDK::connect()
   }
 
   if (protocol_version == 1.0) {
+    if (!ControlManager::connect()) {
+      disconnect();
+
+      return false;
+    }
+
     write_packet(
       CONTROLLER, CM740Address::LED_HEAD_L,
       protocol_1::Word::make_color(255, 128, 0), 2);
