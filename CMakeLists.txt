@@ -107,8 +107,19 @@ install(TARGETS
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
   find_package(ament_lint_auto REQUIRED)
+  
+  ament_add_gtest(${PROJECT_NAME}_tests 
+  "test/joint/joint_test.cpp")
+  
+  target_include_directories(${PROJECT_NAME}_tests PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+  
+  target_link_libraries(${PROJECT_NAME}_tests ${PROJECT_NAME})
   ament_lint_auto_find_test_dependencies()
+  
 endif()
 
 ament_export_dependencies(

@@ -20,7 +20,8 @@
 
 #include "gtest/gtest.h"
 
-#include "joint.hpp"
+#include "tachimawari/control/control.hpp"
+#include "keisan/angle/angle.hpp"
 
 namespace tmw = tachimawari::joint;
 namespace ksn = keisan;
