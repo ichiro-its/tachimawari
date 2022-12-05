@@ -108,7 +108,6 @@ install(TARGETS
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
-  find_package(ament_lint_auto REQUIRED)
   
   ament_add_gtest(${PROJECT_NAME}_tests 
   "test/joint/joint_test.cpp")
