@@ -19,10 +19,10 @@
 // THE SOFTWARE.
 
 #include "gtest/gtest.h"
-#include <vector>
-
 #include "tachimawari/control/control.hpp"
 #include "keisan/angle/angle.hpp"
+
+#include <vector>
 
 namespace tmw = tachimawari::joint;
 namespace ksn = keisan;
@@ -43,7 +43,7 @@ TEST(JointTest, AngleToValue)
 
 TEST(JointTest, ValueToAngle)
 {
-  EXPECT_EQ(tmw::Joint::value_to_angle(360), ksn::Angle<double>(ksn::make_degree(4096.0)));
+  EXPECT_EQ(tmw::Joint::value_to_angle(4096), ksn::Angle<double>(ksn::make_degree(360.0)));
   EXPECT_EQ(tmw::Joint::value_to_angle(-1024), ksn::Angle<double>(ksn::make_degree(-90.0)));
   EXPECT_EQ(tmw::Joint::value_to_angle(2048), ksn::Angle<double>(ksn::make_degree(180.0)));
 }
