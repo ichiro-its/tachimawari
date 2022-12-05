@@ -18,11 +18,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <vector>
+
 #include "gtest/gtest.h"
 #include "tachimawari/control/control.hpp"
 #include "keisan/angle/angle.hpp"
-
-#include <vector>
 
 namespace tmw = tachimawari::joint;
 namespace ksn = keisan;
