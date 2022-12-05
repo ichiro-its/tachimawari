@@ -19,6 +19,7 @@
 // THE SOFTWARE.
 
 #include "gtest/gtest.h"
+#include <vector>
 
 #include "tachimawari/control/control.hpp"
 #include "keisan/angle/angle.hpp"
@@ -42,20 +43,18 @@ TEST(JointTest, AngleToValue)
 
 TEST(JointTest, ValueToAngle)
 {
-  EXPECT_EQ(tmw::Joint::value_to_angle(1137), ksn::Angle<double>(ksn::make_degree(100.0)));
-  EXPECT_EQ(tmw::Joint::value_to_angle(-853), ksn::Angle<double>(ksn::make_degree(-75.0)));
-  EXPECT_EQ(tmw::Joint::value_to_angle(284), ksn::Angle<double>(ksn::make_degree(25.0)));
+  EXPECT_EQ(tmw::Joint::value_to_angle(360), ksn::Angle<double>(ksn::make_degree(4096.0)));
+  EXPECT_EQ(tmw::Joint::value_to_angle(-1024), ksn::Angle<double>(ksn::make_degree(-90.0)));
+  EXPECT_EQ(tmw::Joint::value_to_angle(2048), ksn::Angle<double>(ksn::make_degree(180.0)));
 }
 
 TEST(JointTest, GetPosition)
 {
   tmw::Joint joint(1, 0.0);
 
-  // Set and get position using value
   joint.set_position_value(2018);
   EXPECT_EQ(joint.get_position_value(), 2018);
 
-  // Set and get position using degree
   joint.set_position(0.0);
   EXPECT_EQ(joint.get_position(), 0.0);
 }
@@ -64,7 +63,7 @@ TEST(JointTest, PIDTest)
 {
   tmw::Joint joint(1, 0.0);
   std::vector<float> vector{0.0, 1.0, 2.0};
-  
+
   joint.set_pid_gain(0.0, 1.0, 2.0);
   EXPECT_EQ(joint.get_pid_gain(), vector);
 }
