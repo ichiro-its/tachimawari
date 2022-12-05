@@ -129,6 +129,7 @@ ament_export_dependencies(
   keisan
   rclcpp
   tachimawari_interfaces)
+ament_export_dependencies(gtest_vendor)
 ament_export_include_directories("include")
 ament_export_libraries(${PROJECT_NAME})
 ament_package()
