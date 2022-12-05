@@ -63,6 +63,8 @@ TEST(JointTest, GetPosition)
 TEST(JointTest, PIDTest)
 {
   tmw::Joint joint(1, 0.0);
+  std::vector<float> vector{0.0, 1.0, 2.0};
+  
   joint.set_pid_gain(0.0, 1.0, 2.0);
-  EXPECT_EQ(joint.get_pid_gain(), {0.0, 1.0, 2.0});
+  EXPECT_EQ(joint.get_pid_gain(), vector);
 }

@@ -14,7 +14,6 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_package(ament_cmake REQUIRED)
-find_package(gtest_vendor REQUIRED)
 find_package(dynamixel_sdk REQUIRED)
 find_package(kansei_interfaces REQUIRED)
 find_package(keisan REQUIRED)
@@ -49,8 +48,6 @@ add_library(${PROJECT_NAME} SHARED
   "src/${PROJECT_NAME}/joint/utils/middleware.cpp"
   "src/${PROJECT_NAME}/joint/utils/node_control.cpp"
   "src/${PROJECT_NAME}/node/tachimawari_node.cpp")
-
-ament_target_dependencies(${PROJECT_NAME} gtest_vendor)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -131,7 +128,6 @@ ament_export_dependencies(
   keisan
   rclcpp
   tachimawari_interfaces)
-ament_export_dependencies(gtest_vendor)
 ament_export_include_directories("include")
 ament_export_libraries(${PROJECT_NAME})
 ament_package()
