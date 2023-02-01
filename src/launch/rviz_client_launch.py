@@ -28,5 +28,5 @@ def generate_launch_description():
             name="rviz_client"
             # arguments=["-port 3030"]
         )
-        
+
     ])

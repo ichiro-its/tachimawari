@@ -56,7 +56,7 @@
     <axis xyz="0 1 0"/>
     <parent link="body"/>
     <child link="left_hip_yaw"/>
-    <origin rpy="0 0 0" xyz="-0.15 0 -.45"/>
+    <origin rpy="0 0.03 0" xyz="-0.15 0 -.45"/>
     <limit lower="0.0" upper="0" effort="1.0" velocity="1.0"/>
   </joint>
 
@@ -242,7 +242,7 @@
     <axis xyz="0 1 0"/>
     <parent link="body"/>
     <child link="right_hip_yaw"/>
-    <origin rpy="0 0 0" xyz="0.15 0 -.45"/>
+    <origin rpy="0 .05 0" xyz="0.15 0 -.45"/>
     <limit lower="0.0" upper="0" effort="1.0" velocity="1.0"/>
   </joint>
 
@@ -598,7 +598,7 @@
     <axis xyz="0 1 0"/>
     <parent link="right_hand_1"/>
     <child link="right_shoulder_roll"/>
-    <origin rpy="0 -0.35 0" xyz="0 .0 -0.15"/>
+    <origin rpy="0 -0.7 0" xyz="0 .0 -0.15"/>
     <limit lower="0.0" upper="0" effort="1.0" velocity="1.0"/>
   </joint>
 
@@ -703,7 +703,7 @@
     <axis xyz="1 0 0"/>
     <parent link="head_pan"/>
     <child link="head_tilt"/>
-    <origin rpy="0 0 0" xyz="0 .0 .05"/>
+    <origin rpy="0.5 0 0" xyz="0 .0 .05"/>
     <limit lower="0.0" upper="0" effort="1.0" velocity="1.0"/>
   </joint>
 
@@ -724,7 +724,7 @@
     <axis xyz="1 0 0"/>
     <parent link="head_tilt"/>
     <child link="head"/>
-    <origin rpy="0 0 0" xyz="0 .0 .12"/>
+    <origin rpy="0 0 0" xyz="0 .0 .03"/>
     <limit lower="0.0" upper="0" effort="1.0" velocity="1.0"/>
   </joint>
 

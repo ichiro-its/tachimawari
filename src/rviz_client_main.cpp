@@ -25,27 +25,22 @@
 #include "rclcpp/rclcpp.hpp"
 #include "tachimawari/node/rviz_client_node.hpp"
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
 
   int port = 5000;
   std::string addr = "127.0.0.1";
 
-  for (int i = 0; i < argc; i++)
-  {
-    if ((std::string)argv[i] == "-port")
-    {
-      if (argc < (i + 1))
-      {
+  for (int i = 0; i < argc; i++) {
+    if ((std::string)argv[i] == "-port") {
+      if (argc < (i + 1)) {
         std::cerr << "Please specify the port!" << std::endl;
       }
       port = atoi(argv[i + 1]);
     }
-    if ((std::string)argv[i] == "-addr")
-    {
-      if (argc < (i + 1))
-      {
+    if ((std::string)argv[i] == "-addr") {
+      if (argc < (i + 1)) {
         std::cerr << "Please specify the addr!" << std::endl;
       }
       addr = argv[i + 1];
@@ -54,21 +49,12 @@ int main(int argc, char *argv[])
 
   musen::Address server_address(addr, port);
 
-  try
-  {
-    auto node = std::make_shared<rclcpp::Node>("rviz_client");
-    std::cout << "Connecting to server" << std::endl;
-    auto client = musen::Client(server_address);
-    auto rvizclient = std::make_shared<tachimawari::RvizClientNode>(node, client);
-    rclcpp::spin(node);
-    rclcpp::shutdown();
-  }
-  catch (const std::system_error &err)
-  {
-    std::cerr << "Failed to connect the client to the server on ip " << server_address.ip << " and port " << server_address.port << "! " << err.what() << std::endl;
-
-    return err.code().value();
-  }
+  auto node = std::make_shared<rclcpp::Node>("rviz_client");
+  std::cout << "Connecting to server" << std::endl;
+  auto client = musen::Client(server_address);
+  auto rvizclient = std::make_shared<tachimawari::RvizClientNode>(node, client);
+  rclcpp::spin(node);
+  rclcpp::shutdown();
 
   return 0;
 }

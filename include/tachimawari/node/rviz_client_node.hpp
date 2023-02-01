@@ -21,20 +21,31 @@
 #ifndef TACHIMAWARI__NODE__RVIZ_CLIENT_NODE_HPP_
 #define TACHIMAWARI__NODE__RVIZ_CLIENT_NODE_HPP_
 
-#include "rclcpp/rclcpp.hpp"
 #include "musen/musen.hpp"
-#include "tf2_ros/transform_broadcaster.h"
+#include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/joint_state.hpp"
+#include "tf2_ros/transform_broadcaster.h"
 
-namespace tachimawari {
+namespace tachimawari
+{
 
-class RvizClientNode {
+typedef struct
+{
+  int id;
+  int position;
+} rviz_transfer_message_item;
+
+typedef struct
+{
+  rviz_transfer_message_item data[20];
+} rviz_transfer_message;
+
+class RvizClientNode
+{
 public:
-  RvizClientNode(
-      rclcpp::Node::SharedPtr node,
-      musen::Client client);
+  RvizClientNode(rclcpp::Node::SharedPtr node, musen::Client client);
 
-private : 
+private:
   void register_joint(sensor_msgs::msg::JointState & js, std::string name, double pos);
   double val2deg(int val);
   rclcpp::Node::SharedPtr node;
@@ -44,6 +55,6 @@ private :
   rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr joint_state;
 };
 
-} // namespace tachimawari
+}  // namespace tachimawari
 
-#endif // TACHIMAWARI__NODE__RVIZ_CLIENT_NODE_HPP_
+#endif  // TACHIMAWARI__NODE__RVIZ_CLIENT_NODE_HPP_

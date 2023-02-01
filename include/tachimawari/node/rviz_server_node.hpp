@@ -21,48 +21,44 @@
 #ifndef TACHIMAWARI__NODE__RVIZ_SERVER_NODE_HPP_
 #define TACHIMAWARI__NODE__RVIZ_SERVER_NODE_HPP_
 
+#include <list>
 #include <memory>
 #include <string>
-#include <list>
 
-#include "rclcpp/rclcpp.hpp"
 #include "musen/musen.hpp"
-#include "tachimawari/joint/node/joint_manager.hpp"
+#include "rclcpp/rclcpp.hpp"
 #include "tachimawari/control/manager/control_manager.hpp"
+#include "tachimawari/joint/node/joint_manager.hpp"
 #include "tachimawari_interfaces/msg/current_joints.hpp"
 namespace tachimawari
 {
-  typedef struct
-  {
-    uint16_t id;
-    int position;
-  } rviz_transfer_message_item;
+typedef struct
+{
+  int id;
+  int position;
+} rviz_transfer_message_item;
 
-  typedef struct
-  {
-    rviz_transfer_message_item data[20];
-  } rviz_transfer_message;
+typedef struct
+{
+  rviz_transfer_message_item data[20];
+} rviz_transfer_message;
 
-  class RvizServerNode
-  {
-  public:
-    RvizServerNode(
-        rclcpp::Node::SharedPtr node,
-        std::shared_ptr<tachimawari::control::ControlManager> controller,
-        int port);
-    RvizServerNode(
-        rclcpp::Node::SharedPtr node,
-        int port); // for dumy
-  private:
-    rclcpp::Node::SharedPtr node;
-    rclcpp::TimerBase::SharedPtr node_timer;
-    rclcpp::TimerBase::SharedPtr node_timer_dummy;
-    std::list<std::shared_ptr<musen::Session>> sessions;
-    std::shared_ptr<tachimawari::joint::JointManager> jointmanager;
-    std::shared_ptr<tachimawari::control::ControlManager> controlmanager;
-    musen::Server server;
-    };
+class RvizServerNode
+{
+public:
+  RvizServerNode(rclcpp::Node::SharedPtr node, int port, int mode);
 
-} // namespace tachimawari
+private:
+  rclcpp::Node::SharedPtr node;
+  rclcpp::TimerBase::SharedPtr node_timer;
+  rclcpp::TimerBase::SharedPtr node_timer_dummy;
+  std::list<std::shared_ptr<musen::Session>> sessions;
+  std::shared_ptr<tachimawari::joint::JointManager> jointmanager;
+  std::shared_ptr<tachimawari::control::ControlManager> controlmanager;
+  musen::Server server;
+  rviz_transfer_message read_joint();
+};
 
-#endif // TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
+}  // namespace tachimawari
+
+#endif  // TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
