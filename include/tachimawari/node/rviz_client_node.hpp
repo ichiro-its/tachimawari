@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ichiro ITS
+// Copyright (c) 2023 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -43,11 +43,12 @@ typedef struct
 class RvizClientNode
 {
 public:
-  RvizClientNode(rclcpp::Node::SharedPtr node, musen::Client client);
+  RvizClientNode(const rclcpp::Node::SharedPtr node, const musen::Client client);
 
 private:
-  void register_joint(sensor_msgs::msg::JointState & js, std::string name, double pos);
-  double val2deg(int val);
+  void register_joint(
+    sensor_msgs::msg::JointState & joint_state_msg, const std::string & name, const double pos);
+  double val2rad(int val);
   rclcpp::Node::SharedPtr node;
   musen::Client client;
   rclcpp::TimerBase::SharedPtr node_timer;

@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ichiro ITS
+// Copyright (c) 2023 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -77,7 +77,7 @@ float direction[20] = {
 namespace tachimawari
 {
 
-RvizClientNode::RvizClientNode(rclcpp::Node::SharedPtr node, musen::Client client)
+RvizClientNode::RvizClientNode(const rclcpp::Node::SharedPtr node, const musen::Client client)
 : node(node), client(client)
 {
   this->transform_broadcaster = std::make_unique<tf2_ros::TransformBroadcaster>(this->node);
@@ -85,46 +85,47 @@ RvizClientNode::RvizClientNode(rclcpp::Node::SharedPtr node, musen::Client clien
     this->node->create_publisher<sensor_msgs::msg::JointState>("joint_states", 10);
 
   node_timer = node->create_wall_timer(1ms, [this]() {
-    sensor_msgs::msg::JointState js;
+    sensor_msgs::msg::JointState joint_state_msg;
 
     auto data = this->client.receive<rviz_transfer_message>();
 
     if (data.has_value()) {
-      for (int i = 0; i < 20; i++) {
+      for (int i = 0; i < 20; ++i) {
         register_joint(
-          js, joint_id[data->data[i].id - 1],
-          val2deg(data->data[i].position * direction[data->data[i].id - 1]));
+          joint_state_msg, joint_id[data->data[i].id - 1],
+          val2rad(data->data[i].position * direction[data->data[i].id - 1]));
         RCLCPP_INFO(
           rclcpp::get_logger("rviz_server"), "[size of buffer: %d] %d : %d", sizeof(data),
           data->data[i].id, data->data[i].position);
       }
     }
-    js.header.stamp = this->node->get_clock()->now();
-    geometry_msgs::msg::TransformStamped t;
-    t.header.set__frame_id("world");
-    t.set__child_frame_id("robot");
-    t.header.stamp = this->node->get_clock()->now();
-    t.transform.translation.x = 0.5;
-    t.transform.translation.y = 0;
-    t.transform.translation.z = 0;
-    transform_broadcaster->sendTransform(t);
-    register_joint(js, "body_to_robot", (3.14 / 180) * 0);
-    joint_state->publish(js);
-    js.position.clear();
-    js.name.clear();
+    joint_state_msg.header.stamp = this->node->get_clock()->now();
+    geometry_msgs::msg::TransformStamped world_transform;
+    world_transform.header.set__frame_id("world");
+    world_transform.set__child_frame_id("robot");
+    world_transform.header.stamp = this->node->get_clock()->now();
+    world_transform.transform.translation.x = 0.5;
+    world_transform.transform.translation.y = 0;
+    world_transform.transform.translation.z = 0;
+    transform_broadcaster->sendTransform(world_transform);
+    register_joint(joint_state_msg, "body_to_robot", 0);
+    joint_state->publish(joint_state_msg);
+    joint_state_msg.position.clear();
+    joint_state_msg.name.clear();
   });
 }
 
-double RvizClientNode::val2deg(int val)
+double RvizClientNode::val2rad(int val)
 {
   return (val - 2048.0) * (360.0 / 4096.0) * (M_PI / 180.0);
 }
 
-void RvizClientNode::register_joint(sensor_msgs::msg::JointState & js, std::string name, double pos)
+void register_joint(
+  sensor_msgs::msg::JointState & joint_state_msg, const std::string & name, const double pos)
 {
-  js.header.frame_id = "world";
-  js.name.push_back(name);
-  js.position.push_back(pos);
+  joint_state_msg.header.frame_id = "world";
+  joint_state_msg.name.push_back(name);
+  joint_state_msg.position.push_back(pos);
 }
 
 }  // namespace tachimawari

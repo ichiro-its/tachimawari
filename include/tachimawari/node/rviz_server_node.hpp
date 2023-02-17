@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ichiro ITS
+// Copyright (c) 2023 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -46,15 +46,15 @@ typedef struct
 class RvizServerNode
 {
 public:
-  RvizServerNode(rclcpp::Node::SharedPtr node, int port, int mode);
+  RvizServerNode(const rclcpp::Node::SharedPtr node, const int port, const int mode);
 
 private:
   rclcpp::Node::SharedPtr node;
   rclcpp::TimerBase::SharedPtr node_timer;
   rclcpp::TimerBase::SharedPtr node_timer_dummy;
   std::list<std::shared_ptr<musen::Session>> sessions;
-  std::shared_ptr<tachimawari::joint::JointManager> jointmanager;
-  std::shared_ptr<tachimawari::control::ControlManager> controlmanager;
+  std::shared_ptr<tachimawari::joint::JointManager> joint_manager;
+  std::shared_ptr<tachimawari::control::ControlManager> control_manager;
   musen::Server server;
   rviz_transfer_message read_joint();
 };

@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ichiro ITS
+// Copyright (c) 2023 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -34,19 +34,19 @@ using namespace std::chrono_literals;
 namespace tachimawari
 {
 
-RvizServerNode::RvizServerNode(rclcpp::Node::SharedPtr node, int port, int mode)
+RvizServerNode::RvizServerNode(const rclcpp::Node::SharedPtr node, const int port, const int mode)
 : node(node), server(port)
 {
   switch (mode) {
     case 1:  // sdk
-      controlmanager = std::make_shared<tachimawari::control::DynamixelSDK>("/dev/ttyUSB0");
-      if (!controlmanager->connect()) {
-        controlmanager->set_port("/dev/ttyUSB1");
-        if (!controlmanager->connect()) {
+      control_manager = std::make_shared<tachimawari::control::DynamixelSDK>("/dev/ttyUSB0");
+      if (!control_manager->connect()) {
+        control_manager->set_port("/dev/ttyUSB1");
+        if (!control_manager->connect()) {
           RCLCPP_ERROR(rclcpp::get_logger("RvizServerNode"), "can`t connect to sdk");
         }
       }
-      jointmanager = std::make_shared<tachimawari::joint::JointManager>(controlmanager);
+      joint_manager = std::make_shared<tachimawari::joint::JointManager>(control_manager);
       node_timer = node->create_wall_timer(8ms, [this]() {
         auto new_session = server.accept();
         if (new_session != nullptr) {
@@ -60,14 +60,14 @@ RvizServerNode::RvizServerNode(rclcpp::Node::SharedPtr node, int port, int mode)
       break;
 
     case 2:  // cm740
-      controlmanager = std::make_shared<tachimawari::control::CM740>("/dev/ttyUSB0");
-      if (!controlmanager->connect()) {
-        controlmanager->set_port("/dev/ttyUSB1");
-        if (!controlmanager->connect()) {
+      control_manager = std::make_shared<tachimawari::control::CM740>("/dev/ttyUSB0");
+      if (!control_manager->connect()) {
+        control_manager->set_port("/dev/ttyUSB1");
+        if (!control_manager->connect()) {
           RCLCPP_ERROR(rclcpp::get_logger("RvizServerNode"), "can`t connect to CM740");
         }
       }
-      jointmanager = std::make_shared<tachimawari::joint::JointManager>(controlmanager);
+      joint_manager = std::make_shared<tachimawari::joint::JointManager>(control_manager);
       node_timer = node->create_wall_timer(8ms, [this]() {
         auto new_session = server.accept();
         if (new_session != nullptr) {
@@ -82,8 +82,8 @@ RvizServerNode::RvizServerNode(rclcpp::Node::SharedPtr node, int port, int mode)
 
     case 3:  // dummy
       rviz_transfer_message dummy[10];
-      for (int i = 0; i < 10; i++) {
-        for (int j = 0; j < 20; j++) {
+      for (int i = 0; i < 10; ++i) {
+        for (int j = 0; j < 20; ++j) {
           dummy[i].data[j].id = j;
           dummy[i].data[j].position = 2048;
         }
@@ -105,9 +105,9 @@ RvizServerNode::RvizServerNode(rclcpp::Node::SharedPtr node, int port, int mode)
           this->sessions.push_back(new_session);
         }
         for (auto session : this->sessions) {
-          for (int i = 0; i < 3; i++) {
+          for (int i = 0; i < 3; ++i) {
             auto data = dummy[i];
-            for (int j = 0; j < 20; j++) {
+            for (int j = 0; j < 20; ++j) {
               RCLCPP_INFO(
                 rclcpp::get_logger("rviz_server"), "[size of buffer : %d] %d : %d", sizeof(data),
                 data.data[j].id + 1, data.data[j].position);
@@ -126,12 +126,12 @@ RvizServerNode::RvizServerNode(rclcpp::Node::SharedPtr node, int port, int mode)
 
 rviz_transfer_message RvizServerNode::read_joint()
 {
-  auto joints = jointmanager->get_current_joints();
+  auto joints = joint_manager->get_current_joints();
   std::vector<tachimawari::joint::Joint> new_joints(joints);
   for (auto & joint : new_joints) {
     float value = tachimawari::joint::Joint::CENTER_VALUE;
 
-    int current_value = controlmanager->read_packet(
+    int current_value = control_manager->read_packet(
       joint.get_id(), tachimawari::joint::protocol_1::MX28Address::PRESENT_POSITION_L, 2);
 
     value = (current_value == -1) ? value : current_value;
@@ -151,7 +151,7 @@ rviz_transfer_message RvizServerNode::read_joint()
   }
   rviz_transfer_message msg;
   int pos = 0;
-  for (auto joint : joints) {
+  for (const auto joint : joints) {
     rviz_transfer_message_item item;
     item.id = static_cast<int>(joint.get_id());
     item.position = joint.get_position_value();
