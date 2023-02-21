@@ -43,11 +43,11 @@ typedef struct
 class RvizClientNode
 {
 public:
-  RvizClientNode(const rclcpp::Node::SharedPtr node, const musen::Client client);
+  RvizClientNode(const rclcpp::Node::SharedPtr & node, const musen::Client & client);
 
 private:
   void register_joint(
-    sensor_msgs::msg::JointState & joint_state_msg, const std::string & name, const double pos);
+    sensor_msgs::msg::JointState & joint_state_msg, const std::string & name, const double & pos);
   double val2rad(int val);
   rclcpp::Node::SharedPtr node;
   musen::Client client;

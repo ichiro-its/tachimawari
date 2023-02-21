@@ -77,7 +77,7 @@ float direction[20] = {
 namespace tachimawari
 {
 
-RvizClientNode::RvizClientNode(const rclcpp::Node::SharedPtr node, const musen::Client client)
+RvizClientNode::RvizClientNode(const rclcpp::Node::SharedPtr & node, const musen::Client & client)
 : node(node), client(client)
 {
   this->transform_broadcaster = std::make_unique<tf2_ros::TransformBroadcaster>(this->node);
@@ -120,8 +120,8 @@ double RvizClientNode::val2rad(int val)
   return (val - 2048.0) * (360.0 / 4096.0) * (M_PI / 180.0);
 }
 
-void register_joint(
-  sensor_msgs::msg::JointState & joint_state_msg, const std::string & name, const double pos)
+void RvizClientNode::register_joint(
+  sensor_msgs::msg::JointState & joint_state_msg, const std::string & name, const double & pos)
 {
   joint_state_msg.header.frame_id = "world";
   joint_state_msg.name.push_back(name);
