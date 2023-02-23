@@ -21,6 +21,9 @@
 #include "tachimawari/node/rviz_client_node.hpp"
 
 #include <chrono>
+#include <memory>
+#include <string>
+#include <vector>
 
 #include "tachimawari_interfaces/msg/current_joints.hpp"
 
@@ -28,7 +31,7 @@
 
 using namespace std::chrono_literals;
 
-const std::string joint_id[20] = {
+const char joint_id[20][22] = {
   "right_shoulder_pitch",  // 1
   "left_shoulder_pitch",   // 2
   "right_shoulder_roll",   // 3
@@ -84,35 +87,36 @@ RvizClientNode::RvizClientNode(const rclcpp::Node::SharedPtr & node, const musen
   this->joint_state =
     this->node->create_publisher<sensor_msgs::msg::JointState>("joint_states", 10);
 
-  node_timer = node->create_wall_timer(1ms, [this]() {
-    sensor_msgs::msg::JointState joint_state_msg;
+  node_timer = node->create_wall_timer(
+    1ms, [this]() {
+      sensor_msgs::msg::JointState joint_state_msg;
 
-    auto data = this->client.receive<rviz_transfer_message>();
+      auto data = this->client.receive<rviz_transfer_message>();
 
-    if (data.has_value()) {
-      for (int i = 0; i < 20; ++i) {
-        register_joint(
-          joint_state_msg, joint_id[data->data[i].id - 1],
-          val2rad(data->data[i].position * direction[data->data[i].id - 1]));
-        RCLCPP_INFO(
-          rclcpp::get_logger("rviz_server"), "[size of buffer: %d] %d : %d", sizeof(data),
-          data->data[i].id, data->data[i].position);
+      if (data.has_value()) {
+        for (int i = 0; i < 20; ++i) {
+          register_joint(
+            joint_state_msg, joint_id[data->data[i].id - 1],
+            val2rad(data->data[i].position * direction[data->data[i].id - 1]));
+          RCLCPP_INFO(
+            rclcpp::get_logger("rviz_server"), "[size of buffer: %d] %d : %d", sizeof(data),
+            data->data[i].id, data->data[i].position);
+        }
       }
-    }
-    joint_state_msg.header.stamp = this->node->get_clock()->now();
-    geometry_msgs::msg::TransformStamped world_transform;
-    world_transform.header.set__frame_id("world");
-    world_transform.set__child_frame_id("robot");
-    world_transform.header.stamp = this->node->get_clock()->now();
-    world_transform.transform.translation.x = 0.5;
-    world_transform.transform.translation.y = 0;
-    world_transform.transform.translation.z = 0;
-    transform_broadcaster->sendTransform(world_transform);
-    register_joint(joint_state_msg, "body_to_robot", 0);
-    joint_state->publish(joint_state_msg);
-    joint_state_msg.position.clear();
-    joint_state_msg.name.clear();
-  });
+      joint_state_msg.header.stamp = this->node->get_clock()->now();
+      geometry_msgs::msg::TransformStamped world_transform;
+      world_transform.header.set__frame_id("world");
+      world_transform.set__child_frame_id("robot");
+      world_transform.header.stamp = this->node->get_clock()->now();
+      world_transform.transform.translation.x = 0.5;
+      world_transform.transform.translation.y = 0;
+      world_transform.transform.translation.z = 0;
+      transform_broadcaster->sendTransform(world_transform);
+      register_joint(joint_state_msg, "body_to_robot", 0);
+      joint_state->publish(joint_state_msg);
+      joint_state_msg.position.clear();
+      joint_state_msg.name.clear();
+    });
 }
 
 double RvizClientNode::val2rad(int val)

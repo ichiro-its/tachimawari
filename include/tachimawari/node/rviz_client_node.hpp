@@ -21,6 +21,9 @@
 #ifndef TACHIMAWARI__NODE__RVIZ_CLIENT_NODE_HPP_
 #define TACHIMAWARI__NODE__RVIZ_CLIENT_NODE_HPP_
 
+#include <string>
+#include <memory>
+
 #include "musen/musen.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/joint_state.hpp"

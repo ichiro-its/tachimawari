@@ -20,6 +20,8 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <memory>
+#include <string>
 
 #include "musen/musen.hpp"
 #include "rclcpp/rclcpp.hpp"

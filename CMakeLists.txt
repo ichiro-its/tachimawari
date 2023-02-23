@@ -100,25 +100,25 @@ target_include_directories(init_joints PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 target_link_libraries(init_joints ${PROJECT_NAME})
-  
+
 add_executable(main "src/tachimawari_main.cpp")
 target_include_directories(main PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 target_link_libraries(main ${PROJECT_NAME})
-  
+
 add_executable(read_buttons "src/read_buttons_main.cpp")
 target_include_directories(read_buttons PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 target_link_libraries(read_buttons ${PROJECT_NAME})
-  
+
 add_executable(read_joints "src/read_joints_main.cpp")
 target_include_directories(read_joints PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 target_link_libraries(read_joints ${PROJECT_NAME})
-  
+
 add_executable(rviz_server "src/rviz_server_main.cpp")
 target_include_directories(rviz_server PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -131,7 +131,7 @@ target_include_directories(rviz_client PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 target_link_libraries(rviz_client ${PROJECT_NAME})
- 
+
 install(TARGETS
   check_joints
   init_joints

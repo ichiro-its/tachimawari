@@ -61,4 +61,4 @@ private:
 
 }  // namespace tachimawari
 
-#endif  // TACHIMAWARI__NODE__TACHIMAWARI_NODE_HPP_
+#endif  // TACHIMAWARI__NODE__RVIZ_SERVER_NODE_HPP_

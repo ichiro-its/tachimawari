@@ -24,6 +24,7 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "tachimawari/control/control.hpp"
 #include "tachimawari/joint/joint.hpp"
@@ -47,16 +48,17 @@ RvizServerNode::RvizServerNode(const rclcpp::Node::SharedPtr node, const int por
         }
       }
       joint_manager = std::make_shared<tachimawari::joint::JointManager>(control_manager);
-      node_timer = node->create_wall_timer(8ms, [this]() {
-        auto new_session = server.accept();
-        if (new_session != nullptr) {
-          this->sessions.push_back(new_session);
-        }
-        for (auto session : this->sessions) {
-          auto data = read_joint();
-          session->send<rviz_transfer_message>(data);
-        }
-      });
+      node_timer = node->create_wall_timer(
+        8ms, [this]() {
+          auto new_session = server.accept();
+          if (new_session != nullptr) {
+            this->sessions.push_back(new_session);
+          }
+          for (auto session : this->sessions) {
+            auto data = read_joint();
+            session->send<rviz_transfer_message>(data);
+          }
+        });
       break;
 
     case 2:  // cm740
@@ -68,16 +70,17 @@ RvizServerNode::RvizServerNode(const rclcpp::Node::SharedPtr node, const int por
         }
       }
       joint_manager = std::make_shared<tachimawari::joint::JointManager>(control_manager);
-      node_timer = node->create_wall_timer(8ms, [this]() {
-        auto new_session = server.accept();
-        if (new_session != nullptr) {
-          this->sessions.push_back(new_session);
-        }
-        for (auto session : this->sessions) {
-          auto data = read_joint();
-          session->send<rviz_transfer_message>(data);
-        }
-      });
+      node_timer = node->create_wall_timer(
+        8ms, [this]() {
+          auto new_session = server.accept();
+          if (new_session != nullptr) {
+            this->sessions.push_back(new_session);
+          }
+          for (auto session : this->sessions) {
+            auto data = read_joint();
+            session->send<rviz_transfer_message>(data);
+          }
+        });
       break;
 
     case 3:  // dummy
@@ -99,23 +102,24 @@ RvizServerNode::RvizServerNode(const rclcpp::Node::SharedPtr node, const int por
       dummy[0].data[2].id = 2;
       dummy[0].data[2].position = 2098;
 
-      node_timer = node->create_wall_timer(8ms, [this, dummy]() {
-        auto new_session = server.accept();
-        if (new_session != nullptr) {
-          this->sessions.push_back(new_session);
-        }
-        for (auto session : this->sessions) {
-          for (int i = 0; i < 3; ++i) {
-            auto data = dummy[i];
-            for (int j = 0; j < 20; ++j) {
-              RCLCPP_INFO(
-                rclcpp::get_logger("rviz_server"), "[size of buffer : %d] %d : %d", sizeof(data),
-                data.data[j].id + 1, data.data[j].position);
-            }
-            session->send<rviz_transfer_message>(data);
+      node_timer = node->create_wall_timer(
+        8ms, [this, dummy]() {
+          auto new_session = server.accept();
+          if (new_session != nullptr) {
+            this->sessions.push_back(new_session);
           }
-        }
-      });
+          for (auto session : this->sessions) {
+            for (int i = 0; i < 3; ++i) {
+              auto data = dummy[i];
+              for (int j = 0; j < 20; ++j) {
+                RCLCPP_INFO(
+                  rclcpp::get_logger("rviz_server"), "[size of buffer : %d] %d : %d", sizeof(data),
+                  data.data[j].id + 1, data.data[j].position);
+              }
+              session->send<rviz_transfer_message>(data);
+            }
+          }
+        });
       break;
 
     default:
