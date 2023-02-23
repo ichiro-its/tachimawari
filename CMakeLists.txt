@@ -68,6 +68,12 @@ install(TARGETS ${PROJECT_NAME}
   LIBRARY DESTINATION "lib"
   RUNTIME DESTINATION "bin")
 
+add_executable(check_torques "src/check_joints_torque.cpp")
+target_include_directories(check_torques PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+target_link_libraries(check_torques ${PROJECT_NAME})
+
 add_executable(check_joints "src/check_joints_main.cpp")
 target_include_directories(check_joints PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -99,6 +105,7 @@ target_include_directories(read_joints PUBLIC
 target_link_libraries(read_joints ${PROJECT_NAME})
 
 install(TARGETS
+  check_torques
   check_joints
   init_joints
   main
