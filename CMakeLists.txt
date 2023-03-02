@@ -62,6 +62,9 @@ ament_target_dependencies(${PROJECT_NAME}
 
 install(DIRECTORY "include" DESTINATION ".")
 
+install(DIRECTORY launch 
+  DESTINATION share/${PROJECT_NAME})
+
 install(TARGETS ${PROJECT_NAME}
   EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION "lib"
