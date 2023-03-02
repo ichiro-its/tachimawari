@@ -24,23 +24,12 @@ def generate_launch_description():
         package=firstPackage,
         executable='main',
         name='tachimawari',
-        arguments=[mode]
-    )
-
-    run_first_package = ExecuteProcess(
-        cmd=[[
-            'ros2 ',
-            'run ',
-            firstPackage,
-            ' main ',
-            mode
-        ]],
-        shell=True
+        arguments=[mode],
+        output='screen'
     )
 
     return LaunchDescription([
         firstPackage_launch_arg,
         mode_launch_arg,
-        firstNode,
-        run_first_package
+        firstNode
     ])
