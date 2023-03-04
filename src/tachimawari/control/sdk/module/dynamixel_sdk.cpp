@@ -46,7 +46,8 @@ DynamixelSDK::DynamixelSDK(
 : ControlManager(port_name, protocol_version, baudrate),
   port_handler(dynamixel::PortHandler::getPortHandler(port_name.c_str())),
   packet_handler(dynamixel::PacketHandler::getPacketHandler(protocol_version)),
-  bulk_data(std::make_shared<std::map<uint8_t, sdk::GroupBulkRead>>())
+  bulk_data(std::make_shared<std::map<uint8_t, sdk::GroupBulkRead>>()),
+  group_bulk_read(std::make_shared<sdk::GroupBulkRead>(port_handler, packet_handler))
 {
 }
 
@@ -88,7 +89,6 @@ bool DynamixelSDK::send_bulk_read_packet(sdk::GroupBulkRead packet)
 
     return false;
   }
-    std::cout << "ou2t\n";
 
   return true;
 }
@@ -114,14 +114,14 @@ bool DynamixelSDK::ping(uint8_t id)
   return true;
 }
 
-bool DynamixelSDK::ping_core(uint8_t id){
+bool DynamixelSDK::ping_core(uint8_t id)
+{
   uint8_t error = 0;
 
   int result = packet_handler->ping(port_handler, id, &error);
   if (result != SUCCESS) {
     return false;
-  }
-  else if (error != 0) {
+  } else if (error != 0) {
     return false;
   }
 
@@ -262,49 +262,21 @@ bool DynamixelSDK::sync_write_packet(
 
 bool DynamixelSDK::bulk_read_packet()
 {
-  
   if (protocol_version == 1.0) {
-    dynamixel::GroupBulkRead group_bulk_read(port_handler, packet_handler);
-
     if (ping(CONTROLLER)) {
-      group_bulk_read.addParam(CONTROLLER, CM740Address::DXL_POWER, 30u);
+      group_bulk_read->add_param(CONTROLLER, CM740Address::DXL_POWER, 30u);
+    } else if (ping(MARIN_CORE)) {
+      group_bulk_read->add_param(MARIN_CORE, 64u, 20u);
     }
-    else if (ping(MARIN_CORE)) {
-      group_bulk_read.addParam(MARIN_CORE, 64u, 20u);
-    }
 
-    // if (group_bulk_read.is_parameters_filled()) {
-    // std::cout << "filled\n";
-    //   auto result = send_bulk_read_packet(group_bulk_read);
-      
-    // std::cout << "result\n";
-
-    //   std::cout << "ID FOUND" << std::endl;
-    //   // return group_bulk_read.send();
-    // } 
-    // else {
-    //   return false;
-    // }
-    // group_bulk_read.clearParam();
-    // std::cout << "clear\n";
-
-  int result = group_bulk_read.txRxPacket();
-  if (result == SUCCESS) {
-    // sdk::GroupBulkRead::insert_all(bulk_data, group_bulk_read);
-
-    std::vector<uint16_t> arr_id({64u, 66u, 68u});
-    for(auto &id : arr_id) {
-      bool is_available = group_bulk_read.isAvailable(MARIN_CORE, id, 2);
-
-      if (is_available) {
-        uint32_t result = group_bulk_read.getData(MARIN_CORE, id, 2);
-
-        // return static_cast<int>(result);
+    int result = group_bulk_read->send();
+    if (result == SUCCESS) {
+      std::vector<uint16_t> arr_id({64u, 66u, 68u});
+      for (auto & id : arr_id) {
+        uint32_t result = group_bulk_read->get(MARIN_CORE, id, 2);
       }
+      return true;
     }
-    return true;
-
-  }
   }
 
   return false;
@@ -313,26 +285,21 @@ bool DynamixelSDK::bulk_read_packet()
 void DynamixelSDK::bulk_read_proccess(
   uint8_t id, uint8_t starting_address, int data_length)
 {
-  sdk::GroupBulkRead group_bulk_read(port_handler, packet_handler);
   int dxl_comm_result = TX_FAIL;
 
-  group_bulk_read.add_param(id, starting_address, data_length);
-  
+  group_bulk_read->add_param(id, starting_address, data_length);
 }
 
-void DynamixelSDK::get_data_bulk() {
-   sdk::GroupBulkRead group_bulk_read(port_handler, packet_handler);
-   group_bulk_read.send();
-
+void DynamixelSDK::get_data_bulk()
+{
+  group_bulk_read->send();
 }
 
 int DynamixelSDK::get_data(
-    uint8_t id, uint16_t address, int data_length){
-    sdk::GroupBulkRead group_bulk_read(port_handler, packet_handler); 
-    group_bulk_read.get(id, address, data_length);
-
-    return -1;
-    }
+  uint8_t id, uint16_t address, int data_length)
+{
+  return group_bulk_read->get(id, address, data_length);
+}
 
 int DynamixelSDK::get_bulk_data(
   uint8_t id, uint8_t address,

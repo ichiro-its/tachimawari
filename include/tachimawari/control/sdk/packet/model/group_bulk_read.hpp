@@ -48,9 +48,9 @@ public:
   void add(
     uint8_t id, uint16_t starting_address,
     uint16_t data_length);
-  
+
   void add_param(
-    uint8_t id, uint8_t starting_address, 
+    uint8_t id, uint8_t starting_address,
     uint16_t length);
 
   int send();

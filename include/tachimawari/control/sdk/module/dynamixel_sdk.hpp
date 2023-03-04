@@ -51,7 +51,7 @@ public:
   ~DynamixelSDK();
 
   void set_port(const std::string & port_name) override;
-  
+
 
   bool connect() override;
   void disconnect() override;
@@ -74,7 +74,7 @@ public:
 
   void bulk_read_proccess(
     uint8_t id, uint8_t starting_address, int data_length);
-    
+
   void get_data_bulk();
 
   int get_data(
@@ -91,6 +91,7 @@ private:
   dynamixel::PacketHandler * packet_handler;
 
   std::shared_ptr<std::map<uint8_t, sdk::GroupBulkRead>> bulk_data;
+  std::shared_ptr<sdk::GroupBulkRead> group_bulk_read;
 };
 
 }  // namespace tachimawari::control

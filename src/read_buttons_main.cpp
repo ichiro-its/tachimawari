@@ -55,11 +55,6 @@ int main(int argc, char * argv[])
       return 1;
     }
   }
-
-  // controller->bulk_read_proccess(tachimawari::control::DynamixelSDK::MARIN_CORE, 64, 16);
-
-  
-
   rclcpp::Rate rcl_rate(8ms);
   while (rclcpp::ok()) {
     rcl_rate.sleep();
@@ -69,15 +64,13 @@ int main(int argc, char * argv[])
       return 1;
     }
 
-    // controller->get_data_bulk();
-    std::cout<< "success\n";
-
     int start = controller->get_bulk_data(tachimawari::control::CM740::CONTROLLER, 40, 2);
-    int stop  = controller->get_bulk_data(tachimawari::control::CM740::CONTROLLER, 44, 2);
+    int stop = controller->get_bulk_data(tachimawari::control::CM740::CONTROLLER, 44, 2);
 
-    int yaw_r   = controller->get_data(tachimawari::control::DynamixelSDK::MARIN_CORE, 64u, 2);
-    int pitch_r = controller->get_data(tachimawari::control::DynamixelSDK::MARIN_CORE, 66u, 2) - 360;
-    int roll_r  = controller->get_data(tachimawari::control::DynamixelSDK::MARIN_CORE, 68u, 2) - 360;
+    int yaw_r = controller->get_data(tachimawari::control::DynamixelSDK::MARIN_CORE, 64u, 2);
+    int pitch_r =
+      controller->get_data(tachimawari::control::DynamixelSDK::MARIN_CORE, 66u, 2) - 360;
+    int roll_r = controller->get_data(tachimawari::control::DynamixelSDK::MARIN_CORE, 68u, 2) - 360;
 
     std::cout << "start: " << start << ", stop: " << stop << "\n";
     std::cout << "yaw: " << yaw_r << ", pitch: " << pitch_r << ", roll: " << roll_r << "\n";

@@ -41,7 +41,6 @@ void GroupBulkRead::insert_all(
   for (auto id : group_bulk_read.get_parameters_id()) {
     if (bulk_data->find(id) != bulk_data->end()) {
       bulk_data->insert({id, group_bulk_read});
-      
     }
   }
 }
@@ -67,10 +66,10 @@ void GroupBulkRead::add(
 
 void GroupBulkRead::add_param(
   uint8_t id, uint8_t starting_address,
-  uint16_t length) 
-  {
-    group_bulk_read.addParam(id, starting_address, length);
-  }
+  uint16_t length)
+{
+  group_bulk_read.addParam(id, starting_address, length);
+}
 
 int GroupBulkRead::send()
 {
@@ -107,6 +106,5 @@ GroupBulkRead::~GroupBulkRead()
 {
   group_bulk_read.clearParam();
 }
-
 
 }  // namespace tachimawari::control::sdk
