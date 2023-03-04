@@ -51,11 +51,13 @@ public:
   ~DynamixelSDK();
 
   void set_port(const std::string & port_name) override;
+  
 
   bool connect() override;
   void disconnect() override;
 
   bool ping(uint8_t id) override;
+  bool ping_core(uint8_t id) override;
 
   bool write_packet(
     uint8_t id, uint8_t address, int value,
@@ -69,6 +71,14 @@ public:
     bool with_pid = false) override;
 
   bool bulk_read_packet() override;
+
+  void bulk_read_proccess(
+    uint8_t id, uint8_t starting_address, int data_length);
+    
+  void get_data_bulk();
+
+  int get_data(
+    uint8_t id, uint16_t address, int data_lenghth = 1);
 
   int get_bulk_data(
     uint8_t id, uint8_t address,

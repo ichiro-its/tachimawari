@@ -22,10 +22,12 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <typeinfo>
 
 #include "tachimawari/control/sdk/packet/model/group_bulk_read.hpp"
 
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
+#include "tachimawari/control/sdk/module/marin_core_address.hpp"
 
 #include "dynamixel_sdk/dynamixel_sdk.h"
 
@@ -39,6 +41,7 @@ void GroupBulkRead::insert_all(
   for (auto id : group_bulk_read.get_parameters_id()) {
     if (bulk_data->find(id) != bulk_data->end()) {
       bulk_data->insert({id, group_bulk_read});
+      
     }
   }
 }
@@ -61,6 +64,13 @@ void GroupBulkRead::add(
     // add param failed
   }
 }
+
+void GroupBulkRead::add_param(
+  uint8_t id, uint8_t starting_address,
+  uint16_t length) 
+  {
+    group_bulk_read.addParam(id, starting_address, length);
+  }
 
 int GroupBulkRead::send()
 {
