@@ -271,10 +271,6 @@ bool DynamixelSDK::bulk_read_packet()
 
     int result = group_bulk_read->send();
     if (result == SUCCESS) {
-      std::vector<uint16_t> arr_id({64u, 66u, 68u});
-      for (auto & id : arr_id) {
-        uint32_t result = group_bulk_read->get(MARIN_CORE, id, 2);
-      }
       return true;
     }
   }
