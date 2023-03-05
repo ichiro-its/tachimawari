@@ -37,8 +37,8 @@ class GroupBulkRead
 {
 public:
   static void insert_all(
-    std::shared_ptr<std::map<uint8_t, GroupBulkRead>> bulk_data,
-    GroupBulkRead group_bulk_read);
+    std::shared_ptr<std::map<uint8_t, std::shared_ptr<sdk::GroupBulkRead>>> bulk_data,
+    std::shared_ptr<sdk::GroupBulkRead> group_bulk_read);
 
   GroupBulkRead(
     dynamixel::PortHandler * port_handler,
@@ -62,7 +62,7 @@ public:
   bool is_parameters_filled() const;
 
 protected:
-  dynamixel::GroupBulkRead group_bulk_read;
+  std::shared_ptr<dynamixel::GroupBulkRead> group_bulk_read;
 
   std::vector<uint8_t> parameters_id;
 };

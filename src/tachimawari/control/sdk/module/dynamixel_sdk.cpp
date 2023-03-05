@@ -46,7 +46,7 @@ DynamixelSDK::DynamixelSDK(
 : ControlManager(port_name, protocol_version, baudrate),
   port_handler(dynamixel::PortHandler::getPortHandler(port_name.c_str())),
   packet_handler(dynamixel::PacketHandler::getPacketHandler(protocol_version)),
-  bulk_data(std::make_shared<std::map<uint8_t, sdk::GroupBulkRead>>()),
+  bulk_data(std::make_shared<std::map<uint8_t, std::shared_ptr<sdk::GroupBulkRead>>>()),
   group_bulk_read(std::make_shared<sdk::GroupBulkRead>(port_handler, packet_handler))
 {
 }
@@ -77,9 +77,9 @@ bool DynamixelSDK::connect()
   return true;
 }
 
-bool DynamixelSDK::send_bulk_read_packet(sdk::GroupBulkRead group_bulk_read)
+bool DynamixelSDK::send_bulk_read_packet(std::shared_ptr<sdk::GroupBulkRead> group_bulk_read)
 {
-  int result = group_bulk_read.send();
+  int result = group_bulk_read->send();
   if (result == SUCCESS) {
     sdk::GroupBulkRead::insert_all(bulk_data, group_bulk_read);
   } else {
@@ -254,10 +254,7 @@ bool DynamixelSDK::bulk_read_packet()
       group_bulk_read->add_param(MARIN_CORE, 64u, 20u);
     }
 
-    int result = group_bulk_read->send();
-    if (result == SUCCESS) {
-      return true;
-    }
+    return send_bulk_read_packet(group_bulk_read);
   }
 
   return false;
@@ -287,7 +284,7 @@ int DynamixelSDK::get_bulk_data(
   int data_length)
 {
   if (bulk_data->find(id) != bulk_data->end()) {
-    return bulk_data->at(id).get(id, address, data_length);
+    return bulk_data->at(id)->get(id, address, data_length);
   } else {
     // data is not found
   }

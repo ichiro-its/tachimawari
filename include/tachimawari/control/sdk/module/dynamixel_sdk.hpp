@@ -84,12 +84,12 @@ public:
     int data_length = 1) override;
 
 private:
-  bool send_bulk_read_packet(sdk::GroupBulkRead group_bulk_read);
+  bool send_bulk_read_packet(std::shared_ptr<sdk::GroupBulkRead> group_bulk_read);
 
   dynamixel::PortHandler * port_handler;
   dynamixel::PacketHandler * packet_handler;
 
-  std::shared_ptr<std::map<uint8_t, sdk::GroupBulkRead>> bulk_data;
+  std::shared_ptr<std::map<uint8_t, std::shared_ptr<sdk::GroupBulkRead>>> bulk_data;
   std::shared_ptr<sdk::GroupBulkRead> group_bulk_read;
 };
 
