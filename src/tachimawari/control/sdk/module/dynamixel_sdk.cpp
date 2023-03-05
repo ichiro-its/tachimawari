@@ -249,12 +249,16 @@ bool DynamixelSDK::bulk_read_packet()
 {
   if (protocol_version == 1.0) {
     if (ping(CONTROLLER)) {
-      group_bulk_read->add_param(CONTROLLER, CM740Address::DXL_POWER, 30u);
+      group_bulk_read->add(CONTROLLER, CM740Address::DXL_POWER, 30u);
     } else if (ping(MARIN_CORE)) {
-      group_bulk_read->add_param(MARIN_CORE, 64u, 20u);
+      group_bulk_read->add(MARIN_CORE, 64u, 20u);
     }
 
-    return send_bulk_read_packet(group_bulk_read);
+    if (group_bulk_read->is_parameters_filled()) {
+      return send_bulk_read_packet(group_bulk_read);
+    }
+
+    return false;
   }
 
   return false;
