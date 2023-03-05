@@ -51,7 +51,6 @@ public:
   virtual void disconnect() {}
 
   virtual bool ping(uint8_t id) {}
-  virtual bool ping_core(uint8_t id) {}
 
   virtual bool write_packet(
     uint8_t id, uint8_t address, int value,

@@ -77,12 +77,11 @@ bool DynamixelSDK::connect()
   return true;
 }
 
-bool DynamixelSDK::send_bulk_read_packet(sdk::GroupBulkRead packet)
+bool DynamixelSDK::send_bulk_read_packet(sdk::GroupBulkRead group_bulk_read)
 {
-  int result = 0;
+  int result = group_bulk_read.send();
   if (result == SUCCESS) {
-    return true;
-
+    sdk::GroupBulkRead::insert_all(bulk_data, group_bulk_read);
   } else {
     // TODO(maroqijalil): will be used for logging
     // packet_handler->getTxRxResult(result);
@@ -90,7 +89,7 @@ bool DynamixelSDK::send_bulk_read_packet(sdk::GroupBulkRead packet)
     return false;
   }
 
-  return true;
+return true;
 }
 
 bool DynamixelSDK::ping(uint8_t id)
@@ -108,20 +107,6 @@ bool DynamixelSDK::ping(uint8_t id)
     // TODO(maroqijalil): will be used for logging
     // packet_handler->getRxPacketError(error);
 
-    return false;
-  }
-
-  return true;
-}
-
-bool DynamixelSDK::ping_core(uint8_t id)
-{
-  uint8_t error = 0;
-
-  int result = packet_handler->ping(port_handler, id, &error);
-  if (result != SUCCESS) {
-    return false;
-  } else if (error != 0) {
     return false;
   }
 

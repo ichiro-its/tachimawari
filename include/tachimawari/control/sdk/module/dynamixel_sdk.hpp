@@ -57,7 +57,6 @@ public:
   void disconnect() override;
 
   bool ping(uint8_t id) override;
-  bool ping_core(uint8_t id) override;
 
   bool write_packet(
     uint8_t id, uint8_t address, int value,
@@ -85,7 +84,7 @@ public:
     int data_length = 1) override;
 
 private:
-  bool send_bulk_read_packet(sdk::GroupBulkRead packet);
+  bool send_bulk_read_packet(sdk::GroupBulkRead group_bulk_read);
 
   dynamixel::PortHandler * port_handler;
   dynamixel::PacketHandler * packet_handler;
