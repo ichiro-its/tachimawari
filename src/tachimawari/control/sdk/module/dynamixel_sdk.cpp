@@ -89,7 +89,7 @@ bool DynamixelSDK::send_bulk_read_packet(sdk::GroupBulkRead group_bulk_read)
     return false;
   }
 
-return true;
+  return true;
 }
 
 bool DynamixelSDK::ping(uint8_t id)

@@ -68,7 +68,8 @@ int main(int argc, char * argv[])
     int stop = controller->get_bulk_data(tachimawari::control::CM740::CONTROLLER, 44, 2);
 
     int yaw_r = controller->get_data(tachimawari::control::DynamixelSDK::MARIN_CORE, 64u, 2);
-    int pitch_r = controller->get_data(tachimawari::control::DynamixelSDK::MARIN_CORE, 66u, 2) - 360;
+    int pitch_r =
+      controller->get_data(tachimawari::control::DynamixelSDK::MARIN_CORE, 66u, 2) - 360;
     int roll_r = controller->get_data(tachimawari::control::DynamixelSDK::MARIN_CORE, 68u, 2) - 360;
 
     std::cout << "start: " << start << ", stop: " << stop << "\n";
