@@ -71,11 +71,6 @@ public:
 
   bool bulk_read_packet() override;
 
-  void bulk_read_proccess(
-    uint8_t id, uint8_t starting_address, int data_length);
-
-  void get_data_bulk();
-
   int get_data(
     uint8_t id, uint16_t address, int data_lenghth = 1);
 
@@ -84,13 +79,13 @@ public:
     int data_length = 1) override;
 
 private:
-  bool send_bulk_read_packet(std::shared_ptr<sdk::GroupBulkRead> group_bulk_read);
+  bool send_bulk_read_packet();
 
   dynamixel::PortHandler * port_handler;
   dynamixel::PacketHandler * packet_handler;
 
   std::shared_ptr<std::map<uint8_t, std::shared_ptr<sdk::GroupBulkRead>>> bulk_data;
-  std::shared_ptr<sdk::GroupBulkRead> group_bulk_read;
+  std::shared_ptr<sdk::GroupBulkRead> sdk_group_bulk_read;
 };
 
 }  // namespace tachimawari::control

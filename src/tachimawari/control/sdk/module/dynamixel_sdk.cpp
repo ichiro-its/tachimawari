@@ -47,7 +47,7 @@ DynamixelSDK::DynamixelSDK(
   port_handler(dynamixel::PortHandler::getPortHandler(port_name.c_str())),
   packet_handler(dynamixel::PacketHandler::getPacketHandler(protocol_version)),
   bulk_data(std::make_shared<std::map<uint8_t, std::shared_ptr<sdk::GroupBulkRead>>>()),
-  group_bulk_read(std::make_shared<sdk::GroupBulkRead>(port_handler, packet_handler))
+  sdk_group_bulk_read(std::make_shared<sdk::GroupBulkRead>(port_handler, packet_handler))
 {
 }
 
@@ -77,11 +77,12 @@ bool DynamixelSDK::connect()
   return true;
 }
 
-bool DynamixelSDK::send_bulk_read_packet(std::shared_ptr<sdk::GroupBulkRead> group_bulk_read)
+bool DynamixelSDK::send_bulk_read_packet()
 {
-  int result = group_bulk_read->send();
+  int result = sdk_group_bulk_read->send();
   if (result == SUCCESS) {
-    sdk::GroupBulkRead::insert_all(bulk_data, group_bulk_read);
+    sdk::GroupBulkRead::insert_all(bulk_data, sdk_group_bulk_read);
+    sdk_group_bulk_read->clear_param();
   } else {
     // TODO(maroqijalil): will be used for logging
     // packet_handler->getTxRxResult(result);
@@ -249,13 +250,13 @@ bool DynamixelSDK::bulk_read_packet()
 {
   if (protocol_version == 1.0) {
     if (ping(CONTROLLER)) {
-      group_bulk_read->add(CONTROLLER, CM740Address::DXL_POWER, 30u);
+      sdk_group_bulk_read->add(CONTROLLER, CM740Address::DXL_POWER, 30u);
     } else if (ping(MARIN_CORE)) {
-      group_bulk_read->add(MARIN_CORE, 64u, 20u);
+      sdk_group_bulk_read->add(MARIN_CORE, 64u, 20u);
     }
 
-    if (group_bulk_read->is_parameters_filled()) {
-      return send_bulk_read_packet(group_bulk_read);
+    if (sdk_group_bulk_read->is_parameters_filled()) {
+      return send_bulk_read_packet();
     }
 
     return false;
@@ -264,23 +265,10 @@ bool DynamixelSDK::bulk_read_packet()
   return false;
 }
 
-void DynamixelSDK::bulk_read_proccess(
-  uint8_t id, uint8_t starting_address, int data_length)
-{
-  int dxl_comm_result = TX_FAIL;
-
-  group_bulk_read->add_param(id, starting_address, data_length);
-}
-
-void DynamixelSDK::get_data_bulk()
-{
-  group_bulk_read->send();
-}
-
 int DynamixelSDK::get_data(
   uint8_t id, uint16_t address, int data_length)
 {
-  return group_bulk_read->get(id, address, data_length);
+  return sdk_group_bulk_read->get(id, address, data_length);
 }
 
 int DynamixelSDK::get_bulk_data(

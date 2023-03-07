@@ -53,6 +53,8 @@ public:
     uint8_t id, uint8_t starting_address,
     uint16_t length);
 
+  void clear_param();
+
   int send();
 
   int get(uint8_t id, uint16_t address, uint16_t data_length);

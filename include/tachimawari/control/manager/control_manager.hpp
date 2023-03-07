@@ -65,10 +65,6 @@ public:
 
   virtual bool bulk_read_packet() {}
 
-  virtual void bulk_read_proccess(
-    uint8_t id, uint8_t starting_address, int data_length) {}
-
-  virtual void get_data_bulk() {}
   virtual int get_data(
     uint8_t id, uint16_t address, int data_lenghth = 1) {}
 

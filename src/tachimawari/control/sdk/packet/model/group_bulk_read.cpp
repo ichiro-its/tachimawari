@@ -36,11 +36,11 @@ namespace tachimawari::control::sdk
 
 void GroupBulkRead::insert_all(
   std::shared_ptr<std::map<uint8_t, std::shared_ptr<sdk::GroupBulkRead>>> bulk_data,
-  std::shared_ptr<sdk::GroupBulkRead> group_bulk_read)
+  std::shared_ptr<sdk::GroupBulkRead> sdk_group_bulk_read)
 {
-  for (auto id : group_bulk_read->get_parameters_id()) {
+  for (auto id : sdk_group_bulk_read->get_parameters_id()) {
     if (bulk_data->find(id) != bulk_data->end()) {
-      bulk_data->insert({id, group_bulk_read});
+      bulk_data->insert({id, sdk_group_bulk_read});
     }
   }
 }
@@ -70,6 +70,11 @@ void GroupBulkRead::add_param(
   uint16_t length)
 {
   group_bulk_read->addParam(id, starting_address, length);
+}
+
+void GroupBulkRead::clear_param()
+{
+  group_bulk_read->clearParam();
 }
 
 int GroupBulkRead::send()
