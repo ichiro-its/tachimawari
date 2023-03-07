@@ -41,6 +41,7 @@ void GroupBulkRead::insert_all(
   for (auto id : sdk_group_bulk_read->get_parameters_id()) {
     if (bulk_data->find(id) != bulk_data->end()) {
       bulk_data->insert({id, sdk_group_bulk_read});
+      (*bulk_data)[id] = sdk_group_bulk_read;
     }
   }
 }

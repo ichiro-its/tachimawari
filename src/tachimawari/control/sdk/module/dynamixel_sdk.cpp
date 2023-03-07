@@ -276,7 +276,7 @@ int DynamixelSDK::get_bulk_data(
   int data_length)
 {
   if (bulk_data->find(id) != bulk_data->end()) {
-    return bulk_data->at(id)->get(id, address, data_length);
+    return (*bulk_data)[id]->get(id, address, data_length);
   } else {
     // data is not found
   }
