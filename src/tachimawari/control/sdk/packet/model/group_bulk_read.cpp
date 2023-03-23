@@ -22,10 +22,12 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <typeinfo>
 
 #include "tachimawari/control/sdk/packet/model/group_bulk_read.hpp"
 
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
+#include "tachimawari/control/sdk/module/marin_core_address.hpp"
 
 #include "dynamixel_sdk/dynamixel_sdk.h"
 
@@ -33,12 +35,13 @@ namespace tachimawari::control::sdk
 {
 
 void GroupBulkRead::insert_all(
-  std::shared_ptr<std::map<uint8_t, GroupBulkRead>> bulk_data,
-  GroupBulkRead group_bulk_read)
+  std::shared_ptr<std::map<uint8_t, std::shared_ptr<sdk::GroupBulkRead>>> bulk_data,
+  std::shared_ptr<sdk::GroupBulkRead> sdk_group_bulk_read)
 {
-  for (auto id : group_bulk_read.get_parameters_id()) {
+  for (auto id : sdk_group_bulk_read->get_parameters_id()) {
     if (bulk_data->find(id) != bulk_data->end()) {
-      bulk_data->insert({id, group_bulk_read});
+      bulk_data->insert({id, sdk_group_bulk_read});
+      (*bulk_data)[id] = sdk_group_bulk_read;
     }
   }
 }
@@ -46,7 +49,8 @@ void GroupBulkRead::insert_all(
 GroupBulkRead::GroupBulkRead(
   dynamixel::PortHandler * port_handler,
   dynamixel::PacketHandler * packet_handler)
-: group_bulk_read(port_handler, packet_handler), parameters_id({})
+: group_bulk_read(std::make_shared<dynamixel::GroupBulkRead>(port_handler, packet_handler)),
+  parameters_id({})
 {
 }
 
@@ -54,7 +58,7 @@ void GroupBulkRead::add(
   uint8_t id, uint16_t starting_address,
   uint16_t data_length)
 {
-  if (group_bulk_read.addParam(id, starting_address, data_length)) {
+  if (group_bulk_read->addParam(id, starting_address, data_length)) {
     parameters_id.push_back(id);
   } else {
     // TODO(maroqijalil): will be used for logging
@@ -62,17 +66,29 @@ void GroupBulkRead::add(
   }
 }
 
+void GroupBulkRead::add_param(
+  uint8_t id, uint8_t starting_address,
+  uint16_t length)
+{
+  group_bulk_read->addParam(id, starting_address, length);
+}
+
+void GroupBulkRead::clear_param()
+{
+  group_bulk_read->clearParam();
+}
+
 int GroupBulkRead::send()
 {
-  return group_bulk_read.txRxPacket();
+  return group_bulk_read->txRxPacket();
 }
 
 int GroupBulkRead::get(uint8_t id, uint16_t address, uint16_t data_length)
 {
-  bool is_available = group_bulk_read.isAvailable(id, address, data_length);
+  bool is_available = group_bulk_read->isAvailable(id, address, data_length);
 
   if (is_available) {
-    uint32_t result = group_bulk_read.getData(id, address, data_length);
+    uint32_t result = group_bulk_read->getData(id, address, data_length);
 
     return static_cast<int>(result);
   } else {
@@ -95,8 +111,7 @@ bool GroupBulkRead::is_parameters_filled() const
 
 GroupBulkRead::~GroupBulkRead()
 {
-  group_bulk_read.clearParam();
+  group_bulk_read->clearParam();
 }
-
 
 }  // namespace tachimawari::control::sdk

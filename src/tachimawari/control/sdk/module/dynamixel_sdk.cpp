@@ -28,9 +28,9 @@
 #include "tachimawari/control/controller/module/cm740_address.hpp"
 #include "tachimawari/control/controller/packet/protocol_1/utils/word.hpp"
 #include "tachimawari/control/sdk/packet/model/group_bulk_read.hpp"
-#include "tachimawari/control/sdk/packet/protocol_1/group_bulk_read.hpp"
 #include "tachimawari/control/sdk/packet/protocol_1/group_sync_write.hpp"
 #include "tachimawari/control/sdk/packet/protocol_2/group_sync_write.hpp"
+#include "tachimawari/control/sdk/module/marin_core_address.hpp"
 #include "tachimawari/joint/model/joint.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 #include "tachimawari/joint/protocol_2/mx28_address.hpp"
@@ -46,7 +46,8 @@ DynamixelSDK::DynamixelSDK(
 : ControlManager(port_name, protocol_version, baudrate),
   port_handler(dynamixel::PortHandler::getPortHandler(port_name.c_str())),
   packet_handler(dynamixel::PacketHandler::getPacketHandler(protocol_version)),
-  bulk_data(std::make_shared<std::map<uint8_t, sdk::GroupBulkRead>>())
+  bulk_data(std::make_shared<std::map<uint8_t, std::shared_ptr<sdk::GroupBulkRead>>>()),
+  sdk_group_bulk_read(std::make_shared<sdk::GroupBulkRead>(port_handler, packet_handler))
 {
 }
 
@@ -76,11 +77,12 @@ bool DynamixelSDK::connect()
   return true;
 }
 
-bool DynamixelSDK::send_bulk_read_packet(sdk::GroupBulkRead group_bulk_read)
+bool DynamixelSDK::send_bulk_read_packet()
 {
-  int result = group_bulk_read.send();
+  int result = sdk_group_bulk_read->send();
   if (result == SUCCESS) {
-    sdk::GroupBulkRead::insert_all(bulk_data, group_bulk_read);
+    sdk::GroupBulkRead::insert_all(bulk_data, sdk_group_bulk_read);
+    sdk_group_bulk_read->clear_param();
   } else {
     // TODO(maroqijalil): will be used for logging
     // packet_handler->getTxRxResult(result);
@@ -247,20 +249,26 @@ bool DynamixelSDK::sync_write_packet(
 bool DynamixelSDK::bulk_read_packet()
 {
   if (protocol_version == 1.0) {
-    sdk::GroupBulkRead group_bulk_read(port_handler, packet_handler);
-
     if (ping(CONTROLLER)) {
-      group_bulk_read.add(CONTROLLER, CM740Address::DXL_POWER, 30u);
+      sdk_group_bulk_read->add(CONTROLLER, CM740Address::DXL_POWER, 30u);
+    } else if (ping(MARIN_CORE)) {
+      sdk_group_bulk_read->add(MARIN_CORE, 64u, 20u);
     }
 
-    if (group_bulk_read.is_parameters_filled()) {
-      return send_bulk_read_packet(group_bulk_read);
-    } else {
-      return false;
+    if (sdk_group_bulk_read->is_parameters_filled()) {
+      return send_bulk_read_packet();
     }
+
+    return false;
   }
 
   return false;
+}
+
+int DynamixelSDK::get_data(
+  uint8_t id, uint16_t address, int data_length)
+{
+  return sdk_group_bulk_read->get(id, address, data_length);
 }
 
 int DynamixelSDK::get_bulk_data(
@@ -268,7 +276,7 @@ int DynamixelSDK::get_bulk_data(
   int data_length)
 {
   if (bulk_data->find(id) != bulk_data->end()) {
-    return bulk_data->at(id).get(id, address, data_length);
+    return (*bulk_data)[id]->get(id, address, data_length);
   } else {
     // data is not found
   }

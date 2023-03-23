@@ -32,8 +32,9 @@ namespace tachimawari::control
 class ControlManager
 {
 public:
-  enum
+  enum : uint8_t
   {
+    MARIN_CORE = 190,
     CONTROLLER = 200,
     BROADCAST = 254
   };
@@ -63,6 +64,9 @@ public:
     bool with_pid = false) {}
 
   virtual bool bulk_read_packet() {}
+
+  virtual int get_data(
+    uint8_t id, uint16_t address, int data_lenghth = 1) {}
 
   virtual int get_bulk_data(
     uint8_t id, uint8_t address,
