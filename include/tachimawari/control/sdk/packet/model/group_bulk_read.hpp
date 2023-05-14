@@ -26,32 +26,30 @@
 #include <string>
 #include <vector>
 
-#include "tachimawari/joint/model/joint.hpp"
-
 #include "dynamixel_sdk/dynamixel_sdk.h"
+#include "tachimawari/joint/model/joint.hpp"
 
 namespace tachimawari::control::sdk
 {
+
+struct BulkReadParam
+{
+  uint8_t id;
+  uint16_t starting_address;
+  uint16_t length;
+};
 
 class GroupBulkRead
 {
 public:
   static void insert_all(
-    std::shared_ptr<std::map<uint8_t, std::shared_ptr<sdk::GroupBulkRead>>> bulk_data,
+    std::shared_ptr<std::map<uint8_t, std::vector<uint8_t>>> bulk_data,
     std::shared_ptr<sdk::GroupBulkRead> group_bulk_read);
 
-  GroupBulkRead(
-    dynamixel::PortHandler * port_handler,
-    dynamixel::PacketHandler * packet_handler);
+  GroupBulkRead(dynamixel::PortHandler * port_handler, dynamixel::PacketHandler * packet_handler);
   ~GroupBulkRead();
 
-  void add(
-    uint8_t id, uint16_t starting_address,
-    uint16_t data_length);
-
-  void add_param(
-    uint8_t id, uint8_t starting_address,
-    uint16_t length);
+  bool add(uint8_t id, uint16_t starting_address, uint16_t data_length);
 
   void clear_param();
 
@@ -59,14 +57,16 @@ public:
 
   int get(uint8_t id, uint16_t address, uint16_t data_length);
 
-  std::vector<uint8_t> get_parameters_id() const;
+  std::vector<uint8_t> get_from_param(BulkReadParam param);
+
+  std::vector<BulkReadParam> get_parameters() const;
 
   bool is_parameters_filled() const;
 
 protected:
   std::shared_ptr<dynamixel::GroupBulkRead> group_bulk_read;
 
-  std::vector<uint8_t> parameters_id;
+  std::vector<BulkReadParam> parameters;
 };
 
 }  // namespace tachimawari::control::sdk

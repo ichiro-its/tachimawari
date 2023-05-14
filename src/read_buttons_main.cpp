@@ -22,9 +22,9 @@
 #include <memory>
 #include <string>
 
+#include "rclcpp/rclcpp.hpp"
 #include "tachimawari/control/control.hpp"
 #include "tachimawari/joint/joint.hpp"
-#include "rclcpp/rclcpp.hpp"
 
 int main(int argc, char * argv[])
 {
@@ -59,7 +59,9 @@ int main(int argc, char * argv[])
   while (rclcpp::ok()) {
     rcl_rate.sleep();
 
-    if (!controller->bulk_read_packet()) {
+    controller->add_default_bulk_read_packet();
+
+    if (!controller->send_bulk_read_packet()) {
       std::cout << "bulk read packet failed\n";
       return 1;
     }
