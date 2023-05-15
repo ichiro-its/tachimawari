@@ -58,11 +58,8 @@ public:
   bool sync_write_packet(const std::vector<joint::Joint> & joints, bool with_pid = false) override;
 
   bool send_bulk_read_packet() override;
-
   bool add_default_bulk_read_packet() override;
-
   int get_data(uint8_t id, uint16_t address, int data_lenghth = 1) override;
-
   int get_bulk_data(uint8_t id, uint8_t address, int data_length = 1) override;
 
 private:
