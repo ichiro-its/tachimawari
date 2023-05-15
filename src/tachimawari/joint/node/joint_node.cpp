@@ -18,11 +18,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "tachimawari/joint/node/joint_node.hpp"
+
 #include <memory>
 #include <string>
 #include <vector>
-
-#include "tachimawari/joint/node/joint_node.hpp"
 
 #include "tachimawari/joint/model/joint.hpp"
 #include "tachimawari/joint/node/joint_manager.hpp"
@@ -34,71 +34,46 @@
 namespace tachimawari::joint
 {
 
-std::string JointNode::get_node_prefix()
-{
-  return "joint";
-}
+std::string JointNode::get_node_prefix() { return "joint"; }
 
-std::string JointNode::control_joints_topic()
-{
-  return get_node_prefix() + "/control_joints";
-}
+std::string JointNode::control_joints_topic() { return get_node_prefix() + "/control_joints"; }
 
-std::string JointNode::set_joints_topic()
-{
-  return get_node_prefix() + "/set_joints";
-}
+std::string JointNode::set_joints_topic() { return get_node_prefix() + "/set_joints"; }
 
-std::string JointNode::set_torques_topic()
-{
-  return get_node_prefix() + "/set_joints";
-}
+std::string JointNode::set_torques_topic() { return get_node_prefix() + "/set_torques"; }
 
-std::string JointNode::current_joints_topic()
-{
-  return get_node_prefix() + "/current_joints";
-}
+std::string JointNode::current_joints_topic() { return get_node_prefix() + "/current_joints"; }
 
 JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager)
 : joint_manager(joint_manager), middleware()
 {
   control_joints_subscriber = node->create_subscription<ControlJoints>(
-    control_joints_topic(), 10,
-    [this](const ControlJoints::SharedPtr message) {
+    control_joints_topic(), 10, [this](const ControlJoints::SharedPtr message) {
       this->middleware.set_rules(message->control_type, message->ids);
-    }
-  );
+    });
 
   set_joints_subscriber = node->create_subscription<SetJoints>(
-    set_joints_topic(), 10,
-    [this](const SetJoints::SharedPtr message) {
+    set_joints_topic(), 10, [this](const SetJoints::SharedPtr message) {
       if (this->middleware.validate(message->control_type)) {
         this->joint_manager->set_joints(
           this->middleware.filter_joints(message->control_type, message->joints));
       }
-    }
-  );
+    });
 
   set_torques_subscriber = node->create_subscription<SetTorques>(
-    set_torques_topic(), 10,
-    [this](const SetTorques::SharedPtr message) {
+    set_torques_topic(), 10, [this](const SetTorques::SharedPtr message) {
       std::vector<Joint> joints;
       std::transform(
-        message->ids.begin(), message->ids.end(),
-        std::back_inserter(joints), [](uint8_t id) -> Joint {return Joint(id, 0);});
+        message->ids.begin(), message->ids.end(), std::back_inserter(joints),
+        [](uint8_t id) -> Joint { return Joint(id, 0); });
 
       this->joint_manager->torque_enable(joints, message->torque_enable);
-    }
-  );
+    });
 
-  current_joints_publisher = node->create_publisher<CurrentJoints>(
-    current_joints_topic(), 10);
+  current_joints_publisher = node->create_publisher<CurrentJoints>(current_joints_topic(), 10);
 }
 
-void JointNode::update()
-{
-  middleware.update();
-}
+void JointNode::update() { middleware.update(); }
 
 void JointNode::publish_current_joints()
 {

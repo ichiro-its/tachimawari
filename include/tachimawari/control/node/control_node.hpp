@@ -18,37 +18,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef TACHIMAWARI__IMU__NODE__IMU_NODE_HPP_
-#define TACHIMAWARI__IMU__NODE__IMU_NODE_HPP_
+#ifndef TACHIMAWARI__CONTROL__NODE__CONTROL_NODE_HPP_
+#define TACHIMAWARI__CONTROL__NODE__CONTROL_NODE_HPP_
 
 #include <memory>
 #include <string>
 
-#include "kansei_interfaces/msg/unit.hpp"
 #include "rclcpp/rclcpp.hpp"
-#include "tachimawari/imu/node/imu_provider.hpp"
+#include "tachimawari/control/manager/control_manager.hpp"
+#include "tachimawari_interfaces/msg/status.hpp"
 
-namespace tachimawari::imu
+namespace tachimawari::control
 {
 
-class ImuNode
+class ControlNode
 {
 public:
-  using Unit = kansei_interfaces::msg::Unit;
+  using Status = tachimawari_interfaces::msg::Status;
 
   static std::string get_node_prefix();
-  static std::string unit_topic();
+  static std::string status_topic();
 
-  ImuNode(rclcpp::Node::SharedPtr node, std::shared_ptr<ImuProvider> imu_provider);
+  ControlNode(rclcpp::Node::SharedPtr node, std::shared_ptr<ControlManager> control_manager);
 
   void update();
 
 private:
-  std::shared_ptr<ImuProvider> imu_provider;
+  std::shared_ptr<ControlManager> control_manager;
 
-  rclcpp::Publisher<Unit>::SharedPtr unit_publisher;
+  rclcpp::Publisher<Status>::SharedPtr status_publisher;
 };
 
-}  // namespace tachimawari::imu
+}  // namespace tachimawari::control
 
-#endif  // TACHIMAWARI__IMU__NODE__IMU_NODE_HPP_
+#endif  // TACHIMAWARI__CONTROL__NODE__CONTROL_NODE_HPP_

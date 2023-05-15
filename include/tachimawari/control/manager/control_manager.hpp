@@ -32,7 +32,7 @@ namespace tachimawari::control
 class ControlManager
 {
 public:
-  enum : uint8_t { MARIN_CORE = 190, CONTROLLER = 200, BROADCAST = 254 };
+  enum : uint8_t {MARIN_CORE = 190, CONTROLLER = 200, BROADCAST = 254};
 
   explicit ControlManager(const std::string & port_name, float protocol_version, int baudrate);
   virtual ~ControlManager() {}

@@ -73,7 +73,7 @@ ament_target_dependencies(${PROJECT_NAME}
 install(DIRECTORY "include" DESTINATION ".")
 
 install(DIRECTORY
-  "src/launch"
+  "launch"
   DESTINATION share/${PROJECT_NAME}/
 )
 install(DIRECTORY

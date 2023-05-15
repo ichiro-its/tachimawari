@@ -45,7 +45,7 @@ TachimawariNode::TachimawariNode(
         this->control_manager->add_default_bulk_read_packet();
         this->control_manager->send_bulk_read_packet();
 
-        this->imu_node->update_imu();
+        this->imu_node->update();
       }
 
       if (this->joint_node) {

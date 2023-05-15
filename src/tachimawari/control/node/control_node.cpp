@@ -18,45 +18,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "tachimawari/imu/node/imu_node.hpp"
+#include "tachimawari/control/node/control_node.hpp"
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "keisan/keisan.hpp"
 #include "rclcpp/rclcpp.hpp"
-#include "tachimawari/imu/node/imu_provider.hpp"
+#include "tachimawari/control/controller/module/cm740_address.hpp"
+#include "tachimawari/control/manager/control_manager.hpp"
 
-namespace tachimawari::imu
+namespace tachimawari::control
 {
 
-std::string ImuNode::get_node_prefix() { return "imu"; }
+std::string ControlNode::get_node_prefix() { return "control"; }
 
-std::string ImuNode::unit_topic() { return get_node_prefix() + "/unit"; }
+std::string ControlNode::status_topic() { return get_node_prefix() + "/status"; }
 
-ImuNode::ImuNode(rclcpp::Node::SharedPtr node, std::shared_ptr<ImuProvider> imu_provider)
-: imu_provider(imu_provider)
+ControlNode::ControlNode(
+  rclcpp::Node::SharedPtr node, std::shared_ptr<ControlManager> control_manager)
+: control_manager(control_manager)
 {
-  unit_publisher = node->create_publisher<Unit>(unit_topic(), 10);
+  status_publisher = node->create_publisher<Status>(status_topic(), 10);
 }
 
-void ImuNode::update()
+void ControlNode::update()
 {
-  auto unit_msg = Unit();
+  auto status_msg = Status();
 
-  auto gyro = imu_provider->get_gyro();
-  auto accelero = imu_provider->get_accelero();
+  status_msg.button =
+    control_manager->get_bulk_data(ControlManager::CONTROLLER, CM740Address::BUTTON, 1);
+  status_msg.led_panel =
+    control_manager->get_bulk_data(ControlManager::CONTROLLER, CM740Address::LED_PANNEL, 1);
 
-  unit_msg.gyro.roll = gyro[0];
-  unit_msg.gyro.pitch = gyro[1];
-  unit_msg.gyro.yaw = gyro[2];
-
-  unit_msg.accelero.x = accelero[0];
-  unit_msg.accelero.y = accelero[1];
-  unit_msg.accelero.z = accelero[2];
-
-  unit_publisher->publish(unit_msg);
+  status_publisher->publish(status_msg);
 }
 
-}  // namespace tachimawari::imu
+}  // namespace tachimawari::control
