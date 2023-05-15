@@ -34,15 +34,15 @@
 namespace tachimawari::joint
 {
 
-std::string JointNode::get_node_prefix() { return "joint"; }
+std::string JointNode::get_node_prefix() {return "joint";}
 
-std::string JointNode::control_joints_topic() { return get_node_prefix() + "/control_joints"; }
+std::string JointNode::control_joints_topic() {return get_node_prefix() + "/control_joints";}
 
-std::string JointNode::set_joints_topic() { return get_node_prefix() + "/set_joints"; }
+std::string JointNode::set_joints_topic() {return get_node_prefix() + "/set_joints";}
 
-std::string JointNode::set_torques_topic() { return get_node_prefix() + "/set_torques"; }
+std::string JointNode::set_torques_topic() {return get_node_prefix() + "/set_torques";}
 
-std::string JointNode::current_joints_topic() { return get_node_prefix() + "/current_joints"; }
+std::string JointNode::current_joints_topic() {return get_node_prefix() + "/current_joints";}
 
 JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager)
 : joint_manager(joint_manager), middleware()
@@ -65,7 +65,7 @@ JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager>
       std::vector<Joint> joints;
       std::transform(
         message->ids.begin(), message->ids.end(), std::back_inserter(joints),
-        [](uint8_t id) -> Joint { return Joint(id, 0); });
+        [](uint8_t id) -> Joint {return Joint(id, 0);});
 
       this->joint_manager->torque_enable(joints, message->torque_enable);
     });
@@ -73,7 +73,7 @@ JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager>
   current_joints_publisher = node->create_publisher<CurrentJoints>(current_joints_topic(), 10);
 }
 
-void JointNode::update() { middleware.update(); }
+void JointNode::update() {middleware.update();}
 
 void JointNode::publish_current_joints()
 {

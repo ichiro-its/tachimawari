@@ -59,7 +59,7 @@ CM740::CM740(const std::string & port_name, int baudrate, float protocol_version
 {
 }
 
-void CM740::set_port(const std::string & port_name) { this->port_name = port_name; }
+void CM740::set_port(const std::string & port_name) {this->port_name = port_name;}
 
 bool CM740::connect()
 {
@@ -187,8 +187,8 @@ bool CM740::sync_write_packet(const std::vector<joint::Joint> & joints, bool wit
     protocol_1::SyncWritePacket instruction_packet;
 
     instruction_packet.create(
-      joints, with_pid ? tachimawari::joint::protocol_1::MX28Address::D_GAIN
-                       : tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
+      joints, with_pid ? tachimawari::joint::protocol_1::MX28Address::D_GAIN :
+      tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
 
     std::vector<uint8_t> txpacket = instruction_packet.get_packet();
 
@@ -302,6 +302,6 @@ void CM740::disconnect()
   platform->close_port();
 }
 
-CM740::~CM740() { disconnect(); }
+CM740::~CM740() {disconnect();}
 
 }  // namespace tachimawari::control

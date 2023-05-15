@@ -31,9 +31,9 @@
 namespace tachimawari::imu
 {
 
-std::string ImuNode::get_node_prefix() { return "imu"; }
+std::string ImuNode::get_node_prefix() {return "imu";}
 
-std::string ImuNode::unit_topic() { return get_node_prefix() + "/unit"; }
+std::string ImuNode::unit_topic() {return get_node_prefix() + "/unit";}
 
 ImuNode::ImuNode(rclcpp::Node::SharedPtr node, std::shared_ptr<ImuProvider> imu_provider)
 : imu_provider(imu_provider)

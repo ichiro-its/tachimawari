@@ -31,9 +31,9 @@
 namespace tachimawari::control
 {
 
-std::string ControlNode::get_node_prefix() { return "control"; }
+std::string ControlNode::get_node_prefix() {return "control";}
 
-std::string ControlNode::status_topic() { return get_node_prefix() + "/status"; }
+std::string ControlNode::status_topic() {return get_node_prefix() + "/status";}
 
 ControlNode::ControlNode(
   rclcpp::Node::SharedPtr node, std::shared_ptr<ControlManager> control_manager)

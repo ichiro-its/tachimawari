@@ -78,9 +78,9 @@ bool GroupBulkRead::add(uint8_t id, uint16_t starting_address, uint16_t data_len
   return false;
 }
 
-void GroupBulkRead::clear_param() { group_bulk_read->clearParam(); }
+void GroupBulkRead::clear_param() {group_bulk_read->clearParam();}
 
-int GroupBulkRead::send() { return group_bulk_read->txRxPacket(); }
+int GroupBulkRead::send() {return group_bulk_read->txRxPacket();}
 
 int GroupBulkRead::get(uint8_t id, uint16_t address, uint16_t data_length)
 {
@@ -116,10 +116,10 @@ std::vector<uint8_t> GroupBulkRead::get_from_param(BulkReadParam param)
   return result;
 }
 
-std::vector<BulkReadParam> GroupBulkRead::get_parameters() const { return parameters; }
+std::vector<BulkReadParam> GroupBulkRead::get_parameters() const {return parameters;}
 
-bool GroupBulkRead::is_parameters_filled() const { return parameters.size() > 0; }
+bool GroupBulkRead::is_parameters_filled() const {return parameters.size() > 0;}
 
-GroupBulkRead::~GroupBulkRead() { group_bulk_read->clearParam(); }
+GroupBulkRead::~GroupBulkRead() {group_bulk_read->clearParam();}
 
 }  // namespace tachimawari::control::sdk

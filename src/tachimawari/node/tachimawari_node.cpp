@@ -44,26 +44,27 @@ TachimawariNode::TachimawariNode(
   imu_node(nullptr),
   control_node(nullptr)
 {
-  node_timer = node->create_wall_timer(8ms, [this]() {
-    if (this->control_manager) {
-      this->control_manager->add_default_bulk_read_packet();
-      this->control_manager->send_bulk_read_packet();
+  node_timer = node->create_wall_timer(
+    8ms, [this]() {
+      if (this->control_manager) {
+        this->control_manager->add_default_bulk_read_packet();
+        this->control_manager->send_bulk_read_packet();
 
-      if (this->imu_node) {
-        this->imu_node->update();
+        if (this->imu_node) {
+          this->imu_node->update();
+        }
+
+        if (this->control_node) {
+          this->control_node->update();
+        }
+
+        if (this->joint_node) {
+          this->joint_node->update();
+
+          this->joint_node->publish_current_joints();
+        }
       }
-
-      if (this->control_node) {
-        this->control_node->update();
-      }
-
-      if (this->joint_node) {
-        this->joint_node->update();
-
-        this->joint_node->publish_current_joints();
-      }
-    }
-  });
+    });
 }
 
 void TachimawariNode::run_joint_manager()
