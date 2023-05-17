@@ -31,15 +31,22 @@
 namespace tachimawari::control
 {
 
-std::string ControlNode::get_node_prefix() {return "control";}
+std::string ControlNode::get_node_prefix() { return "control"; }
 
-std::string ControlNode::status_topic() {return get_node_prefix() + "/status";}
+std::string ControlNode::status_topic() { return get_node_prefix() + "/status"; }
+
+std::string ControlNode::write_packet_topic() { return get_node_prefix() + "/write_packet"; }
 
 ControlNode::ControlNode(
   rclcpp::Node::SharedPtr node, std::shared_ptr<ControlManager> control_manager)
 : control_manager(control_manager)
 {
   status_publisher = node->create_publisher<Status>(status_topic(), 10);
+
+  write_packet_subscriber = node->create_subscription<Packet>(
+    write_packet_topic(), 10, [this](const Packet::SharedPtr message) {
+      this->control_manager->write_packet(message->id, message->address, message->value);
+    });
 }
 
 void ControlNode::update()

@@ -59,7 +59,7 @@ CM740::CM740(const std::string & port_name, int baudrate, float protocol_version
 {
 }
 
-void CM740::set_port(const std::string & port_name) {this->port_name = port_name;}
+void CM740::set_port(const std::string & port_name) { this->port_name = port_name; }
 
 bool CM740::connect()
 {
@@ -146,7 +146,7 @@ bool CM740::ping(uint8_t id)
   return false;
 }
 
-bool CM740::write_packet(uint8_t id, uint8_t address, int value, int data_length)
+bool CM740::write_packet(uint8_t id, uint16_t address, int value, int data_length)
 {
   if (protocol_version == 1.0) {
     protocol_1::WritePacket instruction_packet;
@@ -163,7 +163,7 @@ bool CM740::write_packet(uint8_t id, uint8_t address, int value, int data_length
   return false;
 }
 
-int CM740::read_packet(uint8_t id, uint8_t address, int data_length)
+int CM740::read_packet(uint8_t id, uint16_t address, int data_length)
 {
   using ReadPacket = protocol_1::ReadPacket;
 
@@ -187,8 +187,8 @@ bool CM740::sync_write_packet(const std::vector<joint::Joint> & joints, bool wit
     protocol_1::SyncWritePacket instruction_packet;
 
     instruction_packet.create(
-      joints, with_pid ? tachimawari::joint::protocol_1::MX28Address::D_GAIN :
-      tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
+      joints, with_pid ? tachimawari::joint::protocol_1::MX28Address::D_GAIN
+                       : tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
 
     std::vector<uint8_t> txpacket = instruction_packet.get_packet();
 
@@ -280,14 +280,10 @@ bool CM740::send_bulk_read_packet()
   }
 }
 
-int CM740::get_bulk_data(uint8_t id, uint8_t address, int data_length)
+int CM740::get_bulk_data(uint8_t id, uint16_t address, int data_length)
 {
   if (bulk_data->find(id) != bulk_data->end()) {
-    if (data_length == 1) {
-      return bulk_data->at(id).get(static_cast<uint8_t>(address));
-    } else if (data_length == 2) {
-      return bulk_data->at(id).get(static_cast<uint16_t>(address));
-    }
+    return bulk_data->at(id).get(address, data_length);
   }
 
   return -1;
@@ -302,6 +298,6 @@ void CM740::disconnect()
   platform->close_port();
 }
 
-CM740::~CM740() {disconnect();}
+CM740::~CM740() { disconnect(); }
 
 }  // namespace tachimawari::control

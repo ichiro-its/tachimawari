@@ -94,7 +94,7 @@ bool DynamixelSDK::ping(uint8_t id)
   return true;
 }
 
-bool DynamixelSDK::write_packet(uint8_t id, uint8_t address, int value, int data_length)
+bool DynamixelSDK::write_packet(uint8_t id, uint16_t address, int value, int data_length)
 {
   uint8_t error = 0;
   uint16_t model_number;
@@ -126,7 +126,7 @@ bool DynamixelSDK::write_packet(uint8_t id, uint8_t address, int value, int data
   return true;
 }
 
-int DynamixelSDK::read_packet(uint8_t id, uint8_t address, int data_length)
+int DynamixelSDK::read_packet(uint8_t id, uint16_t address, int data_length)
 {
   int value = -1;
   uint8_t error = 0;
@@ -171,9 +171,9 @@ bool DynamixelSDK::sync_write_packet(const std::vector<joint::Joint> & joints, b
   if (protocol_version == 1.0) {
     auto group_sync_write =
       sdk::protocol_1::GroupSyncWrite(port_handler, packet_handler)
-      .create(
-      joints, with_pid ? tachimawari::joint::protocol_1::MX28Address::D_GAIN :
-      tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
+        .create(
+          joints, with_pid ? tachimawari::joint::protocol_1::MX28Address::D_GAIN
+                           : tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
 
     result = group_sync_write.txPacket();
     if (result != SUCCESS) {
@@ -256,7 +256,7 @@ int DynamixelSDK::get_data(uint8_t id, uint16_t address, int data_length)
   return sdk_group_bulk_read->get(id, address, data_length);
 }
 
-int DynamixelSDK::get_bulk_data(uint8_t id, uint8_t address, int data_length)
+int DynamixelSDK::get_bulk_data(uint8_t id, uint16_t address, int data_length)
 {
   if (bulk_data->find(id) != bulk_data->end()) {
     if (data_length == 1) {
@@ -282,6 +282,6 @@ void DynamixelSDK::disconnect()
   port_handler->closePort();
 }
 
-DynamixelSDK::~DynamixelSDK() {disconnect();}
+DynamixelSDK::~DynamixelSDK() { disconnect(); }
 
 }  // namespace tachimawari::control

@@ -35,7 +35,7 @@ public:
 
   ReadPacket();
 
-  void create(uint8_t id, uint8_t address, uint8_t data_length);
+  void create(uint8_t id, uint16_t address, uint8_t data_length);
 };
 
 }  // namespace tachimawari::control::protocol_1

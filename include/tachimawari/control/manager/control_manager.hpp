@@ -46,9 +46,9 @@ public:
 
   virtual bool ping(uint8_t id) {}
 
-  virtual bool write_packet(uint8_t id, uint8_t address, int value, int data_length = 1) {}
+  virtual bool write_packet(uint8_t id, uint16_t address, int value, int data_length = 1) {}
 
-  virtual int read_packet(uint8_t id, uint8_t address, int data_length = 1) {}
+  virtual int read_packet(uint8_t id, uint16_t address, int data_length = 1) {}
 
   virtual bool sync_write_packet(const std::vector<joint::Joint> & joints, bool with_pid = false) {}
 
@@ -58,7 +58,7 @@ public:
 
   virtual int get_data(uint8_t id, uint16_t address, int data_lenghth = 1) {}
 
-  virtual int get_bulk_data(uint8_t id, uint8_t address, int data_length = 1) {}
+  virtual int get_bulk_data(uint8_t id, uint16_t address, int data_length = 1) {}
 
 protected:
   std::string port_name;

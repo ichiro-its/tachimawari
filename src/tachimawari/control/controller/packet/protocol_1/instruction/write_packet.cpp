@@ -36,14 +36,14 @@ WritePacket::WritePacket()
 {
 }
 
-void WritePacket::create(uint8_t id, uint8_t address, uint8_t value)
+void WritePacket::create(uint8_t id, uint16_t address, uint8_t value)
 {
   packet_id = id;
   parameters.push_back(address);
   parameters.push_back(value);
 }
 
-void WritePacket::create(uint8_t id, uint8_t address, uint16_t value)
+void WritePacket::create(uint8_t id, uint16_t address, uint16_t value)
 {
   packet_id = id;
   parameters.push_back(address);

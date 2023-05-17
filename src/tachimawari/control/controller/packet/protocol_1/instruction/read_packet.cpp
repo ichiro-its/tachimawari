@@ -42,7 +42,7 @@ ReadPacket::ReadPacket()
 {
 }
 
-void ReadPacket::create(uint8_t id, uint8_t address, uint8_t data_length)
+void ReadPacket::create(uint8_t id, uint16_t address, uint8_t data_length)
 {
   packet_id = id;
   parameters.push_back(address);

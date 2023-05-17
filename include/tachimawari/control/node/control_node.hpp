@@ -26,6 +26,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "tachimawari/control/manager/control_manager.hpp"
+#include "tachimawari_interfaces/msg/packet.hpp"
 #include "tachimawari_interfaces/msg/status.hpp"
 
 namespace tachimawari::control
@@ -35,9 +36,11 @@ class ControlNode
 {
 public:
   using Status = tachimawari_interfaces::msg::Status;
+  using Packet = tachimawari_interfaces::msg::Packet;
 
   static std::string get_node_prefix();
   static std::string status_topic();
+  static std::string write_packet_topic();
 
   ControlNode(rclcpp::Node::SharedPtr node, std::shared_ptr<ControlManager> control_manager);
 
@@ -47,6 +50,8 @@ private:
   std::shared_ptr<ControlManager> control_manager;
 
   rclcpp::Publisher<Status>::SharedPtr status_publisher;
+
+  rclcpp::Subscription<Packet>::SharedPtr write_packet_subscriber;
 };
 
 }  // namespace tachimawari::control
