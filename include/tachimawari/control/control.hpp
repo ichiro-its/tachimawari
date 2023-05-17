@@ -22,8 +22,9 @@
 #define TACHIMAWARI__CONTROL__CONTROL_HPP_
 
 #include "tachimawari/control/controller/controller.hpp"
-#include "tachimawari/control/manager/control_manager.hpp"
 #include "tachimawari/control/controller/packet/protocol_1/protocol_1.hpp"
+#include "tachimawari/control/manager/control_manager.hpp"
+#include "tachimawari/control/node/control_node.hpp"
 #include "tachimawari/control/sdk/sdk.hpp"
 
 #endif  // TACHIMAWARI__CONTROL__CONTROL_HPP_
