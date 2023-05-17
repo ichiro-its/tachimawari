@@ -166,7 +166,7 @@ bool BulkReadData::is_valid(std::vector<uint8_t> rxpacket)
   }
 }
 
-bool BulkReadData::is_filled() const { return parameters.size() != 0; }
+bool BulkReadData::is_filled() const {return parameters.size() != 0;}
 
 int BulkReadData::get(uint16_t address, int length) const
 {
