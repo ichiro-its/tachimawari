@@ -39,13 +39,13 @@ public:
   enum { MAX_LENGTH = 255 };
 
   static void insert_all(
-    std::shared_ptr<std::map<uint8_t, BulkReadData>> bulk_data,
+    std::shared_ptr<std::map<uint8_t, BulkReadData>> & bulk_data,
     const BulkReadPacket & bulk_read_packet);
 
   static int validate(const std::shared_ptr<std::vector<uint8_t>> & rxpacket, int packet_length);
 
   static int update_all(
-    std::shared_ptr<std::map<uint8_t, BulkReadData>> bulk_data, std::vector<uint8_t> rxpacket,
+    std::shared_ptr<std::map<uint8_t, BulkReadData>> & bulk_data, std::vector<uint8_t> rxpacket,
     int packet_length, int data_number);
 
   explicit BulkReadData(uint8_t id, int data_length = MAX_LENGTH);

@@ -34,7 +34,7 @@ namespace tachimawari::control::sdk
 {
 
 void GroupBulkRead::insert_all(
-  std::shared_ptr<std::unordered_map<uint8_t, std::vector<uint8_t>>> bulk_data,
+  std::shared_ptr<std::unordered_map<uint8_t, std::vector<uint8_t>>> & bulk_data,
   const std::shared_ptr<sdk::GroupBulkRead> & sdk_group_bulk_read)
 {
   for (auto param : sdk_group_bulk_read->get_parameters()) {
@@ -49,11 +49,7 @@ void GroupBulkRead::insert_all(
       data[param.starting_address + i] = param_data[i];
     }
 
-    if (bulk_data->find(param.id) != bulk_data->end()) {
-      (*bulk_data)[param.id] = data;
-    } else {
-      bulk_data->insert({param.id, data});
-    }
+    bulk_data->insert_or_assign(param.id, data);
   }
 }
 

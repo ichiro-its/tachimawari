@@ -95,7 +95,7 @@ int Linux::write_port(const std::vector<uint8_t> & packet)
 }
 
 int Linux::read_port(
-  std::shared_ptr<std::vector<uint8_t>> packet, int packet_length, int packet_index)
+  std::shared_ptr<std::vector<uint8_t>> & packet, int packet_length, int packet_index)
 {
   unsigned char rxpacket[(packet_index + packet_length) * 2] = {0x00};
 

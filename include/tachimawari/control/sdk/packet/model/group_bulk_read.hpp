@@ -43,7 +43,7 @@ class GroupBulkRead
 {
 public:
   static void insert_all(
-    std::shared_ptr<std::unordered_map<uint8_t, std::vector<uint8_t>>> bulk_data,
+    std::shared_ptr<std::unordered_map<uint8_t, std::vector<uint8_t>>> & bulk_data,
     const std::shared_ptr<sdk::GroupBulkRead> & sdk_group_bulk_read);
 
   GroupBulkRead(dynamixel::PortHandler * port_handler, dynamixel::PacketHandler * packet_handler);

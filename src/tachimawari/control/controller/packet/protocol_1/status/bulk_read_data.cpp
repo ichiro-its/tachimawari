@@ -35,7 +35,7 @@ namespace tachimawari::control::protocol_1
 {
 
 void BulkReadData::insert_all(
-  std::shared_ptr<std::map<uint8_t, BulkReadData>> bulk_data,
+  std::shared_ptr<std::map<uint8_t, BulkReadData>> & bulk_data,
   const BulkReadPacket & bulk_read_packet)
 {
   auto parameters = bulk_read_packet.get_parameters();
@@ -73,7 +73,7 @@ int BulkReadData::validate(
 }
 
 int BulkReadData::update_all(
-  std::shared_ptr<std::map<uint8_t, BulkReadData>> bulk_data, std::vector<uint8_t> rxpacket,
+  std::shared_ptr<std::map<uint8_t, BulkReadData>> & bulk_data, std::vector<uint8_t> rxpacket,
   int packet_length, int data_number)
 {
   while (true) {
