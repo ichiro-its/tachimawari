@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ichiro ITS
+// Copyright (c) 2021-2023 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,31 +18,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "tachimawari/control/controller/platform/linux.hpp"
+
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "tachimawari/control/controller/platform/linux.hpp"
-
-#include "tachimawari/control/controller/packet/protocol_1/instruction/write_packet.hpp"
-
 #include "errno.h"  // NOLINT
 #include "fcntl.h"  // NOLINT
-#include "stdio.h"  // NOLINT
-#include "string.h"  // NOLINT
-#include "termios.h"  // NOLINT
-#include "unistd.h"  // NOLINT
 #include "linux/serial.h"
+#include "stdio.h"   // NOLINT
+#include "string.h"  // NOLINT
 #include "sys/ioctl.h"
 #include "sys/time.h"
+#include "tachimawari/control/controller/packet/protocol_1/instruction/write_packet.hpp"
+#include "termios.h"  // NOLINT
+#include "unistd.h"   // NOLINT
 
 namespace tachimawari::control
 {
 
-Linux::Linux()
-: port_name(""), baudrate(1000000), socket_fd(-1)
-{
-}
+Linux::Linux() : port_name(""), baudrate(1000000), socket_fd(-1) {}
 
 bool Linux::open_port(const std::string & port_name, int baudrate)
 {
@@ -89,12 +85,9 @@ void Linux::close_port()
   socket_fd = -1;
 }
 
-void Linux::clear_port()
-{
-  tcflush(socket_fd, TCIFLUSH);
-}
+void Linux::clear_port() { tcflush(socket_fd, TCIFLUSH); }
 
-int Linux::write_port(std::vector<uint8_t> packet)
+int Linux::write_port(const std::vector<uint8_t> & packet)
 {
   clear_port();
 
@@ -102,8 +95,7 @@ int Linux::write_port(std::vector<uint8_t> packet)
 }
 
 int Linux::read_port(
-  std::shared_ptr<std::vector<uint8_t>> packet, int packet_length,
-  int packet_index)
+  std::shared_ptr<std::vector<uint8_t>> packet, int packet_length, int packet_index)
 {
   unsigned char rxpacket[(packet_index + packet_length) * 2] = {0x00};
 

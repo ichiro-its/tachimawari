@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ichiro ITS
+// Copyright (c) 2021-2023 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -34,8 +34,8 @@ namespace tachimawari::control::sdk
 {
 
 void GroupBulkRead::insert_all(
-  std::shared_ptr<std::map<uint8_t, std::vector<uint8_t>>> bulk_data,
-  std::shared_ptr<sdk::GroupBulkRead> sdk_group_bulk_read)
+  std::shared_ptr<std::unordered_map<uint8_t, std::vector<uint8_t>>> bulk_data,
+  const std::shared_ptr<sdk::GroupBulkRead> & sdk_group_bulk_read)
 {
   for (auto param : sdk_group_bulk_read->get_parameters()) {
     std::vector<uint8_t> data(param.starting_address + param.length, 0);
@@ -78,9 +78,9 @@ bool GroupBulkRead::add(uint8_t id, uint16_t starting_address, uint16_t data_len
   return false;
 }
 
-void GroupBulkRead::clear_param() {group_bulk_read->clearParam();}
+void GroupBulkRead::clear_param() { group_bulk_read->clearParam(); }
 
-int GroupBulkRead::send() {return group_bulk_read->txRxPacket();}
+int GroupBulkRead::send() { return group_bulk_read->txRxPacket(); }
 
 int GroupBulkRead::get(uint8_t id, uint16_t address, uint16_t data_length)
 {
@@ -116,10 +116,10 @@ std::vector<uint8_t> GroupBulkRead::get_from_param(BulkReadParam param)
   return result;
 }
 
-std::vector<BulkReadParam> GroupBulkRead::get_parameters() const {return parameters;}
+std::vector<BulkReadParam> GroupBulkRead::get_parameters() const { return parameters; }
 
-bool GroupBulkRead::is_parameters_filled() const {return parameters.size() > 0;}
+bool GroupBulkRead::is_parameters_filled() const { return parameters.size() > 0; }
 
-GroupBulkRead::~GroupBulkRead() {group_bulk_read->clearParam();}
+GroupBulkRead::~GroupBulkRead() { group_bulk_read->clearParam(); }
 
 }  // namespace tachimawari::control::sdk

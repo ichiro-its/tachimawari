@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ichiro ITS
+// Copyright (c) 2021-2023 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -49,7 +49,8 @@ void BulkReadData::insert_all(
   }
 }
 
-int BulkReadData::validate(std::shared_ptr<std::vector<uint8_t>> rxpacket, int packet_length)
+int BulkReadData::validate(
+  const std::shared_ptr<std::vector<uint8_t>> & rxpacket, int packet_length)
 {
   int header_place = 0;
   for (header_place = 0; header_place < (packet_length - 1); ++header_place) {
@@ -140,7 +141,7 @@ void BulkReadData::set_starting_address(uint8_t start_address)
   this->start_address = start_address;
 }
 
-bool BulkReadData::is_valid(std::vector<uint8_t> rxpacket)
+bool BulkReadData::is_valid(const std::vector<uint8_t> & rxpacket)
 {
   info = rxpacket[PacketIndex::ERROR];
 
@@ -166,7 +167,7 @@ bool BulkReadData::is_valid(std::vector<uint8_t> rxpacket)
   }
 }
 
-bool BulkReadData::is_filled() const {return parameters.size() != 0;}
+bool BulkReadData::is_filled() const { return parameters.size() != 0; }
 
 int BulkReadData::get(uint16_t address, int length) const
 {

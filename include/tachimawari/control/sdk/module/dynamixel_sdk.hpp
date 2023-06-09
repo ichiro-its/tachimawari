@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ichiro ITS
+// Copyright (c) 2021-2023 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,7 @@ namespace tachimawari::control
 class DynamixelSDK : public ControlManager
 {
 public:
-  enum : int {SUCCESS = 0, TX_FAIL = -1001};
+  enum : int { SUCCESS = 0, TX_FAIL = -1001 };
 
   explicit DynamixelSDK(
     const std::string & port_name, int baudrate = 1000000, float protocol_version = 1.0);
@@ -66,7 +66,7 @@ private:
   dynamixel::PortHandler * port_handler;
   dynamixel::PacketHandler * packet_handler;
 
-  std::shared_ptr<std::map<uint8_t, std::vector<uint8_t>>> bulk_data;
+  std::shared_ptr<std::unordered_map<uint8_t, std::vector<uint8_t>>> bulk_data;
   std::shared_ptr<sdk::GroupBulkRead> sdk_group_bulk_read;
 };
 

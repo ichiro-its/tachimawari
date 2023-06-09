@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ichiro ITS
+// Copyright (c) 2021-2023 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -43,8 +43,8 @@ class GroupBulkRead
 {
 public:
   static void insert_all(
-    std::shared_ptr<std::map<uint8_t, std::vector<uint8_t>>> bulk_data,
-    std::shared_ptr<sdk::GroupBulkRead> group_bulk_read);
+    std::shared_ptr<std::unordered_map<uint8_t, std::vector<uint8_t>>> bulk_data,
+    const std::shared_ptr<sdk::GroupBulkRead> & sdk_group_bulk_read);
 
   GroupBulkRead(dynamixel::PortHandler * port_handler, dynamixel::PacketHandler * packet_handler);
   ~GroupBulkRead();

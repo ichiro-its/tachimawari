@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ichiro ITS
+// Copyright (c) 2021-2023 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,7 @@ DynamixelSDK::DynamixelSDK(const std::string & port_name, int baudrate, float pr
 : ControlManager(port_name, protocol_version, baudrate),
   port_handler(dynamixel::PortHandler::getPortHandler(port_name.c_str())),
   packet_handler(dynamixel::PacketHandler::getPacketHandler(protocol_version)),
-  bulk_data(std::make_shared<std::map<uint8_t, std::vector<uint8_t>>>()),
+  bulk_data(std::make_shared<std::unordered_map<uint8_t, std::vector<uint8_t>>>()),
   sdk_group_bulk_read(nullptr)
 {
 }
@@ -171,9 +171,9 @@ bool DynamixelSDK::sync_write_packet(const std::vector<joint::Joint> & joints, b
   if (protocol_version == 1.0) {
     auto group_sync_write =
       sdk::protocol_1::GroupSyncWrite(port_handler, packet_handler)
-      .create(
-      joints, with_pid ? tachimawari::joint::protocol_1::MX28Address::D_GAIN :
-      tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
+        .create(
+          joints, with_pid ? tachimawari::joint::protocol_1::MX28Address::D_GAIN
+                           : tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
 
     result = group_sync_write.txPacket();
     if (result != SUCCESS) {
@@ -282,6 +282,6 @@ void DynamixelSDK::disconnect()
   port_handler->closePort();
 }
 
-DynamixelSDK::~DynamixelSDK() {disconnect();}
+DynamixelSDK::~DynamixelSDK() { disconnect(); }
 
 }  // namespace tachimawari::control
