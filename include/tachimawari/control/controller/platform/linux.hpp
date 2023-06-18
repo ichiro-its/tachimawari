@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ichiro ITS
+// Copyright (c) 2021-2023 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -40,10 +40,9 @@ public:
   void close_port();
   void clear_port();
 
-  int write_port(std::vector<uint8_t> packet);
+  int write_port(const std::vector<uint8_t> & packet);
   int read_port(
-    std::shared_ptr<std::vector<uint8_t>> packet, int packet_length,
-    int packet_index);
+    std::shared_ptr<std::vector<uint8_t>> & packet, int packet_length, int packet_index);
 
 private:
   int socket_fd;

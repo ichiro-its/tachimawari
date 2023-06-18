@@ -18,23 +18,48 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "tachimawari/control/node/control_node.hpp"
+
+#include <memory>
 #include <string>
 #include <vector>
 
+#include "rclcpp/rclcpp.hpp"
+#include "tachimawari/control/controller/module/cm740_address.hpp"
 #include "tachimawari/control/manager/control_manager.hpp"
 
 namespace tachimawari::control
 {
 
-ControlManager::ControlManager(
-  const std::string & port_name, float protocol_version, int baudrate)
-: port_name(port_name), protocol_version(protocol_version), baudrate(baudrate)
+std::string ControlNode::get_node_prefix() { return "control"; }
+
+std::string ControlNode::status_topic() { return get_node_prefix() + "/status"; }
+
+std::string ControlNode::write_packet_topic() { return get_node_prefix() + "/write_packet"; }
+
+ControlNode::ControlNode(
+  rclcpp::Node::SharedPtr node, std::shared_ptr<ControlManager> control_manager)
+: control_manager(control_manager)
 {
+  status_publisher = node->create_publisher<Status>(status_topic(), 10);
+
+  write_packet_subscriber = node->create_subscription<Packet>(
+    write_packet_topic(), 10, [this](const Packet::SharedPtr message) {
+      this->control_manager->write_packet(
+        message->id, message->address, message->value, message->length);
+    });
 }
 
-float ControlManager::get_protocol_version() const
+void ControlNode::update()
 {
-  return protocol_version;
+  auto status_msg = Status();
+
+  status_msg.button =
+    control_manager->get_bulk_data(ControlManager::CONTROLLER, CM740Address::BUTTON, 1);
+  status_msg.led_panel =
+    control_manager->get_bulk_data(ControlManager::CONTROLLER, CM740Address::LED_PANNEL, 1);
+
+  status_publisher->publish(status_msg);
 }
 
 }  // namespace tachimawari::control

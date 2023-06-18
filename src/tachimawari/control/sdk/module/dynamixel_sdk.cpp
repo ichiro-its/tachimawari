@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ichiro ITS
+// Copyright (c) 2021-2023 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,36 +18,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "tachimawari/control/sdk/module/dynamixel_sdk.hpp"
+
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "tachimawari/control/sdk/module/dynamixel_sdk.hpp"
-
+#include "dynamixel_sdk/dynamixel_sdk.h"
 #include "tachimawari/control/controller/module/cm740_address.hpp"
 #include "tachimawari/control/controller/packet/protocol_1/utils/word.hpp"
+#include "tachimawari/control/sdk/module/marin_core_address.hpp"
 #include "tachimawari/control/sdk/packet/model/group_bulk_read.hpp"
 #include "tachimawari/control/sdk/packet/protocol_1/group_sync_write.hpp"
 #include "tachimawari/control/sdk/packet/protocol_2/group_sync_write.hpp"
-#include "tachimawari/control/sdk/module/marin_core_address.hpp"
 #include "tachimawari/joint/model/joint.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 #include "tachimawari/joint/protocol_2/mx28_address.hpp"
 
-#include "dynamixel_sdk/dynamixel_sdk.h"
-
 namespace tachimawari::control
 {
 
-DynamixelSDK::DynamixelSDK(
-  const std::string & port_name, int baudrate,
-  float protocol_version)
+DynamixelSDK::DynamixelSDK(const std::string & port_name, int baudrate, float protocol_version)
 : ControlManager(port_name, protocol_version, baudrate),
   port_handler(dynamixel::PortHandler::getPortHandler(port_name.c_str())),
   packet_handler(dynamixel::PacketHandler::getPacketHandler(protocol_version)),
-  bulk_data(std::make_shared<std::map<uint8_t, std::shared_ptr<sdk::GroupBulkRead>>>()),
-  sdk_group_bulk_read(std::make_shared<sdk::GroupBulkRead>(port_handler, packet_handler))
+  bulk_data(std::make_shared<std::unordered_map<uint8_t, std::vector<uint8_t>>>()),
+  sdk_group_bulk_read(nullptr)
 {
 }
 
@@ -70,24 +67,7 @@ bool DynamixelSDK::connect()
 
   if (protocol_version == 1.0) {
     write_packet(
-      CONTROLLER, CM740Address::LED_HEAD_L,
-      protocol_1::Word::make_color(255, 128, 0), 2);
-  }
-
-  return true;
-}
-
-bool DynamixelSDK::send_bulk_read_packet()
-{
-  int result = sdk_group_bulk_read->send();
-  if (result == SUCCESS) {
-    sdk::GroupBulkRead::insert_all(bulk_data, sdk_group_bulk_read);
-    sdk_group_bulk_read->clear_param();
-  } else {
-    // TODO(maroqijalil): will be used for logging
-    // packet_handler->getTxRxResult(result);
-
-    return false;
+      CONTROLLER, CM740Address::LED_HEAD_L, protocol_1::Word::make_color(255, 128, 0), 2);
   }
 
   return true;
@@ -114,9 +94,7 @@ bool DynamixelSDK::ping(uint8_t id)
   return true;
 }
 
-bool DynamixelSDK::write_packet(
-  uint8_t id, uint8_t address, int value,
-  int data_length)
+bool DynamixelSDK::write_packet(uint8_t id, uint16_t address, int value, int data_length)
 {
   uint8_t error = 0;
   uint16_t model_number;
@@ -124,16 +102,13 @@ bool DynamixelSDK::write_packet(
 
   if (data_length == 1) {
     result = packet_handler->write1ByteTxRx(
-      port_handler, id, address,
-      static_cast<uint8_t>(value), &error);
+      port_handler, id, address, static_cast<uint8_t>(value), &error);
   } else if (data_length == 2) {
     result = packet_handler->write2ByteTxRx(
-      port_handler, id, address,
-      static_cast<uint16_t>(value), &error);
+      port_handler, id, address, static_cast<uint16_t>(value), &error);
   } else if (data_length == 4) {
     result = packet_handler->write4ByteTxRx(
-      port_handler, id, address,
-      static_cast<uint32_t>(value), &error);
+      port_handler, id, address, static_cast<uint32_t>(value), &error);
   }
 
   if (result != SUCCESS) {
@@ -151,8 +126,7 @@ bool DynamixelSDK::write_packet(
   return true;
 }
 
-int DynamixelSDK::read_packet(
-  uint8_t id, uint8_t address, int data_length)
+int DynamixelSDK::read_packet(uint8_t id, uint16_t address, int data_length)
 {
   int value = -1;
   uint8_t error = 0;
@@ -162,25 +136,19 @@ int DynamixelSDK::read_packet(
   if (data_length == 1) {
     uint8_t result_val = 0;
 
-    result = packet_handler->read1ByteTxRx(
-      port_handler, id, address,
-      &result_val, &error);
+    result = packet_handler->read1ByteTxRx(port_handler, id, address, &result_val, &error);
 
     value = (result == SUCCESS) ? result_val : value;
   } else if (data_length == 2) {
     uint16_t result_val = 0;
 
-    result = packet_handler->read2ByteTxRx(
-      port_handler, id, address,
-      &result_val, &error);
+    result = packet_handler->read2ByteTxRx(port_handler, id, address, &result_val, &error);
 
     value = (result == SUCCESS) ? result_val : value;
   } else if (data_length == 4) {
     uint32_t result_val = 0;
 
-    result = packet_handler->read4ByteTxRx(
-      port_handler, id, address,
-      &result_val, &error);
+    result = packet_handler->read4ByteTxRx(port_handler, id, address, &result_val, &error);
 
     value = (result == SUCCESS) ? result_val : value;
   }
@@ -196,16 +164,16 @@ int DynamixelSDK::read_packet(
   return value;
 }
 
-bool DynamixelSDK::sync_write_packet(
-  const std::vector<joint::Joint> & joints,
-  bool with_pid)
+bool DynamixelSDK::sync_write_packet(const std::vector<joint::Joint> & joints, bool with_pid)
 {
   int result = TX_FAIL;
 
   if (protocol_version == 1.0) {
-    auto group_sync_write = sdk::protocol_1::GroupSyncWrite(port_handler, packet_handler).create(
-      joints, with_pid ? tachimawari::joint::protocol_1::MX28Address::D_GAIN :
-      tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
+    auto group_sync_write =
+      sdk::protocol_1::GroupSyncWrite(port_handler, packet_handler)
+        .create(
+          joints, with_pid ? tachimawari::joint::protocol_1::MX28Address::D_GAIN
+                           : tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
 
     result = group_sync_write.txPacket();
     if (result != SUCCESS) {
@@ -219,8 +187,8 @@ bool DynamixelSDK::sync_write_packet(
     using tachimawari::joint::protocol_2::MX28Address;
 
     if (with_pid) {
-      auto pid_sync_write = GroupSyncWrite(port_handler, packet_handler).create(
-        joints, MX28Address::POSITION_D_GAIN);
+      auto pid_sync_write =
+        GroupSyncWrite(port_handler, packet_handler).create(joints, MX28Address::POSITION_D_GAIN);
 
       result = pid_sync_write.txPacket();
       if (result != SUCCESS) {
@@ -231,8 +199,8 @@ bool DynamixelSDK::sync_write_packet(
       pid_sync_write.clearParam();
     }
 
-    auto position_sync_write = GroupSyncWrite(port_handler, packet_handler).create(
-      joints, MX28Address::GOAL_POSITION);
+    auto position_sync_write =
+      GroupSyncWrite(port_handler, packet_handler).create(joints, MX28Address::GOAL_POSITION);
 
     result = position_sync_write.txPacket();
     if (result != SUCCESS) {
@@ -246,37 +214,60 @@ bool DynamixelSDK::sync_write_packet(
   return result == SUCCESS;
 }
 
-bool DynamixelSDK::bulk_read_packet()
+bool DynamixelSDK::add_default_bulk_read_packet()
 {
+  if (sdk_group_bulk_read == nullptr) {
+    sdk_group_bulk_read = std::make_shared<sdk::GroupBulkRead>(port_handler, packet_handler);
+  }
+
   if (protocol_version == 1.0) {
     if (ping(CONTROLLER)) {
-      sdk_group_bulk_read->add(CONTROLLER, CM740Address::DXL_POWER, 30u);
+      return sdk_group_bulk_read->add(CONTROLLER, CM740Address::DXL_POWER, 30u);
     } else if (ping(MARIN_CORE)) {
-      sdk_group_bulk_read->add(MARIN_CORE, 64u, 20u);
+      return sdk_group_bulk_read->add(MARIN_CORE, 64u, 20u);
     }
-
-    if (sdk_group_bulk_read->is_parameters_filled()) {
-      return send_bulk_read_packet();
-    }
-
-    return false;
   }
 
   return false;
 }
 
-int DynamixelSDK::get_data(
-  uint8_t id, uint16_t address, int data_length)
+bool DynamixelSDK::send_bulk_read_packet()
+{
+  int result = TX_FAIL;
+
+  if (sdk_group_bulk_read->is_parameters_filled()) {
+    result = sdk_group_bulk_read->send();
+
+    if (result == SUCCESS) {
+      sdk::GroupBulkRead::insert_all(bulk_data, sdk_group_bulk_read);
+    } else {
+      // TODO(maroqijalil): will be used for logging
+      // packet_handler->getTxRxResult(result);
+    }
+  }
+
+  sdk_group_bulk_read = nullptr;
+
+  return result == SUCCESS;
+}
+
+int DynamixelSDK::get_data(uint8_t id, uint16_t address, int data_length)
 {
   return sdk_group_bulk_read->get(id, address, data_length);
 }
 
-int DynamixelSDK::get_bulk_data(
-  uint8_t id, uint8_t address,
-  int data_length)
+int DynamixelSDK::get_bulk_data(uint8_t id, uint16_t address, int data_length)
 {
   if (bulk_data->find(id) != bulk_data->end()) {
-    return (*bulk_data)[id]->get(id, address, data_length);
+    if (data_length == 1) {
+      return (*bulk_data)[id][address];
+    } else if (data_length == 2) {
+      return DXL_MAKEWORD((*bulk_data)[id][address], (*bulk_data)[id][address + 1]);
+    } else if (data_length == 4) {
+      return DXL_MAKEDWORD(
+        DXL_MAKEWORD((*bulk_data)[id][address], (*bulk_data)[id][address + 1]),
+        DXL_MAKEWORD((*bulk_data)[id][address + 2], (*bulk_data)[id][address + 3]));
+    }
   } else {
     // data is not found
   }
@@ -291,9 +282,6 @@ void DynamixelSDK::disconnect()
   port_handler->closePort();
 }
 
-DynamixelSDK::~DynamixelSDK()
-{
-  disconnect();
-}
+DynamixelSDK::~DynamixelSDK() { disconnect(); }
 
 }  // namespace tachimawari::control

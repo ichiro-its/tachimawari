@@ -18,29 +18,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__CONTROLLER__UTILS__TIMER_HPP_
-#define TACHIMAWARI__CONTROL__CONTROLLER__UTILS__TIMER_HPP_
+#ifndef TACHIMAWARI__CONTROL__NODE__CONTROL_NODE_HPP_
+#define TACHIMAWARI__CONTROL__NODE__CONTROL_NODE_HPP_
+
+#include <memory>
+#include <string>
+
+#include "rclcpp/rclcpp.hpp"
+#include "tachimawari/control/manager/control_manager.hpp"
+#include "tachimawari_interfaces/msg/packet.hpp"
+#include "tachimawari_interfaces/msg/status.hpp"
 
 namespace tachimawari::control
 {
 
-class Timer
+class ControlNode
 {
 public:
-  explicit Timer(double transfer_time);
+  using Status = tachimawari_interfaces::msg::Status;
+  using Packet = tachimawari_interfaces::msg::Packet;
 
-  void set_timeout(int length, double additional_time = 40.0);
+  static std::string get_node_prefix();
+  static std::string status_topic();
+  static std::string write_packet_topic();
 
-  bool is_timeout();
+  ControlNode(rclcpp::Node::SharedPtr node, std::shared_ptr<ControlManager> control_manager);
+
+  void update();
 
 private:
-  double get_current_time();
+  std::shared_ptr<ControlManager> control_manager;
 
-  double start_time;
-  double wait_time;
-  double transfer_time;
+  rclcpp::Publisher<Status>::SharedPtr status_publisher;
+
+  rclcpp::Subscription<Packet>::SharedPtr write_packet_subscriber;
 };
 
 }  // namespace tachimawari::control
 
-#endif  // TACHIMAWARI__CONTROL__CONTROLLER__UTILS__TIMER_HPP_
+#endif  // TACHIMAWARI__CONTROL__NODE__CONTROL_NODE_HPP_

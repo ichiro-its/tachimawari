@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ichiro ITS
+// Copyright (c) 2021-2023 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,28 +18,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "tachimawari/imu/node/imu_node.hpp"
+
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "tachimawari/imu/node/imu_node.hpp"
-
 #include "keisan/keisan.hpp"
-#include "tachimawari/imu/node/imu_provider.hpp"
 #include "rclcpp/rclcpp.hpp"
+#include "tachimawari/imu/node/imu_provider.hpp"
 
 namespace tachimawari::imu
 {
 
-std::string ImuNode::get_node_prefix()
-{
-  return "imu";
-}
+std::string ImuNode::get_node_prefix() {return "imu";}
 
-std::string ImuNode::unit_topic()
-{
-  return get_node_prefix() + "/unit";
-}
+std::string ImuNode::unit_topic() {return get_node_prefix() + "/unit";}
 
 ImuNode::ImuNode(rclcpp::Node::SharedPtr node, std::shared_ptr<ImuProvider> imu_provider)
 : imu_provider(imu_provider)
@@ -47,7 +41,7 @@ ImuNode::ImuNode(rclcpp::Node::SharedPtr node, std::shared_ptr<ImuProvider> imu_
   unit_publisher = node->create_publisher<Unit>(unit_topic(), 10);
 }
 
-void ImuNode::update_imu()
+void ImuNode::update()
 {
   auto unit_msg = Unit();
 
