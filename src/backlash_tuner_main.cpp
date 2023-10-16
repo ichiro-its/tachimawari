@@ -86,8 +86,8 @@ int main(int argc, char *argv[])
 
     if (!read_all) {
       for (const auto &joint : joints) {
-        double max = std::numeric_limits<int>::min();
-        double min = std::numeric_limits<int>::max();
+        double max = std::numeric_limits<double>::min();
+        double min = std::numeric_limits<double>::max();
 
         if (target_joint == joint.get_id()) {
           min = std::min(joint.get_position(), min);
