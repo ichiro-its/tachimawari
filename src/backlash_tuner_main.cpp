@@ -79,6 +79,9 @@ int main(int argc, char *argv[])
   tachimawari::TachimawariNode tachimawari_node(node, controller);
   joints = joint_manager->get_current_joints();
 
+  double max = std::numeric_limits<double>::min();
+  double min = std::numeric_limits<double>::max();
+
   rclcpp::Rate rcl_rate(8ms);
   while (rclcpp::ok()) {
     rcl_rate.sleep();
@@ -86,9 +89,6 @@ int main(int argc, char *argv[])
 
     if (!read_all) {
       for (const auto &joint : joints) {
-        double max = std::numeric_limits<double>::min();
-        double min = std::numeric_limits<double>::max();
-
         if (target_joint == joint.get_id()) {
           min = std::min(joint.get_position(), min);
           max = std::max(joint.get_position(), max);
