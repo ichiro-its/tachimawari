@@ -8,7 +8,7 @@ on:
 jobs:
   build-and-test:
     name: Build and Test
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout this repository
         uses: actions/checkout@v2.3.4
@@ -16,4 +16,4 @@ jobs:
           path: tachimawari
 
       - name: Build and test workspace
-        uses: ichiro-its/ros2-build-and-test-action@main
+        uses: ichiro-its/ros2-ws-action@v1.0.0
