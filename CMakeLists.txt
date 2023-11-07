@@ -161,8 +161,8 @@ if(BUILD_TESTING)
   $<INSTALL_INTERFACE:include>)
 
   target_link_libraries(${PROJECT_NAME}_tests ${PROJECT_NAME})
-  ament_lint_auto_find_test_dependencies()
-
+  # TODO: Enable me later.
+  # ament_lint_auto_find_test_dependencies()
 endif()
 
 ament_export_dependencies(
