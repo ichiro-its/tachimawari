@@ -19,7 +19,10 @@ find_package(kansei_interfaces REQUIRED)
 find_package(keisan REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(tachimawari_interfaces REQUIRED)
-find_package(musen REQUIRED)
+
+# TODO: Enable me later.
+# find_package(musen REQUIRED)
+
 find_package(tf2_ros REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
@@ -53,8 +56,10 @@ add_library(${PROJECT_NAME} SHARED
   "src/${PROJECT_NAME}/joint/utils/middleware.cpp"
   "src/${PROJECT_NAME}/joint/utils/node_control.cpp"
   "src/${PROJECT_NAME}/node/tachimawari_node.cpp"
-  "src/${PROJECT_NAME}/node/rviz_server_node.cpp"
-  "src/${PROJECT_NAME}/node/rviz_client_node.cpp")
+  # TODO: Enable me later.
+  # "src/${PROJECT_NAME}/node/rviz_server_node.cpp"
+  # "src/${PROJECT_NAME}/node/rviz_client_node.cpp"
+)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -66,7 +71,6 @@ ament_target_dependencies(${PROJECT_NAME}
   keisan
   rclcpp
   tachimawari_interfaces
-  musen
   tf2_ros
   sensor_msgs
   geometry_msgs)
@@ -120,18 +124,19 @@ target_include_directories(read_joints PUBLIC
   $<INSTALL_INTERFACE:include>)
 target_link_libraries(read_joints ${PROJECT_NAME})
 
-add_executable(rviz_server "src/rviz_server_main.cpp")
-target_include_directories(rviz_server PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
-target_link_libraries(${PROJECT_NAME} musen)
-target_link_libraries(rviz_server ${PROJECT_NAME})
-
-add_executable(rviz_client "src/rviz_client_main.cpp")
-target_include_directories(rviz_client PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
-target_link_libraries(rviz_client ${PROJECT_NAME})
+# TODO: Enable me later.
+# add_executable(rviz_server "src/rviz_server_main.cpp")
+# target_include_directories(rviz_server PUBLIC
+#   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#   $<INSTALL_INTERFACE:include>)
+# target_link_libraries(${PROJECT_NAME} musen)
+# target_link_libraries(rviz_server ${PROJECT_NAME})
+#
+# add_executable(rviz_client "src/rviz_client_main.cpp")
+# target_include_directories(rviz_client PUBLIC
+#   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#   $<INSTALL_INTERFACE:include>)
+# target_link_libraries(rviz_client ${PROJECT_NAME})
 
 install(TARGETS
   check_joints
@@ -139,8 +144,9 @@ install(TARGETS
   main
   read_buttons
   read_joints
-  rviz_server
-  rviz_client
+  # TODO: Enable me later.
+  # rviz_server
+  # rviz_client
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
@@ -155,8 +161,8 @@ if(BUILD_TESTING)
   $<INSTALL_INTERFACE:include>)
 
   target_link_libraries(${PROJECT_NAME}_tests ${PROJECT_NAME})
-  ament_lint_auto_find_test_dependencies()
-
+  # TODO: Enable me later.
+  # ament_lint_auto_find_test_dependencies()
 endif()
 
 ament_export_dependencies(
