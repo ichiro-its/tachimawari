@@ -33,10 +33,10 @@ jobs:
           path: keisan
 
       - name: Setup workspace
-        uses: ichiro-its/ros2-ws-action/setup@v1.0.0
+        uses: ichiro-its/ros2-ws-action/setup@v1.0.1
 
       - name: Build workspace
-        uses: ichiro-its/ros2-ws-action/build@v1.0.0
+        uses: ichiro-its/ros2-ws-action/build@v1.0.1
 
       - name: Test workspace
-        uses: ichiro-its/ros2-ws-action/test@v1.0.0
+        uses: ichiro-its/ros2-ws-action/test@v1.0.1
