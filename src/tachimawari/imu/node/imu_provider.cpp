@@ -37,7 +37,7 @@ ImuProvider::ImuProvider(std::shared_ptr<tachimawari::control::ControlManager> c
 {
 }
 
-const keisan::Vector<3> & ImuProvider::get_gyro() const
+const keisan::Vector<3> ImuProvider::get_gyro() const
 {
   if (control_manager->get_protocol_version() == 1.0) {
     {
@@ -65,7 +65,7 @@ const keisan::Vector<3> & ImuProvider::get_gyro() const
   return keisan::Vector<3>::zero();
 }
 
-const keisan::Vector<3> & ImuProvider::get_accelero() const
+const keisan::Vector<3> ImuProvider::get_accelero() const
 {
   if (control_manager->get_protocol_version() == 1.0) {
     {
