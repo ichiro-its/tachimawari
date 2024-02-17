@@ -56,10 +56,17 @@ int main(int argc, char * argv[])
   auto joint_manager = std::make_shared<tachimawari::joint::JointManager>(controller);
 
   auto joints = joint_manager->get_current_joints();
+  
+  auto consuming_current_joints = joint_manager->get_consuming_current_joints();
 
   for (auto joint : joints) {
     std::cout << "id " << static_cast<int>(joint.get_id()) << ": " << joint.get_position() <<
       std::endl;
+  }
+
+  for (auto consuming_current_joint : consuming_current_joints) {
+    std::cout << "consuming current id " << static_cast<int>(consuming_current_joint.get_id()) << 
+      ": " << consuming_current_joint.get_current() << std::endl;
   }
 
   return 0;

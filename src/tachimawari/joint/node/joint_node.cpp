@@ -44,6 +44,8 @@ std::string JointNode::set_torques_topic() {return get_node_prefix() + "/set_tor
 
 std::string JointNode::current_joints_topic() {return get_node_prefix() + "/current_joints";}
 
+std::string JointNode::consuming_current_joints_topic() {return get_node_prefix() + "/consuming_current_joints";}
+
 JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager)
 : joint_manager(joint_manager), middleware()
 {
@@ -71,6 +73,7 @@ JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager>
     });
 
   current_joints_publisher = node->create_publisher<CurrentJoints>(current_joints_topic(), 10);
+  consuming_current_joints_publisher = node->create_publisher<ConsumingCurrentsJoints>(consuming_current_joints_topic(), 10);
 }
 
 void JointNode::update() {middleware.update();}
@@ -88,6 +91,21 @@ void JointNode::publish_current_joints()
   }
 
   current_joints_publisher->publish(msg_joints);
+}
+
+void JointNode::publish_consuming_current_joints()
+{
+  const auto & consuming_current_joints = this->joint_manager->get_consuming_current_joints();
+  auto msg_joints = CurrentJoints();
+  auto & joints = msg_joints.joints;
+
+  joints.resize(consuming_current_joints.size());
+  for (size_t i = 0; i < joints.size() && i < consuming_current_joints.size(); ++i) {
+    joints[i].id = consuming_current_joints[i].get_id();
+    joints[i].position = consuming_current_joints[i].get_position();
+  }
+
+  consuming_current_joints_publisher->publish(msg_joints);
 }
 
 }  // namespace tachimawari::joint

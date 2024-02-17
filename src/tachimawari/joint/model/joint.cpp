@@ -32,6 +32,11 @@ int Joint::angle_to_value(const keisan::Angle<double> & angle)
   return angle.degree() / 360.0 * 4096.0;
 }
 
+float Joint::current_to_value(const int current)
+{
+  return (float) (  (4.5 * (current-2048))  /  1000 ); //in amps
+}
+
 keisan::Angle<double> Joint::value_to_angle(int value)
 {
   return keisan::make_degree(value / 4096.0 * 360.0);
@@ -57,6 +62,11 @@ void Joint::set_position(keisan::Angle<float> position)
   this->position = position;
 }
 
+void Joint::set_current(int value)
+{
+  this->current = Joint::current_to_value(value);
+}
+
 void Joint::set_pid_gain(float p, float i, float d)
 {
   p_gain = p;
@@ -72,6 +82,11 @@ uint8_t Joint::get_id() const
 float Joint::get_position() const
 {
   return position.normalize().degree();
+}
+
+float Joint::get_current() const
+{
+  return current;
 }
 
 std::vector<float> Joint::get_pid_gain() const

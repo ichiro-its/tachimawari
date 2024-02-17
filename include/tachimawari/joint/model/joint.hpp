@@ -41,6 +41,7 @@ public:
   static int angle_to_value(const keisan::Angle<double> & angle);
   static keisan::Angle<double> value_to_angle(int value);
 
+  static float current_to_value(const int current);
   explicit Joint(uint8_t joint_id, float position = 0.0);
   explicit Joint(uint8_t joint_id, keisan::Angle<float> position);
 
@@ -48,6 +49,9 @@ public:
 
   void set_position_value(int value);
   int get_position_value() const;
+
+  void set_current(int value);
+  float get_current() const;
 
   void set_position(float position);
   void set_position(keisan::Angle<float> position);
@@ -64,6 +68,7 @@ private:
   float d_gain;
 
   keisan::Angle<float> position;
+  float current;
 };
 
 }  // namespace tachimawari::joint

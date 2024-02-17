@@ -31,7 +31,7 @@ namespace tachimawari::joint
 {
 
 JointManager::JointManager(std::shared_ptr<tachimawari::control::ControlManager> control_manager)
-: control_manager(control_manager), is_each_joint_updated(false)
+: control_manager(control_manager), is_each_joint_updated(false), is_each_current_updated(false)
 {
   torque_enable(true);
 
@@ -81,6 +81,47 @@ const std::vector<Joint> & JointManager::get_current_joints()
   }
 
   return current_joints;
+}
+
+void JointManager::update_consuming_current_joints(const std::vector<Joint> & Joints)
+{
+  for (const auto & joint : Joints){
+    for (auto & consuming_current_joint : consuming_current_joints){
+      if (consuming_current_joint.get_id() == joint.get_id()) {
+        consuming_current_joint.set_current(joint.get_current());
+        
+        break;
+      }
+    }
+  }
+
+  is_each_current_updated = true;
+}
+
+void JointManager::update_consuming_current_joints_from_control_manager(const std::vector<Joint> & Joints)
+{
+  std::vector<Joint> new_joints(Joints);
+  for (auto & joint : new_joints) {
+    float value = Joint::CENTER_VALUE;
+
+    int current_value = 
+      control_manager->read_packet(joint.get_id(), protocol_1::MX28Address::CURRENT, 2);
+
+    value = (current_value == -1) ? value : current_value;
+
+    joint.set_current(value);
+  }
+
+  update_consuming_current_joints(new_joints);
+} 
+
+const std::vector<Joint> & JointManager::get_consuming_current_joints()
+{
+  if(!is_each_current_updated){
+    update_consuming_current_joints_from_control_manager(consuming_current_joints);
+  }
+  
+  return consuming_current_joints;
 }
 
 bool JointManager::torque_enable(bool enable)

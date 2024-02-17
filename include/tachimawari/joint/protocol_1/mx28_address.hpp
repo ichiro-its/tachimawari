@@ -99,6 +99,7 @@ enum MX28Address : uint8_t
   I_ERROR_OUT_H             = 65,
   D_ERROR_OUT_L             = 66,
   D_ERROR_OUT_H             = 67,
+  CURRENT                   = 68,
   MAXNUM_ADDRESS
 };
 

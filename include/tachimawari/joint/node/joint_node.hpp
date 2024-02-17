@@ -40,6 +40,7 @@ class JointNode
 public:
   using ControlJoints = tachimawari_interfaces::msg::ControlJoints;
   using CurrentJoints = tachimawari_interfaces::msg::CurrentJoints;
+  using ConsumingCurrentsJoints = tachimawari_interfaces::msg::CurrentJoints;
   using SetJoints = tachimawari_interfaces::msg::SetJoints;
   using SetTorques = tachimawari_interfaces::msg::SetTorques;
 
@@ -48,16 +49,20 @@ public:
   static std::string set_joints_topic();
   static std::string set_torques_topic();
   static std::string current_joints_topic();
+  static std::string consuming_current_joints_topic();
 
   JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager);
 
   void publish_current_joints();
+  void publish_consuming_current_joints();
   void update();
 
 private:
   std::shared_ptr<JointManager> joint_manager;
 
   rclcpp::Publisher<CurrentJoints>::SharedPtr current_joints_publisher;
+
+  rclcpp::Publisher<ConsumingCurrentsJoints>::SharedPtr consuming_current_joints_publisher;
 
   rclcpp::Subscription<SetJoints>::SharedPtr set_joints_subscriber;
 
