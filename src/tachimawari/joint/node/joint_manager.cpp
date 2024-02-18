@@ -37,6 +37,7 @@ JointManager::JointManager(std::shared_ptr<tachimawari::control::ControlManager>
 
   for (auto id : JointId::list) {
     current_joints.push_back(Joint(id, 0.0));
+    consuming_current_joints.push_back(Joint(id, 0.0));
   }
 }
 
