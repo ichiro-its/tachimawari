@@ -102,7 +102,7 @@ void JointNode::publish_consuming_current_joints()
   joints.resize(consuming_current_joints.size());
   for (size_t i = 0; i < joints.size() && i < consuming_current_joints.size(); ++i) {
     joints[i].id = consuming_current_joints[i].get_id();
-    joints[i].position = consuming_current_joints[i].get_position();
+    joints[i].position = consuming_current_joints[i].get_current();
   }
 
   consuming_current_joints_publisher->publish(msg_joints);

@@ -121,6 +121,7 @@ const std::vector<Joint> & JointManager::get_consuming_current_joints()
     update_consuming_current_joints_from_control_manager(consuming_current_joints);
   }
   
+  is_each_current_updated = false;
   return consuming_current_joints;
 }
 
