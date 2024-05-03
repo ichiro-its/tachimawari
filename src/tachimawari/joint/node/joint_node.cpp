@@ -71,6 +71,9 @@ JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager>
     });
 
   current_joints_publisher = node->create_publisher<CurrentJoints>(current_joints_topic(), 10);
+  tf2_broadcaster = std::make_shared<tf2_ros::TransformBroadcaster>(node);
+  tf2_manager = std::make_shared<Tf2Manager>();
+  tf2_manager->load_configuration();
 }
 
 void JointNode::update() {middleware.update();}
@@ -87,7 +90,18 @@ void JointNode::publish_current_joints()
     joints[i].position = current_joints[i].get_position();
   }
 
+  tf2_manager->update(current_joints);
   current_joints_publisher->publish(msg_joints);
+}
+
+void JointNode::publish_frame_tree()
+{
+  // get time
+  rclcpp::Time now = rclcpp::Clock().now();
+
+  for (auto & frame : tf2_manager->get_frames()) {
+    tf2_broadcaster->sendTransform(frame.get_transform_stamped(now));
+  }
 }
 
 }  // namespace tachimawari::joint

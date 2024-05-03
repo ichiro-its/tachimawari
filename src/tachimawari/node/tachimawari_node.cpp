@@ -62,6 +62,7 @@ TachimawariNode::TachimawariNode(
           this->joint_node->update();
 
           this->joint_node->publish_current_joints();
+          this->joint_node->publish_frame_tree();
         }
       }
     });
