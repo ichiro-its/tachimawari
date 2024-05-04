@@ -67,6 +67,7 @@ const std::map<uint8_t, std::vector<uint8_t>> FrameId::frame_joint_map = {
 
 const std::map<uint8_t, uint8_t> FrameId::parent_frame = {
   {GAZE, TORSO},
+  {TORSO, BASE_LINK},
   {RIGHT_THIGH, BASE_LINK},
   {RIGHT_CALF, RIGHT_THIGH},
   {RIGHT_FOOT, RIGHT_CALF},
