@@ -61,9 +61,9 @@ bool Tf2Manager::load_configuration()
       double quaternion_y = item.value().at("quaternion").at("y");
       double quaternion_z = item.value().at("quaternion").at("z");
       double quaternion_w = item.value().at("quaternion").at("w");
+      auto map_string_id = FrameId::frame_string_id.find(name);
 
-      auto iterator = FrameId::frame_string_id.find(name);
-      uint8_t id = iterator->second;
+      uint8_t id = map_string_id->second;
       frames.push_back(Frame(
         id, translation_x, translation_y, translation_z, quaternion_x, quaternion_y, quaternion_z,
         quaternion_w));
