@@ -47,8 +47,11 @@ Frame::Frame(
 
 geometry_msgs::msg::TransformStamped Frame::get_transform_stamped(rclcpp::Time time_stamp)
 {
-  std::string frame_name = FrameId::frame_id_string.at(id);
-  std::string parent_frame_name = FrameId::frame_id_string.at(FrameId::parent_frame.at(id));
+  auto map_string_name = FrameId::frame_id_string.find(id);
+  std::string frame_name = map_string_name->second;
+
+  auto map_parent_name = FrameId::parent_frame.find(id);
+  std::string parent_frame_name = map_parent_name->second;
 
   geometry_msgs::msg::TransformStamped t;
   t.header.frame_id = parent_frame_name;
@@ -76,8 +79,10 @@ void Frame::update_quaternion(std::vector<Joint> current_joints)
 
 double Frame::get_joint_angle(uint8_t quaternion_axis, std::vector<Joint> current_joints)
 {
-  std::vector<uint8_t> frame_joints = FrameId::frame_joint_map.at(id);
-  double joint_id = frame_joints[quaternion_axis];
+  auto map = FrameId::frame_joint_map.find(id);
+  std::vector<uint8_t> frame_joints = map->second;
+  uint8_t id_map = map->first;
+  uint8_t joint_id = frame_joints[quaternion_axis];
 
   if (joint_id == 0) {
     return 0.0;

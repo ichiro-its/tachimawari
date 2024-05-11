@@ -48,7 +48,7 @@ public:
   static const std::map<uint8_t, std::string> frame_id_string;
   static const std::map<std::string, uint8_t> frame_string_id;
   static const std::map<uint8_t, std::vector<uint8_t>> frame_joint_map;
-  static const std::map<uint8_t, uint8_t> parent_frame;
+  static const std::map<uint8_t, std::string> parent_frame;
 };
 
 }  // namespace tachimawari::joint

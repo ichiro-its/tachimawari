@@ -34,7 +34,7 @@ Tf2Manager::Tf2Manager() {}
 
 bool Tf2Manager::load_configuration()
 {
-  config_path = "/todo/";
+  config_path = "/home/ichiro/ros2-ws-cp/src/tachimawari/data/";
   std::string ss = config_path + utils::get_host_name() + ".json";
 
   if (utils::is_file_exist(ss) == false) {
@@ -77,6 +77,7 @@ bool Tf2Manager::load_configuration()
 
 bool Tf2Manager::save_configuration()
 {
+  config_path = "/home/ichiro/ros2-ws-cp/src/tachimawari/data/";
   std::string ss = config_path + utils::get_host_name() + ".json";
 
   if (utils::is_file_exist(ss) == false) {
@@ -87,19 +88,22 @@ bool Tf2Manager::save_configuration()
 
   nlohmann::json config = nlohmann::json::array();
 
-  // for (auto & item : frames) {
-  //   nlohmann::json frame;
-  //   frame["name"] = item.name;
-  //   frame["translation"]["x"] = item.translation.x;
-  //   frame["translation"]["y"] = item.translation.y;
-  //   frame["translation"]["z"] = item.translation.z;
-  //   frame["quaternion"]["x"] = item.quaternion.x;
-  //   frame["quaternion"]["y"] = item.quaternion.y;
-  //   frame["quaternion"]["z"] = item.quaternion.z;
-  //   frame["quaternion"]["w"] = item.quaternion.w;
+  for (auto & item : frames) {
+    auto iterator = FrameId::frame_id_string.find(item.id);
+    std::string name = iterator->second;
 
-  //   config.push_back(frame);
-  // }
+    nlohmann::json frame;
+    frame["name"] = name;
+    frame["translation"]["x"] = item.translation_x;
+    frame["translation"]["y"] = item.translation_y;
+    frame["translation"]["z"] = item.translation_z;
+    frame["quaternion"]["x"] = item.quaternion_x;
+    frame["quaternion"]["y"] = item.quaternion_y;
+    frame["quaternion"]["z"] = item.quaternion_z;
+    frame["quaternion"]["w"] = item.quaternion_w;
+
+    config.push_back(frame);
+  }
 
   std::ofstream output(ss, std::ofstream::out);
   if (output.is_open() == false) {
@@ -114,13 +118,13 @@ bool Tf2Manager::save_configuration()
 
 bool Tf2Manager::sync_configuration()
 {
-  // if (!load_configuration()) {
-  //   return false;
-  // }
+  if (!load_configuration()) {
+    return false;
+  }
 
-  // if (!save_configuration()) {
-  //   return false;
-  // }
+  if (!save_configuration()) {
+    return false;
+  }
 
   return true;
 }

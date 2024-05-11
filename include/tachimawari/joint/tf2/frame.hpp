@@ -45,13 +45,6 @@ public:
   void update_quaternion(std::vector<Joint> current_joints);
   geometry_msgs::msg::TransformStamped get_transform_stamped(rclcpp::Time time_stamp);
 
-private:
-  enum : uint8_t {
-    ROLL = 0,
-    PITCH = 1,
-    YAW = 2,
-  };
-
   uint8_t id;
 
   double translation_x;
@@ -62,6 +55,13 @@ private:
   double quaternion_y;
   double quaternion_z;
   double quaternion_w;
+
+private:
+  enum : uint8_t {
+    ROLL = 0,
+    PITCH = 1,
+    YAW = 2,
+  };
 
   double get_joint_angle(uint8_t quaternion_axis, std::vector<Joint> current_joints);
 };

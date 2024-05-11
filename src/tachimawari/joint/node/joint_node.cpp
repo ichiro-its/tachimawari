@@ -100,6 +100,7 @@ void JointNode::publish_frame_tree()
   rclcpp::Time now = rclcpp::Clock().now();
 
   for (auto & frame : tf2_manager->get_frames()) {
+    if (frame.id == 0) continue;
     tf2_broadcaster->sendTransform(frame.get_transform_stamped(now));
   }
 }
