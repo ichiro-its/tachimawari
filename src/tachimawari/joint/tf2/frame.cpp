@@ -71,10 +71,21 @@ geometry_msgs::msg::TransformStamped Frame::get_transform_stamped(rclcpp::Time t
 
 void Frame::update_quaternion(std::vector<Joint> current_joints)
 {
-  quaternion_x = get_joint_angle(ROLL, current_joints);
-  quaternion_y = get_joint_angle(PITCH, current_joints);
-  quaternion_z = get_joint_angle(YAW, current_joints);
-  quaternion_w = 1.0;
+  double roll_deg = get_joint_angle(ROLL, current_joints);
+  double pitch_deg = get_joint_angle(PITCH, current_joints);
+  double yaw_deg = get_joint_angle(YAW, current_joints);
+  
+  double roll_rad = roll_deg * M_PI / 180.0;
+  double pitch_rad = pitch_deg * M_PI / 180.0;
+  double yaw_rad = yaw_deg * M_PI / 180.0;
+
+  tf2::Quaternion q;
+  q.setRPY(roll_rad, pitch_rad, yaw_rad);
+
+  quaternion_x = q.x();
+  quaternion_y = q.y();
+  quaternion_z = q.z();
+  quaternion_w = q.w();
 }
 
 double Frame::get_joint_angle(uint8_t quaternion_axis, std::vector<Joint> current_joints)

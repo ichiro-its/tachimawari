@@ -29,6 +29,7 @@
 #include "geometry_msgs/msg/transform_stamped.hpp"
 #include "rclcpp/time.hpp"
 #include "tachimawari/joint/node/joint_manager.hpp"
+#include "tf2/LinearMath/Quaternion.h"
 #include "tachimawari/joint/tf2/frame_id.hpp"
 
 namespace tachimawari::joint
