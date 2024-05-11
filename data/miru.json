@@ -1,37 +1,37 @@
 {
-  "BASE_LINK": {
+  "base_link": {
     "translation": {"x": 0.0, "y": 0.0, "z": 0.0},
     "quaternion": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 0.0}
   },
-  "TORSO": {
+  "torso": {
     "translation": {"x": 0.0, "y": 0.0, "z": 16.4124},
     "quaternion": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 0.0}
   },
-  "GAZE": {
+  "gaze": {
     "translation": {"x": 2.9161, "y": 0.0, "z": 4.0},
     "quaternion": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 0.0}
   },
-  "RIGHT_THIGH": {
+  "r_thigh": {
     "translation": {"x": 0.0, "y": 4.9346, "z": -4.8},
     "quaternion": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 0.0}
   },
-  "RIGHT_CALF": {
+  "r_calf": {
     "translation": {"x": 0.0, "y": 0.0, "z": -13.8},
     "quaternion": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 0.0}
   },
-  "RIGHT_FOOT": {
+  "r_sole": {
     "translation": {"x": 0.0, "y": 0.0, "z": -13.8},
     "quaternion": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 0.0}
   },
-  "LEFT_THIGH": {
+  "l_thigh": {
     "translation": {"x": 0.0, "y": -4.9346, "z": -4.8},
     "quaternion": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 0.0}
   },
-  "LEFT_CALF": {
+  "l_calf": {
     "translation": {"x": 0.0, "y": 0.0, "z": -13.8},
     "quaternion": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 0.0}
   },
-  "LEFT_FOOT": {
+  "l_sole": {
     "translation": {"x": 0.0, "y": 0.0, "z": -13.8},
     "quaternion": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 0.0}
   }

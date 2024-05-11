@@ -34,26 +34,18 @@ const std::array<uint8_t, 9> FrameId::frame_ids = {
 };
 
 const std::map<uint8_t, std::string> FrameId::frame_id_string = {
-  {FrameId::BASE_LINK, "BASE_LINK"},
-  {FrameId::TORSO, "TORSO"},
-  {FrameId::GAZE, "GAZE"},
-  {FrameId::RIGHT_THIGH, "RIGHT_THIGH"},
-  {FrameId::RIGHT_CALF, "RIGHT_CALF"},
-  {FrameId::RIGHT_FOOT, "RIGHT_FOOT"},
-  {FrameId::LEFT_THIGH, "LEFT_THIGH"},
-  {FrameId::LEFT_CALF, "LEFT_CALF"},
-  {FrameId::LEFT_FOOT, "LEFT_FOOT"}};
+  {FrameId::BASE_LINK, "base_link"}, {FrameId::TORSO, "torso"},
+  {FrameId::GAZE, "gaze"},           {FrameId::RIGHT_THIGH, "r_thigh"},
+  {FrameId::RIGHT_CALF, "r_calf"},   {FrameId::RIGHT_FOOT, "r_sole"},
+  {FrameId::LEFT_THIGH, "l_thigh"},  {FrameId::LEFT_CALF, "l_calf"},
+  {FrameId::LEFT_FOOT, "l_sole"}};
 
 const std::map<std::string, uint8_t> FrameId::frame_string_id = {
-  {"BASE_LINK", FrameId::BASE_LINK},
-  {"TORSO", FrameId::TORSO},
-  {"GAZE", FrameId::GAZE},
-  {"RIGHT_THIGH", FrameId::RIGHT_THIGH},
-  {"RIGHT_CALF", FrameId::RIGHT_CALF},
-  {"RIGHT_FOOT", FrameId::RIGHT_FOOT},
-  {"LEFT_THIGH", FrameId::LEFT_THIGH},
-  {"LEFT_CALF", FrameId::LEFT_CALF},
-  {"LEFT_FOOT", FrameId::LEFT_FOOT}};
+  {"base_link", FrameId::BASE_LINK}, {"torso", FrameId::TORSO},
+  {"gaze", FrameId::GAZE},           {"r_thigh", FrameId::RIGHT_THIGH},
+  {"r_calf", FrameId::RIGHT_CALF},   {"r_sole", FrameId::RIGHT_FOOT},
+  {"l_thigh", FrameId::LEFT_THIGH},  {"l_calf", FrameId::LEFT_CALF},
+  {"l_sole", FrameId::LEFT_FOOT}};
 
 const std::map<uint8_t, std::vector<uint8_t>> FrameId::frame_joint_map = {
   {BASE_LINK, {0, 0, 0}},
@@ -68,14 +60,9 @@ const std::map<uint8_t, std::vector<uint8_t>> FrameId::frame_joint_map = {
 };
 
 const std::map<uint8_t, std::string> FrameId::parent_frame = {
-  {GAZE, "TORSO"},
-  {TORSO, "BASE_LINK"},
-  {RIGHT_THIGH, "BASE_LINK"},
-  {RIGHT_CALF, "RIGHT_THIGH"},
-  {RIGHT_FOOT, "RIGHT_CALF"},
-  {LEFT_THIGH, "BASE_LINK"},
-  {LEFT_CALF, "LEFT_THIGH"},
-  {LEFT_FOOT, "LEFT_CALF"},
+  {GAZE, "torso"},         {TORSO, "base_link"},   {RIGHT_THIGH, "base_link"},
+  {RIGHT_CALF, "r_thigh"}, {RIGHT_FOOT, "r_calf"}, {LEFT_THIGH, "base_link"},
+  {LEFT_CALF, "l_thigh"},  {LEFT_FOOT, "l_calf"},
 };
 
 }  // namespace tachimawari::joint
