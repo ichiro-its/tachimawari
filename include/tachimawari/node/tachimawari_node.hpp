@@ -46,6 +46,7 @@ public:
 private:
   rclcpp::Node::SharedPtr node;
   rclcpp::TimerBase::SharedPtr node_timer;
+  rclcpp::TimerBase::SharedPtr node_timer_tf;
 
   std::shared_ptr<control::ControlManager> control_manager;
 
