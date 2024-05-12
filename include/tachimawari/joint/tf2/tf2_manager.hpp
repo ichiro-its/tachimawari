@@ -25,6 +25,7 @@
 #include <string>
 #include <vector>
 
+#include "keisan/angle/angle.hpp"
 #include "rclcpp/time.hpp"
 #include "tachimawari/joint/model/joint.hpp"
 #include "tachimawari/joint/model/joint_id.hpp"
@@ -45,7 +46,7 @@ public:
   bool load_configuration();
   bool save_configuration();
   bool sync_configuration();
-  void update(std::vector<Joint> current_joints);
+  void update(std::vector<Joint> current_joints, keisan::Angle<double> imu_yaw);
   std::vector<Frame> get_frames() { return frames; }
 
 private:

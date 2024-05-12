@@ -34,19 +34,27 @@
 namespace tachimawari::joint
 {
 
-std::string JointNode::get_node_prefix() {return "joint";}
+std::string JointNode::get_node_prefix() { return "joint"; }
 
-std::string JointNode::control_joints_topic() {return get_node_prefix() + "/control_joints";}
+std::string JointNode::control_joints_topic() { return get_node_prefix() + "/control_joints"; }
 
-std::string JointNode::set_joints_topic() {return get_node_prefix() + "/set_joints";}
+std::string JointNode::set_joints_topic() { return get_node_prefix() + "/set_joints"; }
 
-std::string JointNode::set_torques_topic() {return get_node_prefix() + "/set_torques";}
+std::string JointNode::set_torques_topic() { return get_node_prefix() + "/set_torques"; }
 
-std::string JointNode::current_joints_topic() {return get_node_prefix() + "/current_joints";}
+std::string JointNode::status_topic() { return get_node_prefix() + "/status"; }
+
+std::string JointNode::current_joints_topic() { return get_node_prefix() + "/current_joints"; }
 
 JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager)
-: joint_manager(joint_manager), middleware()
+: joint_manager(joint_manager),
+  middleware(),
+  tf2_broadcaster(std::make_shared<tf2_ros::TransformBroadcaster>(node)),
+  tf2_manager(std::make_shared<Tf2Manager>()),
+  imu_yaw(keisan::make_degree(0))
 {
+  tf2_manager->load_configuration();
+
   control_joints_subscriber = node->create_subscription<ControlJoints>(
     control_joints_topic(), 10, [this](const ControlJoints::SharedPtr message) {
       this->middleware.set_rules(message->control_type, message->ids);
@@ -65,18 +73,21 @@ JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager>
       std::vector<Joint> joints;
       std::transform(
         message->ids.begin(), message->ids.end(), std::back_inserter(joints),
-        [](uint8_t id) -> Joint {return Joint(id, 0);});
+        [](uint8_t id) -> Joint { return Joint(id, 0); });
 
       this->joint_manager->torque_enable(joints, message->torque_enable);
     });
 
+  status_subscriber =
+    node->create_subscription<Status>(status_topic(), 10, [this](const Status::SharedPtr message) {
+      imu_yaw = keisan::make_degree(message->orientation.yaw);
+      std::cout << "Updated imu_yaw" << imu_yaw.radian() << std::endl;
+    });
+
   current_joints_publisher = node->create_publisher<CurrentJoints>(current_joints_topic(), 10);
-  tf2_broadcaster = std::make_shared<tf2_ros::TransformBroadcaster>(node);
-  tf2_manager = std::make_shared<Tf2Manager>();
-  tf2_manager->load_configuration();
 }
 
-void JointNode::update() {middleware.update();}
+void JointNode::update() { middleware.update(); }
 
 void JointNode::publish_current_joints()
 {
@@ -90,7 +101,7 @@ void JointNode::publish_current_joints()
     joints[i].position = current_joints[i].get_position();
   }
 
-  tf2_manager->update(current_joints);
+  tf2_manager->update(current_joints, imu_yaw);
   current_joints_publisher->publish(msg_joints);
 }
 
@@ -100,7 +111,6 @@ void JointNode::publish_frame_tree()
   rclcpp::Time now = rclcpp::Clock().now();
 
   for (auto & frame : tf2_manager->get_frames()) {
-    if (frame.id == 0) continue;
     tf2_broadcaster->sendTransform(frame.get_transform_stamped(now));
   }
 }

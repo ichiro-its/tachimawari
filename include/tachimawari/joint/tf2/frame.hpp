@@ -27,10 +27,11 @@
 #include <vector>
 
 #include "geometry_msgs/msg/transform_stamped.hpp"
+#include "keisan/angle/angle.hpp"
 #include "rclcpp/time.hpp"
 #include "tachimawari/joint/node/joint_manager.hpp"
-#include "tf2/LinearMath/Quaternion.h"
 #include "tachimawari/joint/tf2/frame_id.hpp"
+#include "tf2/LinearMath/Quaternion.h"
 
 namespace tachimawari::joint
 {
@@ -44,6 +45,7 @@ public:
     const double quaternion_z, const double quaternion_w);
 
   void update_quaternion(std::vector<Joint> current_joints);
+  void update_quaternion(keisan::Angle<double> imu_yaw);
   geometry_msgs::msg::TransformStamped get_transform_stamped(rclcpp::Time time_stamp);
 
   uint8_t id;

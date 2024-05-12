@@ -88,6 +88,17 @@ void Frame::update_quaternion(std::vector<Joint> current_joints)
   quaternion_w = q.w();
 }
 
+void Frame::update_quaternion(keisan::Angle<double> imu_yaw)
+{
+  tf2::Quaternion q;
+  q.setRPY(0, 0, imu_yaw.radian());
+
+  quaternion_x = q.x();
+  quaternion_y = q.y();
+  quaternion_z = q.z();
+  quaternion_w = q.w();
+}
+
 double Frame::get_joint_angle(uint8_t quaternion_axis, std::vector<Joint> current_joints)
 {
   auto map = FrameId::frame_joint_map.find(id);

@@ -33,15 +33,16 @@ class FrameId
 {
 public:
   enum : uint8_t {
-    BASE_LINK = 0,
-    TORSO = 1,
-    GAZE = 2,
-    RIGHT_THIGH = 3,
-    RIGHT_CALF = 4,
-    RIGHT_FOOT = 5,
-    LEFT_THIGH = 6,
-    LEFT_CALF = 7,
-    LEFT_FOOT = 8,
+    ODOM = 0,
+    BASE_LINK = 1,
+    TORSO = 2,
+    GAZE = 3,
+    RIGHT_THIGH = 4,
+    RIGHT_CALF = 5,
+    RIGHT_FOOT = 6,
+    LEFT_THIGH = 7,
+    LEFT_CALF = 9,
+    LEFT_FOOT = 10,
   };
 
   static const std::array<uint8_t, 9> frame_ids;

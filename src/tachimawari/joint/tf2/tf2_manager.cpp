@@ -129,10 +129,14 @@ bool Tf2Manager::sync_configuration()
   return true;
 }
 
-void Tf2Manager::update(std::vector<Joint> current_joints)
+void Tf2Manager::update(std::vector<Joint> current_joints, keisan::Angle<double> imu_yaw)
 {
   for (auto & item : frames) {
-    item.update_quaternion(current_joints);
+    if (item.id == 0) {
+      item.update_quaternion(imu_yaw);
+    } else {
+      item.update_quaternion(current_joints);
+    }
   }
 }
 
