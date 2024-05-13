@@ -42,7 +42,7 @@ std::string JointNode::set_joints_topic() { return get_node_prefix() + "/set_joi
 
 std::string JointNode::set_torques_topic() { return get_node_prefix() + "/set_torques"; }
 
-std::string JointNode::status_topic() { return get_node_prefix() + "/status"; }
+std::string JointNode::status_topic() { return "measurement/status"; }
 
 std::string JointNode::current_joints_topic() { return get_node_prefix() + "/current_joints"; }
 
@@ -81,7 +81,6 @@ JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager>
   status_subscriber =
     node->create_subscription<Status>(status_topic(), 10, [this](const Status::SharedPtr message) {
       imu_yaw = keisan::make_degree(message->orientation.yaw);
-      std::cout << "Updated imu_yaw" << imu_yaw.radian() << std::endl;
     });
 
   current_joints_publisher = node->create_publisher<CurrentJoints>(current_joints_topic(), 10);

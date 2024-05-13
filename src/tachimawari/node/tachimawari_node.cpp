@@ -61,13 +61,8 @@ TachimawariNode::TachimawariNode(
         this->joint_node->update();
 
         this->joint_node->publish_current_joints();
+        this->joint_node->publish_frame_tree();
       }
-    }
-  });
-
-  node_timer_tf = node->create_wall_timer(30ms, [this]() {
-    if (this->joint_node) {
-      this->joint_node->publish_frame_tree();
     }
   });
 }
