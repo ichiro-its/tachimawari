@@ -174,6 +174,7 @@ ament_export_dependencies(
   kansei_interfaces
   keisan
   rclcpp
+  tf2_ros
   tachimawari_interfaces)
 ament_export_include_directories("include")
 ament_export_libraries(${PROJECT_NAME})
