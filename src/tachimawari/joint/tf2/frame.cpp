@@ -74,7 +74,7 @@ void Frame::update_quaternion(std::vector<Joint> current_joints)
   double roll_deg = get_joint_angle(ROLL, current_joints);
   double pitch_deg = get_joint_angle(PITCH, current_joints);
   double yaw_deg = get_joint_angle(YAW, current_joints);
-  
+
   double roll_rad = roll_deg * M_PI / 180.0;
   double pitch_rad = pitch_deg * M_PI / 180.0;
   double yaw_rad = yaw_deg * M_PI / 180.0;
@@ -112,6 +112,12 @@ double Frame::get_joint_angle(uint8_t quaternion_axis, std::vector<Joint> curren
 
   for (auto joint : current_joints) {
     if (joint.get_id() == joint_id) {
+      if (
+        joint_id == JointId::LEFT_HIP_PITCH || joint_id == JointId::LEFT_KNEE ||
+        joint_id == JointId::NECK_PITCH) {
+        return -joint.get_position();
+      }
+
       return joint.get_position();
     }
   }

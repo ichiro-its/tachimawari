@@ -16,7 +16,7 @@
     "quaternion": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 0.0}
   },
   "r_thigh": {
-    "translation": {"x": 0.0, "y": 4.9346, "z": -4.8},
+    "translation": {"x": 0.0, "y": -4.9346, "z": -4.8},
     "quaternion": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 0.0}
   },
   "r_calf": {
@@ -28,7 +28,7 @@
     "quaternion": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 0.0}
   },
   "l_thigh": {
-    "translation": {"x": 0.0, "y": -4.9346, "z": -4.8},
+    "translation": {"x": 0.0, "y": 4.9346, "z": -4.8},
     "quaternion": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 0.0}
   },
   "l_calf": {
