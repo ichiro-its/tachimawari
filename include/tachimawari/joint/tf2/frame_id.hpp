@@ -36,16 +36,17 @@ public:
     ODOM = 0,
     BASE_LINK = 1,
     TORSO = 2,
-    GAZE = 3,
-    RIGHT_THIGH = 4,
-    RIGHT_CALF = 5,
-    RIGHT_FOOT = 6,
-    LEFT_THIGH = 7,
+    HEAD = 3,
+    GAZE = 4,
+    RIGHT_THIGH = 5,
+    RIGHT_CALF = 6,
+    RIGHT_FOOT = 7,
+    LEFT_THIGH = 8,
     LEFT_CALF = 9,
-    LEFT_FOOT = 10,
+    LEFT_FOOT = 10
   };
 
-  static const std::array<uint8_t, 9> frame_ids;
+  static const std::array<uint8_t, 10> frame_ids;
   static const std::map<uint8_t, std::string> frame_id_string;
   static const std::map<std::string, uint8_t> frame_string_id;
   static const std::map<uint8_t, std::vector<uint8_t>> frame_joint_map;

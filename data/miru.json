@@ -1,42 +1,50 @@
 {
   "odom": {
     "translation": {"x": 0.0, "y": 0.0, "z": 0.0},
-    "quaternion": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 0.0}
+    "const_rpy": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0}
   },
   "base_link": {
     "translation": {"x": 0.0, "y": 0.0, "z": 0.0},
-    "quaternion": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 0.0}
+    "const_rpy": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0}
   },
   "torso": {
     "translation": {"x": 0.0, "y": 0.0, "z": 16.4124},
-    "quaternion": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 0.0}
+    "const_rpy": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0}
+  },
+  "head": {
+    "translation": {"x": 2.9161, "y": 0.0, "z": 4.0},
+    "const_rpy": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0}
   },
   "gaze": {
-    "translation": {"x": 2.9161, "y": 0.0, "z": 4.0},
-    "quaternion": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 0.0}
+    "translation": {"x": 0.0, "y": 0.0, "z": 6.22},
+    "const_rpy": {"roll": 0.0, "pitch": 90.0, "yaw": 0.0}
+  },
+  "camera": {
+    "translation": {"x": 0.0, "y": 0.0, "z": 4.0},
+    "const_rpy": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0}
   },
   "r_thigh": {
     "translation": {"x": 0.0, "y": -4.9346, "z": -4.8},
-    "quaternion": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 0.0}
+    "const_rpy": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0}
   },
   "r_calf": {
     "translation": {"x": 0.0, "y": 0.0, "z": -13.8},
-    "quaternion": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 0.0}
+    "const_rpy": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0}
   },
   "r_sole": {
     "translation": {"x": 0.0, "y": 0.0, "z": -13.8},
-    "quaternion": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 0.0}
+    "const_rpy": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0}
   },
   "l_thigh": {
     "translation": {"x": 0.0, "y": 4.9346, "z": -4.8},
-    "quaternion": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 0.0}
+    "const_rpy": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0}
   },
   "l_calf": {
     "translation": {"x": 0.0, "y": 0.0, "z": -13.8},
-    "quaternion": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 0.0}
+    "const_rpy": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0}
   },
   "l_sole": {
     "translation": {"x": 0.0, "y": 0.0, "z": -13.8},
-    "quaternion": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 0.0}
+    "const_rpy": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0}
   }
 }

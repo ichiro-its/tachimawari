@@ -57,16 +57,14 @@ bool Tf2Manager::load_configuration()
       double translation_x = item.value().at("translation").at("x");
       double translation_y = item.value().at("translation").at("y");
       double translation_z = item.value().at("translation").at("z");
-      double quaternion_x = item.value().at("quaternion").at("x");
-      double quaternion_y = item.value().at("quaternion").at("y");
-      double quaternion_z = item.value().at("quaternion").at("z");
-      double quaternion_w = item.value().at("quaternion").at("w");
+      double const_roll = item.value().at("const_rpy").at("roll");
+      double const_pitch = item.value().at("const_rpy").at("pitch");
+      double const_yaw = item.value().at("const_rpy").at("yaw");
       auto map_string_id = FrameId::frame_string_id.find(name);
 
       uint8_t id = map_string_id->second;
-      frames.push_back(Frame(
-        id, translation_x, translation_y, translation_z, quaternion_x, quaternion_y, quaternion_z,
-        quaternion_w));
+      frames.push_back(
+        Frame(id, translation_x, translation_y, translation_z, const_roll, const_pitch, const_yaw));
     } catch (nlohmann::json::parse_error & ex) {
       std::cerr << "parse error at byte " << ex.byte << std::endl;
     }
@@ -97,10 +95,9 @@ bool Tf2Manager::save_configuration()
     frame["translation"]["x"] = item.translation_x;
     frame["translation"]["y"] = item.translation_y;
     frame["translation"]["z"] = item.translation_z;
-    frame["quaternion"]["x"] = item.quaternion_x;
-    frame["quaternion"]["y"] = item.quaternion_y;
-    frame["quaternion"]["z"] = item.quaternion_z;
-    frame["quaternion"]["w"] = item.quaternion_w;
+    frame["const_rpy"]["roll"] = item.const_roll;
+    frame["const_rpy"]["pitch"] = item.const_pitch;
+    frame["const_rpy"]["yaw"] = item.const_yaw;
 
     config.push_back(frame);
   }

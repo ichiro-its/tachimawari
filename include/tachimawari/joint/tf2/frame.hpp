@@ -41,8 +41,8 @@ class Frame
 public:
   Frame(
     const uint8_t id, const double translation_x, const double translation_y,
-    const double translation_z, const double quaternion_x, const double quaternion_y,
-    const double quaternion_z, const double quaternion_w);
+    const double translation_z, const double const_roll, const double const_pitch,
+    const double const_yaw);
 
   void update_quaternion(std::vector<Joint> current_joints);
   void update_quaternion(keisan::Angle<double> imu_yaw);
@@ -58,6 +58,10 @@ public:
   double quaternion_y;
   double quaternion_z;
   double quaternion_w;
+
+  double const_roll;
+  double const_pitch;
+  double const_yaw;
 
 private:
   enum : uint8_t {

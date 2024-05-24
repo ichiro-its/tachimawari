@@ -29,29 +29,33 @@
 namespace tachimawari::joint
 {
 
-const std::array<uint8_t, 9> FrameId::frame_ids = {
-  BASE_LINK, TORSO, GAZE, RIGHT_THIGH, RIGHT_CALF, RIGHT_FOOT, LEFT_THIGH, LEFT_CALF, LEFT_FOOT,
+const std::array<uint8_t, 10> FrameId::frame_ids = {
+  BASE_LINK,  TORSO,      HEAD,       GAZE,      RIGHT_THIGH,
+  RIGHT_CALF, RIGHT_FOOT, LEFT_THIGH, LEFT_CALF, LEFT_FOOT,
 };
 
 const std::map<uint8_t, std::string> FrameId::frame_id_string = {
-  {FrameId::ODOM, "odom"},           {FrameId::BASE_LINK, "base_link"},
-  {FrameId::TORSO, "torso"},         {FrameId::GAZE, "gaze"},
-  {FrameId::RIGHT_THIGH, "r_thigh"}, {FrameId::RIGHT_CALF, "r_calf"},
-  {FrameId::RIGHT_FOOT, "r_sole"},   {FrameId::LEFT_THIGH, "l_thigh"},
-  {FrameId::LEFT_CALF, "l_calf"},    {FrameId::LEFT_FOOT, "l_sole"}};
+  {FrameId::ODOM, "odom"},          {FrameId::BASE_LINK, "base_link"},
+  {FrameId::TORSO, "torso"},        {FrameId::HEAD, "head"},
+  {FrameId::GAZE, "gaze"},          {FrameId::RIGHT_THIGH, "r_thigh"},
+  {FrameId::RIGHT_CALF, "r_calf"},  {FrameId::RIGHT_FOOT, "r_sole"},
+  {FrameId::LEFT_THIGH, "l_thigh"}, {FrameId::LEFT_CALF, "l_calf"},
+  {FrameId::LEFT_FOOT, "l_sole"}};
 
 const std::map<std::string, uint8_t> FrameId::frame_string_id = {
-  {"odom", FrameId::ODOM},           {"base_link", FrameId::BASE_LINK},
-  {"torso", FrameId::TORSO},         {"gaze", FrameId::GAZE},
-  {"r_thigh", FrameId::RIGHT_THIGH}, {"r_calf", FrameId::RIGHT_CALF},
-  {"r_sole", FrameId::RIGHT_FOOT},   {"l_thigh", FrameId::LEFT_THIGH},
-  {"l_calf", FrameId::LEFT_CALF},    {"l_sole", FrameId::LEFT_FOOT}};
+  {"odom", FrameId::ODOM},          {"base_link", FrameId::BASE_LINK},
+  {"torso", FrameId::TORSO},        {"head", FrameId::HEAD},
+  {"gaze", FrameId::GAZE},          {"r_thigh", FrameId::RIGHT_THIGH},
+  {"r_calf", FrameId::RIGHT_CALF},  {"r_sole", FrameId::RIGHT_FOOT},
+  {"l_thigh", FrameId::LEFT_THIGH}, {"l_calf", FrameId::LEFT_CALF},
+  {"l_sole", FrameId::LEFT_FOOT}};
 
 const std::map<uint8_t, std::vector<uint8_t>> FrameId::frame_joint_map = {
   {ODOM, {0, 0, 0}},
   {BASE_LINK, {0, 0, 0}},
   {TORSO, {0, 0, 0}},
-  {GAZE, {0, JointId::NECK_PITCH, JointId::NECK_YAW}},
+  {GAZE, {0, 0, 0}},
+  {HEAD, {0, JointId::NECK_PITCH, JointId::NECK_YAW}},
   {RIGHT_THIGH, {JointId::RIGHT_HIP_ROLL, JointId::RIGHT_HIP_PITCH, JointId::RIGHT_HIP_YAW}},
   {RIGHT_CALF, {0, JointId::RIGHT_KNEE, 0}},
   {RIGHT_FOOT, {JointId::RIGHT_ANKLE_ROLL, JointId::RIGHT_ANKLE_PITCH, 0}},
@@ -61,10 +65,10 @@ const std::map<uint8_t, std::vector<uint8_t>> FrameId::frame_joint_map = {
 };
 
 const std::map<uint8_t, std::string> FrameId::parent_frame = {
-  {ODOM, "world"},        {BASE_LINK, "odom"},        {GAZE, "torso"},
-  {TORSO, "base_link"},   {RIGHT_THIGH, "base_link"}, {RIGHT_CALF, "r_thigh"},
-  {RIGHT_FOOT, "r_calf"}, {LEFT_THIGH, "base_link"},  {LEFT_CALF, "l_thigh"},
-  {LEFT_FOOT, "l_calf"},
+  {ODOM, "world"},         {BASE_LINK, "odom"},    {GAZE, "head"},
+  {HEAD, "torso"},         {TORSO, "base_link"},   {RIGHT_THIGH, "base_link"},
+  {RIGHT_CALF, "r_thigh"}, {RIGHT_FOOT, "r_calf"}, {LEFT_THIGH, "base_link"},
+  {LEFT_CALF, "l_thigh"},  {LEFT_FOOT, "l_calf"},
 };
 
 }  // namespace tachimawari::joint

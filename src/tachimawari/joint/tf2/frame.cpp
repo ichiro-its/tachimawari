@@ -32,16 +32,19 @@ namespace tachimawari::joint
 
 Frame::Frame(
   const uint8_t id, const double translation_x, const double translation_y,
-  const double translation_z, const double quaternion_x, const double quaternion_y,
-  const double quaternion_z, const double quaternion_w)
+  const double translation_z, const double const_roll, const double const_pitch,
+  const double const_yaw)
 : id(id),
   translation_x(translation_x),
   translation_y(translation_y),
   translation_z(translation_z),
-  quaternion_x(quaternion_x),
-  quaternion_y(quaternion_y),
-  quaternion_z(quaternion_z),
-  quaternion_w(quaternion_w)
+  quaternion_x(0),
+  quaternion_y(0),
+  quaternion_z(0),
+  quaternion_w(0),
+  const_roll(const_roll),
+  const_pitch(const_pitch),
+  const_yaw(const_yaw)
 {
 }
 
@@ -71,9 +74,9 @@ geometry_msgs::msg::TransformStamped Frame::get_transform_stamped(rclcpp::Time t
 
 void Frame::update_quaternion(std::vector<Joint> current_joints)
 {
-  double roll_deg = get_joint_angle(ROLL, current_joints);
-  double pitch_deg = get_joint_angle(PITCH, current_joints);
-  double yaw_deg = get_joint_angle(YAW, current_joints);
+  double roll_deg = get_joint_angle(ROLL, current_joints) + const_roll;
+  double pitch_deg = get_joint_angle(PITCH, current_joints) + const_pitch;
+  double yaw_deg = get_joint_angle(YAW, current_joints) + const_yaw;
 
   double roll_rad = roll_deg * M_PI / 180.0;
   double pitch_rad = pitch_deg * M_PI / 180.0;
