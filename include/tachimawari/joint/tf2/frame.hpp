@@ -54,7 +54,7 @@ public:
   double translation_y;
   double translation_z;
 
-  double quaternion_x;  // maybe change to keisan angle
+  double quaternion_x;
   double quaternion_y;
   double quaternion_z;
   double quaternion_w;
