@@ -32,7 +32,6 @@
 #include "tachimawari/joint/node/joint_manager.hpp"
 #include "tachimawari/joint/tf2/frame.hpp"
 #include "tachimawari/joint/tf2/frame_id.hpp"
-#include "tachimawari/joint/utils/utils.hpp"
 #include "tf2_ros/transform_broadcaster.h"
 
 namespace tachimawari::joint
@@ -43,9 +42,7 @@ class Tf2Manager
 public:
   explicit Tf2Manager();
 
-  bool load_configuration();
-  bool save_configuration();
-  bool sync_configuration();
+  bool load_configuration(std::string path);
   void update(std::vector<Joint> current_joints, keisan::Angle<double> imu_yaw);
   std::vector<Frame> get_frames() { return frames; }
 

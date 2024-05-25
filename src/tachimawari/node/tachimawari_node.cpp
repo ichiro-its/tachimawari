@@ -67,10 +67,10 @@ TachimawariNode::TachimawariNode(
   });
 }
 
-void TachimawariNode::run_joint_manager()
+void TachimawariNode::run_joint_manager(std::string path)
 {
   joint_node = std::make_shared<joint::JointNode>(
-    node, std::make_shared<joint::JointManager>(control_manager));
+    node, std::make_shared<joint::JointManager>(control_manager), path);
 
   control_node = std::make_shared<control::ControlNode>(node, control_manager);
 }

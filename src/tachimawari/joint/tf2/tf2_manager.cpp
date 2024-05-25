@@ -32,20 +32,13 @@ namespace tachimawari::joint
 
 Tf2Manager::Tf2Manager() {}
 
-bool Tf2Manager::load_configuration()
+bool Tf2Manager::load_configuration(std::string path)
 {
-  config_path = "/home/ichiro/ros2-ws-cp/src/tachimawari/data/";
-  std::string ss = config_path + utils::get_host_name() + ".json";
-
-  if (utils::is_file_exist(ss) == false) {
-    if (save_configuration() == false) {
-      return false;
-    }
-  }
+  std::string ss = path + "frame_measurements.json";
 
   std::ifstream input(ss, std::ifstream::in);
-  if (input.is_open() == false) {
-    return false;
+  if (!input.is_open()) {
+    throw std::runtime_error("Unable to open `" + ss + "`!");
   }
 
   nlohmann::json config = nlohmann::json::parse(input);
@@ -73,63 +66,10 @@ bool Tf2Manager::load_configuration()
   return true;
 }
 
-bool Tf2Manager::save_configuration()
-{
-  config_path = "/home/ichiro/ros2-ws-cp/src/tachimawari/data/";
-  std::string ss = config_path + utils::get_host_name() + ".json";
-
-  if (utils::is_file_exist(ss) == false) {
-    if (utils::create_file(ss) == false) {
-      return false;
-    }
-  }
-
-  nlohmann::json config = nlohmann::json::array();
-
-  for (auto & item : frames) {
-    auto iterator = FrameId::frame_id_string.find(item.id);
-    std::string name = iterator->second;
-
-    nlohmann::json frame;
-    frame["name"] = name;
-    frame["translation"]["x"] = item.translation_x;
-    frame["translation"]["y"] = item.translation_y;
-    frame["translation"]["z"] = item.translation_z;
-    frame["const_rpy"]["roll"] = item.const_roll;
-    frame["const_rpy"]["pitch"] = item.const_pitch;
-    frame["const_rpy"]["yaw"] = item.const_yaw;
-
-    config.push_back(frame);
-  }
-
-  std::ofstream output(ss, std::ofstream::out);
-  if (output.is_open() == false) {
-    return false;
-  }
-
-  output << config.dump(2);
-  output.close();
-
-  return true;
-}
-
-bool Tf2Manager::sync_configuration()
-{
-  if (!load_configuration()) {
-    return false;
-  }
-
-  if (!save_configuration()) {
-    return false;
-  }
-
-  return true;
-}
-
 void Tf2Manager::update(std::vector<Joint> current_joints, keisan::Angle<double> imu_yaw)
 {
   for (auto & item : frames) {
-    if (item.id == 0) {
+    if (item.id == FrameId::ODOM) {
       item.update_quaternion(imu_yaw);
     } else {
       item.update_quaternion(current_joints);

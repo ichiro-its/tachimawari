@@ -46,14 +46,15 @@ std::string JointNode::status_topic() { return "measurement/status"; }
 
 std::string JointNode::current_joints_topic() { return get_node_prefix() + "/current_joints"; }
 
-JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager)
+JointNode::JointNode(
+  rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager, std::string path)
 : joint_manager(joint_manager),
   middleware(),
   tf2_broadcaster(std::make_shared<tf2_ros::TransformBroadcaster>(node)),
   tf2_manager(std::make_shared<Tf2Manager>()),
   imu_yaw(keisan::make_degree(0))
 {
-  tf2_manager->load_configuration();
+  tf2_manager->load_configuration(path);
 
   control_joints_subscriber = node->create_subscription<ControlJoints>(
     control_joints_topic(), 10, [this](const ControlJoints::SharedPtr message) {
@@ -100,15 +101,15 @@ void JointNode::publish_current_joints()
     joints[i].position = current_joints[i].get_position();
   }
 
-  tf2_manager->update(current_joints, imu_yaw);
   current_joints_publisher->publish(msg_joints);
 }
 
 void JointNode::publish_frame_tree()
 {
-  // get time
-  rclcpp::Time now = rclcpp::Clock().now();
+  const auto & current_joints = this->joint_manager->get_current_joints();
+  tf2_manager->update(current_joints, imu_yaw);
 
+  rclcpp::Time now = rclcpp::Clock().now();
   for (auto & frame : tf2_manager->get_frames()) {
     tf2_broadcaster->sendTransform(frame.get_transform_stamped(now));
   }
