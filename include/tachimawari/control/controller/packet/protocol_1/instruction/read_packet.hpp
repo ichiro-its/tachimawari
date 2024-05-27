@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ichiro ITS
+// Copyright (c) 2021-2023 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,7 @@ public:
 
   ReadPacket();
 
-  void create(uint8_t id, uint8_t address, uint8_t data_length);
+  void create(uint8_t id, uint16_t address, uint8_t data_length);
 };
 
 }  // namespace tachimawari::control::protocol_1

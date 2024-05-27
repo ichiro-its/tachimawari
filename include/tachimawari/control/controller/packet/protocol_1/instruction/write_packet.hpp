@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ichiro ITS
+// Copyright (c) 2021-2023 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -36,9 +36,9 @@ class WritePacket : public Packet
 public:
   WritePacket();
 
-  void create(uint8_t id, uint8_t address, uint8_t value);
+  void create(uint8_t id, uint16_t address, uint8_t value);
 
-  void create(uint8_t id, uint8_t address, uint16_t value);
+  void create(uint8_t id, uint16_t address, uint16_t value);
 };
 
 }  // namespace tachimawari::control::protocol_1

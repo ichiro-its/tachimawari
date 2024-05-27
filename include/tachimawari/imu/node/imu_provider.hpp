@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ichiro ITS
+// Copyright (c) 2021-2023 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -33,8 +33,8 @@ class ImuProvider
 public:
   explicit ImuProvider(std::shared_ptr<tachimawari::control::ControlManager> control_manager);
 
-  const keisan::Vector<3> & get_gyro() const;
-  const keisan::Vector<3> & get_accelero() const;
+  const keisan::Vector<3> get_gyro() const;
+  const keisan::Vector<3> get_accelero() const;
 
 private:
   std::shared_ptr<tachimawari::control::ControlManager> control_manager;

@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ichiro ITS
+// Copyright (c) 2021-2023 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,7 @@ ImuProvider::ImuProvider(std::shared_ptr<tachimawari::control::ControlManager> c
 {
 }
 
-const keisan::Vector<3> & ImuProvider::get_gyro() const
+const keisan::Vector<3> ImuProvider::get_gyro() const
 {
   if (control_manager->get_protocol_version() == 1.0) {
     {
@@ -65,7 +65,7 @@ const keisan::Vector<3> & ImuProvider::get_gyro() const
   return keisan::Vector<3>::zero();
 }
 
-const keisan::Vector<3> & ImuProvider::get_accelero() const
+const keisan::Vector<3> ImuProvider::get_accelero() const
 {
   if (control_manager->get_protocol_version() == 1.0) {
     {

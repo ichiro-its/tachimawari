@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ichiro ITS
+// Copyright (c) 2021-2023 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -36,14 +36,14 @@ WritePacket::WritePacket()
 {
 }
 
-void WritePacket::create(uint8_t id, uint8_t address, uint8_t value)
+void WritePacket::create(uint8_t id, uint16_t address, uint8_t value)
 {
   packet_id = id;
   parameters.push_back(address);
   parameters.push_back(value);
 }
 
-void WritePacket::create(uint8_t id, uint8_t address, uint16_t value)
+void WritePacket::create(uint8_t id, uint16_t address, uint16_t value)
 {
   packet_id = id;
   parameters.push_back(address);

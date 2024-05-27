@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ichiro ITS
+// Copyright (c) 2021-2023 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -36,33 +36,27 @@ namespace tachimawari::control::protocol_1
 class BulkReadData : public Packet
 {
 public:
-  enum
-  {
-    MAX_LENGTH = 255
-  };
+  enum { MAX_LENGTH = 255 };
 
   static void insert_all(
-    std::shared_ptr<std::map<uint8_t, BulkReadData>> bulk_data,
+    std::shared_ptr<std::map<uint8_t, BulkReadData>> & bulk_data,
     const BulkReadPacket & bulk_read_packet);
 
-  static int validate(
-    std::shared_ptr<std::vector<uint8_t>> rxpacket,
-    int packet_length);
+  static int validate(const std::shared_ptr<std::vector<uint8_t>> & rxpacket, int packet_length);
 
   static int update_all(
-    std::shared_ptr<std::map<uint8_t, BulkReadData>> bulk_data,
-    std::vector<uint8_t> rxpacket, int packet_length, int data_number);
+    std::shared_ptr<std::map<uint8_t, BulkReadData>> & bulk_data, std::vector<uint8_t> rxpacket,
+    int packet_length, int data_number);
 
   explicit BulkReadData(uint8_t id, int data_length = MAX_LENGTH);
 
   void set_starting_address(uint8_t start_address);
 
-  bool is_valid(std::vector<uint8_t> rxpacket);
+  bool is_valid(const std::vector<uint8_t> & rxpacket);
 
   bool is_filled() const;
 
-  int get(uint8_t address) const;
-  int get(uint16_t address) const;
+  int get(uint16_t address, int length) const;
 
 private:
   uint8_t start_address;

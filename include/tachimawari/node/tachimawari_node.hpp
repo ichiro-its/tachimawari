@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ichiro ITS
+// Copyright (c) 2021-2023 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "tachimawari/control/manager/control_manager.hpp"
+#include "tachimawari/control/node/control_node.hpp"
 #include "tachimawari/imu/node/imu_node.hpp"
 #include "tachimawari/joint/node/joint_node.hpp"
 
@@ -36,8 +37,7 @@ class TachimawariNode
 {
 public:
   explicit TachimawariNode(
-    rclcpp::Node::SharedPtr node,
-    std::shared_ptr<control::ControlManager> control_manager);
+    rclcpp::Node::SharedPtr node, std::shared_ptr<control::ControlManager> control_manager);
 
   void run_joint_manager();
 
@@ -52,6 +52,8 @@ private:
   std::shared_ptr<joint::JointNode> joint_node;
 
   std::shared_ptr<imu::ImuNode> imu_node;
+
+  std::shared_ptr<control::ControlNode> control_node;
 };
 
 }  // namespace tachimawari

@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ichiro ITS
+// Copyright (c) 2021-2023 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,16 +18,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "tachimawari/control/controller/packet/protocol_1/status/bulk_read_data.hpp"
+
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "tachimawari/control/controller/packet/protocol_1/status/bulk_read_data.hpp"
-
-#include "tachimawari/control/controller/packet/protocol_1/model/packet_index.hpp"
 #include "tachimawari/control/controller/packet/protocol_1/instruction/bulk_read_packet.hpp"
 #include "tachimawari/control/controller/packet/protocol_1/instruction/instruction.hpp"
+#include "tachimawari/control/controller/packet/protocol_1/model/packet_index.hpp"
 #include "tachimawari/control/controller/packet/protocol_1/utils/word.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 
@@ -35,7 +35,7 @@ namespace tachimawari::control::protocol_1
 {
 
 void BulkReadData::insert_all(
-  std::shared_ptr<std::map<uint8_t, BulkReadData>> bulk_data,
+  std::shared_ptr<std::map<uint8_t, BulkReadData>> & bulk_data,
   const BulkReadPacket & bulk_read_packet)
 {
   auto parameters = bulk_read_packet.get_parameters();
@@ -50,8 +50,7 @@ void BulkReadData::insert_all(
 }
 
 int BulkReadData::validate(
-  std::shared_ptr<std::vector<uint8_t>> rxpacket,
-  int packet_length)
+  const std::shared_ptr<std::vector<uint8_t>> & rxpacket, int packet_length)
 {
   int header_place = 0;
   for (header_place = 0; header_place < (packet_length - 1); ++header_place) {
@@ -74,8 +73,8 @@ int BulkReadData::validate(
 }
 
 int BulkReadData::update_all(
-  std::shared_ptr<std::map<uint8_t, BulkReadData>> bulk_data,
-  std::vector<uint8_t> rxpacket, int packet_length, int data_number)
+  std::shared_ptr<std::map<uint8_t, BulkReadData>> & bulk_data, std::vector<uint8_t> rxpacket,
+  int packet_length, int data_number)
 {
   while (true) {
     int header_place = 0;
@@ -142,7 +141,7 @@ void BulkReadData::set_starting_address(uint8_t start_address)
   this->start_address = start_address;
 }
 
-bool BulkReadData::is_valid(std::vector<uint8_t> rxpacket)
+bool BulkReadData::is_valid(const std::vector<uint8_t> & rxpacket)
 {
   info = rxpacket[PacketIndex::ERROR];
 
@@ -168,26 +167,17 @@ bool BulkReadData::is_valid(std::vector<uint8_t> rxpacket)
   }
 }
 
-bool BulkReadData::is_filled() const
-{
-  return parameters.size() != 0;
-}
+bool BulkReadData::is_filled() const { return parameters.size() != 0; }
 
-int BulkReadData::get(uint8_t address) const
+int BulkReadData::get(uint16_t address, int length) const
 {
   size_t index = static_cast<size_t>(address);
   if (index < data.size() && marker[index]) {
-    return data[index];
-  }
-
-  return -1;
-}
-
-int BulkReadData::get(uint16_t address) const
-{
-  size_t index = static_cast<size_t>(address);
-  if (index < data.size() && marker[index] && marker[index + 1]) {
-    return Word::make_word(data[index], data[index + 1]);
+    if (length == 1) {
+      return data[index];
+    } else if (length == 2 && marker[index + 1]) {
+      return Word::make_word(data[index], data[index + 1]);
+    }
   }
 
   return -1;

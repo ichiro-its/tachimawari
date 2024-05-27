@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ichiro ITS
+// Copyright (c) 2021-2023 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,8 +25,8 @@
 #include <string>
 
 #include "kansei_interfaces/msg/unit.hpp"
-#include "tachimawari/imu/node/imu_provider.hpp"
 #include "rclcpp/rclcpp.hpp"
+#include "tachimawari/imu/node/imu_provider.hpp"
 
 namespace tachimawari::imu
 {
@@ -41,7 +41,7 @@ public:
 
   ImuNode(rclcpp::Node::SharedPtr node, std::shared_ptr<ImuProvider> imu_provider);
 
-  void update_imu();
+  void update();
 
 private:
   std::shared_ptr<ImuProvider> imu_provider;

@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ichiro ITS
+// Copyright (c) 2021-2023 Ichiro ITS
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,9 +22,9 @@
 #include <memory>
 #include <string>
 
+#include "rclcpp/rclcpp.hpp"
 #include "tachimawari/control/control.hpp"
 #include "tachimawari/joint/joint.hpp"
-#include "rclcpp/rclcpp.hpp"
 
 int main(int argc, char * argv[])
 {
@@ -55,12 +55,13 @@ int main(int argc, char * argv[])
       return 1;
     }
   }
-
   rclcpp::Rate rcl_rate(8ms);
   while (rclcpp::ok()) {
     rcl_rate.sleep();
 
-    if (!controller->bulk_read_packet()) {
+    controller->add_default_bulk_read_packet();
+
+    if (!controller->send_bulk_read_packet()) {
       std::cout << "bulk read packet failed\n";
       return 1;
     }
@@ -68,7 +69,13 @@ int main(int argc, char * argv[])
     int start = controller->get_bulk_data(tachimawari::control::CM740::CONTROLLER, 40, 2);
     int stop = controller->get_bulk_data(tachimawari::control::CM740::CONTROLLER, 44, 2);
 
+    int yaw_r = controller->get_data(tachimawari::control::DynamixelSDK::MARIN_CORE, 64u, 2);
+    int pitch_r =
+      controller->get_data(tachimawari::control::DynamixelSDK::MARIN_CORE, 66u, 2) - 360;
+    int roll_r = controller->get_data(tachimawari::control::DynamixelSDK::MARIN_CORE, 68u, 2) - 360;
+
     std::cout << "start: " << start << ", stop: " << stop << "\n";
+    std::cout << "yaw: " << yaw_r << ", pitch: " << pitch_r << ", roll: " << roll_r << "\n";
   }
 
   return 0;
