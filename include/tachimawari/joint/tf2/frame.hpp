@@ -65,9 +65,9 @@ public:
 
 private:
   enum : uint8_t {
-    ROLL = 0,
-    PITCH = 1,
-    YAW = 2,
+    ROLL,
+    PITCH,
+    YAW,
   };
 
   double get_joint_angle(uint8_t quaternion_axis, std::vector<Joint> current_joints);

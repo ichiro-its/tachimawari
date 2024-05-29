@@ -42,13 +42,11 @@ class Tf2Manager
 public:
   explicit Tf2Manager();
 
-  bool load_configuration(std::string path);
+  bool load_configuration(const std::string & path);
   void update(std::vector<Joint> current_joints, keisan::Angle<double> imu_yaw);
   std::vector<Frame> get_frames() { return frames; }
 
 private:
-  static const std::vector<std::pair<int, int>> tf2_joint_pairs;
-  std::string config_path;
   std::vector<Frame> frames;
 };
 }  // namespace tachimawari::joint

@@ -32,7 +32,7 @@ namespace tachimawari::joint
 
 Tf2Manager::Tf2Manager() {}
 
-bool Tf2Manager::load_configuration(std::string path)
+bool Tf2Manager::load_configuration(const std::string & path)
 {
   std::string ss = path + "frame_measurements.json";
 
@@ -60,6 +60,7 @@ bool Tf2Manager::load_configuration(std::string path)
         Frame(id, translation_x, translation_y, translation_z, const_roll, const_pitch, const_yaw));
     } catch (nlohmann::json::parse_error & ex) {
       std::cerr << "parse error at byte " << ex.byte << std::endl;
+      throw ex;
     }
   }
 
