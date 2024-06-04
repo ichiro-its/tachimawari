@@ -34,7 +34,6 @@ ControlManager::ControlManager(
 
 bool ControlManager::connect()
 {
-  std::cout << "write on\n";
   return write_packet(CONTROLLER, 64, 1);
 }
 
