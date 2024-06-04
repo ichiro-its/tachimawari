@@ -51,9 +51,8 @@ bool Linux::open_port(const std::string & port_name, int baudrate)
 
   struct termios newtio;
   memset(&newtio, 0, sizeof(newtio));
-  newtio.c_cflag = B38400 | CS8 | CLOCAL | CREAD;
+  newtio.c_cflag = B1000000 | CS8 | CLOCAL | CREAD;
   newtio.c_iflag = IGNPAR;
-  tcsetattr(socket_fd, TCSANOW, &newtio);
 
   struct serial_struct serinfo;
   if (ioctl(socket_fd, TIOCGSERIAL, &serinfo) >= 0) {
@@ -71,7 +70,8 @@ bool Linux::open_port(const std::string & port_name, int baudrate)
     return false;
   }
 
-  tcflush(socket_fd, TCIFLUSH);
+  clear_port();
+  tcsetattr(socket_fd, TCSANOW, &newtio);
 
   return true;
 }
