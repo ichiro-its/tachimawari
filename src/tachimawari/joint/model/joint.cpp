@@ -38,8 +38,15 @@ keisan::Angle<double> Joint::value_to_angle(int value)
 }
 
 Joint::Joint(uint8_t joint_id, float position)
-: id(joint_id), position(keisan::make_degree(position)), p_gain(30.0), i_gain(30.0), d_gain(30.0)
+: id(joint_id), position(keisan::make_degree(position))
 {
+  if (joint_id < 7) {
+    set_pid_gain(32.0, 0.0, 0.0);
+  } else if (joint_id < 19) {
+    set_pid_gain(28.0, 2.0, 3.0);
+  } else {
+    set_pid_gain(20.0, 2.0, 3.0);
+  }
 }
 
 Joint::Joint(uint8_t joint_id, keisan::Angle<float> position)
