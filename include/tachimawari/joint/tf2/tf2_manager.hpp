@@ -43,7 +43,7 @@ public:
   explicit Tf2Manager();
 
   bool load_configuration(const std::string & path);
-  void update(std::vector<Joint> current_joints, keisan::Angle<double> imu_yaw);
+  void update(const std::vector<Joint> & current_joints, const keisan::Angle<double> & imu_yaw);
   std::vector<Frame> get_frames() { return frames; }
 
 private:

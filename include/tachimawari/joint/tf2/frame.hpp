@@ -44,9 +44,9 @@ public:
     const double translation_z, const double const_roll, const double const_pitch,
     const double const_yaw);
 
-  void update_quaternion(std::vector<Joint> current_joints);
-  void update_quaternion(keisan::Angle<double> imu_yaw);
-  geometry_msgs::msg::TransformStamped get_transform_stamped(rclcpp::Time time_stamp);
+  void update_quaternion(const std::vector<Joint> & current_joints);
+  void update_quaternion(const keisan::Angle<double> & imu_yaw);
+  geometry_msgs::msg::TransformStamped get_transform_stamped(const rclcpp::Time & time_stamp);
 
   uint8_t id;
 
@@ -70,7 +70,7 @@ private:
     YAW,
   };
 
-  double get_joint_angle(uint8_t quaternion_axis, std::vector<Joint> current_joints);
+  double get_joint_angle(const uint8_t & quaternion_axis, const std::vector<Joint> & current_joints);
 };
 }  // namespace tachimawari::joint
 

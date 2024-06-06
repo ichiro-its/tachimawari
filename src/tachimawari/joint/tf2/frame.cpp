@@ -48,7 +48,7 @@ Frame::Frame(
 {
 }
 
-geometry_msgs::msg::TransformStamped Frame::get_transform_stamped(rclcpp::Time time_stamp)
+geometry_msgs::msg::TransformStamped Frame::get_transform_stamped(const rclcpp::Time & time_stamp)
 {
   auto map_string_name = FrameId::frame_id_string.find(id);
   std::string frame_name = map_string_name->second;
@@ -72,7 +72,7 @@ geometry_msgs::msg::TransformStamped Frame::get_transform_stamped(rclcpp::Time t
   return t;
 }
 
-void Frame::update_quaternion(std::vector<Joint> current_joints)
+void Frame::update_quaternion(const std::vector<Joint> & current_joints)
 {
   double roll_deg = get_joint_angle(ROLL, current_joints) + const_roll;
   double pitch_deg = get_joint_angle(PITCH, current_joints) + const_pitch;
@@ -91,7 +91,7 @@ void Frame::update_quaternion(std::vector<Joint> current_joints)
   quaternion_w = q.w();
 }
 
-void Frame::update_quaternion(keisan::Angle<double> imu_yaw)
+void Frame::update_quaternion(const keisan::Angle<double> & imu_yaw)
 {
   tf2::Quaternion q;
   q.setRPY(0, 0, imu_yaw.radian());
@@ -102,7 +102,7 @@ void Frame::update_quaternion(keisan::Angle<double> imu_yaw)
   quaternion_w = q.w();
 }
 
-double Frame::get_joint_angle(uint8_t quaternion_axis, std::vector<Joint> current_joints)
+double Frame::get_joint_angle(const uint8_t & quaternion_axis, const std::vector<Joint> & current_joints)
 {
   auto map = FrameId::frame_joint_map.find(id);
   std::vector<uint8_t> frame_joints = map->second;

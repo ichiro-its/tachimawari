@@ -67,7 +67,7 @@ bool Tf2Manager::load_configuration(const std::string & path)
   return true;
 }
 
-void Tf2Manager::update(std::vector<Joint> current_joints, keisan::Angle<double> imu_yaw)
+void Tf2Manager::update(const std::vector<Joint> & current_joints, const keisan::Angle<double> & imu_yaw)
 {
   for (auto & item : frames) {
     if (item.id == FrameId::ODOM) {
