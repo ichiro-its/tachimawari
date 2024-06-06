@@ -47,7 +47,7 @@ std::string JointNode::status_topic() {return "measurement/status";}
 std::string JointNode::current_joints_topic() {return get_node_prefix() + "/current_joints";}
 
 JointNode::JointNode(
-  rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager, std::string path)
+  rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager, const std::string & path)
 : joint_manager(joint_manager),
   middleware(),
   tf2_broadcaster(std::make_shared<tf2_ros::TransformBroadcaster>(node)),

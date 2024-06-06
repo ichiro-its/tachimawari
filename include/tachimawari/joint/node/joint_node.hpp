@@ -59,7 +59,7 @@ public:
   static std::string status_topic();
 
   JointNode(
-    rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager, std::string path);
+    rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager, const std::string & path);
   keisan::Angle<double> imu_yaw;
 
   void publish_current_joints();
