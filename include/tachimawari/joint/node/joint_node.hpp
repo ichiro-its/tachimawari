@@ -21,8 +21,6 @@
 #ifndef TACHIMAWARI__JOINT__NODE__JOINT_NODE_HPP_
 #define TACHIMAWARI__JOINT__NODE__JOINT_NODE_HPP_
 
-#include <tf2_ros/buffer.h>
-
 #include <memory>
 #include <string>
 
@@ -37,6 +35,7 @@
 #include "tachimawari_interfaces/msg/current_joints.hpp"
 #include "tachimawari_interfaces/msg/set_joints.hpp"
 #include "tachimawari_interfaces/msg/set_torques.hpp"
+#include "tf2_ros/buffer.h"
 #include "tf2_ros/transform_broadcaster.h"
 
 namespace tachimawari::joint

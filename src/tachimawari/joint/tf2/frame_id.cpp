@@ -18,13 +18,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "tachimawari/joint/tf2/frame_id.hpp"
-
 #include <map>
 #include <string>
 #include <vector>
 
 #include "tachimawari/joint/model/joint_id.hpp"
+#include "tachimawari/joint/tf2/frame_id.hpp"
 
 namespace tachimawari::joint
 {

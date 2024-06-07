@@ -18,8 +18,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "tachimawari/node/tachimawari_node.hpp"
-
 #include <chrono>
 #include <memory>
 #include <string>
@@ -30,6 +28,7 @@
 #include "tachimawari/imu/node/imu_provider.hpp"
 #include "tachimawari/joint/node/joint_manager.hpp"
 #include "tachimawari/joint/node/joint_node.hpp"
+#include "tachimawari/node/tachimawari_node.hpp"
 
 using namespace std::chrono_literals;
 
