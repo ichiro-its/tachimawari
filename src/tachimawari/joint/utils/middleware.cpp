@@ -44,7 +44,7 @@ void Middleware::reset_ids()
   control_rule = DEFAULT;
 
   action_ids.clear();
-  std::copy(JointId::list.begin(), JointId::list.end(), std::back_inserter(action_ids));
+  std::copy(JointId::body_ids.begin(), JointId::body_ids.end(), std::back_inserter(action_ids));
 
   head_ids.clear();
   std::copy(JointId::head_ids.begin(), JointId::head_ids.end(), std::back_inserter(head_ids));
@@ -106,10 +106,10 @@ bool Middleware::validate(int control_type)
   if (control_rule == DEFAULT && control_type != FORCE) {
     if (control_type == FOR_ACTION) {
       ++action_control;
+    } else if (control_type == FOR_HEAD) {
+      ++head_control;
     } else if (!action_control.is_controlling()) {
-      if (control_type == FOR_HEAD) {
-        ++head_control;
-      } else if (control_type == FOR_WALKING) {
+      if (control_type == FOR_WALKING) {
         ++walking_control;
       }
     } else {
@@ -124,7 +124,7 @@ std::vector<Joint> Middleware::filter_joints(
   int control_type,
   const std::vector<tachimawari_interfaces::msg::Joint> & joints_message)
 {
-  if (control_rule == DEFAULT || control_type == FORCE) {
+  if (control_type == FORCE) {
     std::vector<Joint> joints;
     std::transform(
       joints_message.begin(), joints_message.end(),
