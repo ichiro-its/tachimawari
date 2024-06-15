@@ -55,6 +55,9 @@ add_library(${PROJECT_NAME} SHARED
   "src/${PROJECT_NAME}/joint/node/joint_node.cpp"
   "src/${PROJECT_NAME}/joint/utils/middleware.cpp"
   "src/${PROJECT_NAME}/joint/utils/node_control.cpp"
+  "src/${PROJECT_NAME}/joint/tf2/frame_id.cpp"
+  "src/${PROJECT_NAME}/joint/tf2/frame.cpp"
+  "src/${PROJECT_NAME}/joint/tf2/tf2_manager.cpp"
   "src/${PROJECT_NAME}/node/tachimawari_node.cpp"
   # TODO: Enable me later.
   # "src/${PROJECT_NAME}/node/rviz_server_node.cpp"
@@ -170,6 +173,7 @@ ament_export_dependencies(
   kansei_interfaces
   keisan
   rclcpp
+  tf2_ros
   tachimawari_interfaces)
 ament_export_include_directories("include")
 ament_export_libraries(${PROJECT_NAME})

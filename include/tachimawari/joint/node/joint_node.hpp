@@ -24,13 +24,19 @@
 #include <memory>
 #include <string>
 
+#include "kansei_interfaces/msg/status.hpp"
+#include "keisan/angle/angle.hpp"
 #include "rclcpp/rclcpp.hpp"
+#include "rclcpp/time.hpp"
 #include "tachimawari/joint/node/joint_manager.hpp"
+#include "tachimawari/joint/tf2/tf2_manager.hpp"
 #include "tachimawari/joint/utils/middleware.hpp"
 #include "tachimawari_interfaces/msg/control_joints.hpp"
 #include "tachimawari_interfaces/msg/current_joints.hpp"
 #include "tachimawari_interfaces/msg/set_joints.hpp"
 #include "tachimawari_interfaces/msg/set_torques.hpp"
+#include "tf2_ros/buffer.h"
+#include "tf2_ros/transform_broadcaster.h"
 
 namespace tachimawari::joint
 {
@@ -42,16 +48,21 @@ public:
   using CurrentJoints = tachimawari_interfaces::msg::CurrentJoints;
   using SetJoints = tachimawari_interfaces::msg::SetJoints;
   using SetTorques = tachimawari_interfaces::msg::SetTorques;
+  using Status = kansei_interfaces::msg::Status;
 
   static std::string get_node_prefix();
   static std::string control_joints_topic();
   static std::string set_joints_topic();
   static std::string set_torques_topic();
   static std::string current_joints_topic();
+  static std::string status_topic();
 
-  JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager);
+  JointNode(
+    rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager, const std::string & path);
+  keisan::Angle<double> imu_yaw;
 
   void publish_current_joints();
+  void publish_frame_tree();
   void update();
 
 private:
@@ -63,8 +74,13 @@ private:
 
   rclcpp::Subscription<SetTorques>::SharedPtr set_torques_subscriber;
 
+  rclcpp::Subscription<Status>::SharedPtr status_subscriber;
+
   Middleware middleware;
   rclcpp::Subscription<ControlJoints>::SharedPtr control_joints_subscriber;
+
+  std::shared_ptr<tf2_ros::TransformBroadcaster> tf2_broadcaster;
+  std::shared_ptr<Tf2Manager> tf2_manager;
 };
 
 }  // namespace tachimawari::joint

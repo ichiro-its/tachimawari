@@ -39,7 +39,7 @@ public:
   explicit TachimawariNode(
     rclcpp::Node::SharedPtr node, std::shared_ptr<control::ControlManager> control_manager);
 
-  void run_joint_manager();
+  void run_joint_manager(const std::string & path);
 
   void run_imu_provider();
 

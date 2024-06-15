@@ -21,9 +21,9 @@
 #include <memory>
 #include <string>
 
+#include "rclcpp/rclcpp.hpp"
 #include "tachimawari/control/control.hpp"
 #include "tachimawari/node/tachimawari_node.hpp"
-#include "rclcpp/rclcpp.hpp"
 
 int main(int argc, char * argv[])
 {
@@ -32,9 +32,12 @@ int main(int argc, char * argv[])
   if (argc < 2) {
     std::cerr << "Please specify the mode! [sdk / cm740]" << std::endl;
     return 0;
+  } else if (argc < 3) {
+    std::cerr << "Please specify the tf configuration path" << std::endl;
   }
 
   std::string mode = argv[1];
+  std::string path = argv[2];
   std::shared_ptr<tachimawari::control::ControlManager> controller;
 
   if (mode == "sdk") {
@@ -58,7 +61,7 @@ int main(int argc, char * argv[])
   auto node = std::make_shared<rclcpp::Node>("tachimawari_node");
   auto tachimawari_node = std::make_shared<tachimawari::TachimawariNode>(node, controller);
 
-  tachimawari_node->run_joint_manager();
+  tachimawari_node->run_joint_manager(path);
   tachimawari_node->run_imu_provider();
 
   rclcpp::spin(node);
