@@ -81,13 +81,6 @@ bool CM740::dxl_power_on()
   // test ping
   using tachimawari::joint::JointId;
 
-  for (int id = JointId::RIGHT_SHOULDER_PITCH; id < JointId::NECK_PITCH; id++) {
-    if (!ping(id)) {
-      std::cerr << "Ping failed! ID: " << id << std::endl;
-      return false;
-    }
-  }
-
   if (protocol_version == 1.0) {
     write_packet(
       CONTROLLER, CM740Address::LED_HEAD_L, protocol_1::Word::make_color(255, 128, 0), 2);
