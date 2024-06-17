@@ -78,9 +78,6 @@ bool CM740::connect()
 
 bool CM740::dxl_power_on()
 {
-  // test ping
-  using tachimawari::joint::JointId;
-
   if (protocol_version == 1.0) {
     write_packet(
       CONTROLLER, CM740Address::LED_HEAD_L, protocol_1::Word::make_color(255, 128, 0), 2);
