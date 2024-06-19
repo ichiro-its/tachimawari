@@ -29,10 +29,10 @@ int main(int argc, char * argv[])
 {
   auto args = rclcpp::init_and_remove_ros_arguments(argc, argv);
 
-  if (argc < args.size()) {
+  if (args.size() < 2) {
     std::cerr << "Please specify the mode! [sdk / cm740]" << std::endl;
     return 0;
-  } else if (argc < 3) {
+  } else if (args.size() < 3) {
     std::cerr << "Please specify the tf configuration path" << std::endl;
   }
 
