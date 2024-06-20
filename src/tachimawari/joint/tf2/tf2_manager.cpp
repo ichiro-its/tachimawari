@@ -41,6 +41,8 @@ bool Tf2Manager::load_configuration(const std::string & path)
     return false;
   }
 
+  bool valid_config = true;
+
   for (auto & item : config.items()) {
     // Get all config
     double translation_x;
@@ -53,13 +55,16 @@ bool Tf2Manager::load_configuration(const std::string & path)
     std::string name = item.key();
 
     nlohmann::json section;
-    if (!jitsuyo::assign_val(item.value(), name, section)) return false;
-    if (!jitsuyo::assign_val(section, "translation_x", translation_x) ||
-      !jitsuyo::assign_val(section, "translation_y", translation_y) ||
-      !jitsuyo::assign_val(section, "translation_z", translation_z) ||
-      !jitsuyo::assign_val(section, "const_roll", const_roll) ||
-      !jitsuyo::assign_val(section, "const_pitch", const_pitch) ||
-      !jitsuyo::assign_val(section, "const_yaw", const_yaw)) return false;
+    if (jitsuyo::assign_val(item.value(), name, section)) {
+      valid_config &= jitsuyo::assign_val(section, "translation_x", translation_x);
+      valid_config &= jitsuyo::assign_val(section, "translation_y", translation_y);
+      valid_config &= jitsuyo::assign_val(section, "translation_z", translation_z);
+      valid_config &= jitsuyo::assign_val(section, "const_roll", const_roll);
+      valid_config &= jitsuyo::assign_val(section, "const_pitch", const_pitch);
+      valid_config &= jitsuyo::assign_val(section, "const_yaw", const_yaw);
+    } else {
+      valid_config = false;
+    }
 
     auto map_string_id = FrameId::frame_string_id.find(name);
 
@@ -68,7 +73,7 @@ bool Tf2Manager::load_configuration(const std::string & path)
       Frame(id, translation_x, translation_y, translation_z, const_roll, const_pitch, const_yaw));
   }
 
-  return true;
+  return valid_config;
 }
 
 void Tf2Manager::update(const std::vector<Joint> & current_joints, const keisan::Angle<double> & imu_yaw)
