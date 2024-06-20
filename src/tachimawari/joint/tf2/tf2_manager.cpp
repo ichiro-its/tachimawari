@@ -36,13 +36,6 @@ Tf2Manager::Tf2Manager() {}
 
 bool Tf2Manager::load_configuration(const std::string & path)
 {
-  std::string ss = path + "frame_measurements.json";
-
-  std::ifstream input(ss, std::ifstream::in);
-  if (!input.is_open()) {
-    throw std::runtime_error("Unable to open `" + ss + "`!");
-  }
-
   nlohmann::json config = jitsuyo::load_config(path, "frame_measurements.json");
   if (config.empty()) {
     return false;
