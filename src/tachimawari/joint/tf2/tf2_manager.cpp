@@ -21,11 +21,13 @@
 #include <algorithm>
 #include <fstream>
 #include <memory>
-#include <nlohmann/json.hpp>
 #include <string>
 #include <vector>
 
 #include "tachimawari/joint/tf2/tf2_manager.hpp"
+
+#include "jitsuyo/config.hpp"
+#include "nlohmann/json.hpp"
 
 namespace tachimawari::joint
 {
@@ -41,27 +43,36 @@ bool Tf2Manager::load_configuration(const std::string & path)
     throw std::runtime_error("Unable to open `" + ss + "`!");
   }
 
-  nlohmann::json config = nlohmann::json::parse(input);
+  nlohmann::json config = jitsuyo::load_config(path, "frame_measurements.json");
+  if (config.empty()) {
+    return false;
+  }
 
   for (auto & item : config.items()) {
     // Get all config
-    try {
-      std::string name = item.key();
-      double translation_x = item.value().at("translation").at("x");
-      double translation_y = item.value().at("translation").at("y");
-      double translation_z = item.value().at("translation").at("z");
-      double const_roll = item.value().at("const_rpy").at("roll");
-      double const_pitch = item.value().at("const_rpy").at("pitch");
-      double const_yaw = item.value().at("const_rpy").at("yaw");
-      auto map_string_id = FrameId::frame_string_id.find(name);
+    double translation_x;
+    double translation_y;
+    double translation_z;
+    double const_roll;
+    double const_pitch;
+    double const_yaw;
 
-      uint8_t id = map_string_id->second;
-      frames.push_back(
-        Frame(id, translation_x, translation_y, translation_z, const_roll, const_pitch, const_yaw));
-    } catch (nlohmann::json::parse_error & ex) {
-      std::cerr << "parse error at byte " << ex.byte << std::endl;
-      throw ex;
-    }
+    std::string name = item.key();
+
+    nlohmann::json section;
+    if (!jitsuyo::assign_val(item.value(), name, section)) return false;
+    if (!jitsuyo::assign_val(section, "translation_x", translation_x) ||
+      !jitsuyo::assign_val(section, "translation_y", translation_y) ||
+      !jitsuyo::assign_val(section, "translation_z", translation_z) ||
+      !jitsuyo::assign_val(section, "const_roll", const_roll) ||
+      !jitsuyo::assign_val(section, "const_pitch", const_pitch) ||
+      !jitsuyo::assign_val(section, "const_yaw", const_yaw)) return false;
+
+    auto map_string_id = FrameId::frame_string_id.find(name);
+
+    uint8_t id = map_string_id->second;
+    frames.push_back(
+      Frame(id, translation_x, translation_y, translation_z, const_roll, const_pitch, const_yaw));
   }
 
   return true;
