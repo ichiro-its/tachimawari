@@ -36,8 +36,8 @@ Tf2Manager::Tf2Manager() {}
 
 bool Tf2Manager::load_configuration(const std::string & path)
 {
-  nlohmann::json config = jitsuyo::load_config(path, "frame_measurements.json");
-  if (config.empty()) {
+  nlohmann::json config;
+  if (!jitsuyo::load_config(path, "frame_measurements.json", config)) {
     return false;
   }
 
