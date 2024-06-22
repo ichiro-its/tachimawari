@@ -55,13 +55,25 @@ bool Tf2Manager::load_configuration(const std::string & path)
     std::string name = item.key();
 
     nlohmann::json section;
-    if (jitsuyo::assign_val(item.value(), name, section)) {
-      valid_config &= jitsuyo::assign_val(section, "translation_x", translation_x);
-      valid_config &= jitsuyo::assign_val(section, "translation_y", translation_y);
-      valid_config &= jitsuyo::assign_val(section, "translation_z", translation_z);
-      valid_config &= jitsuyo::assign_val(section, "const_roll", const_roll);
-      valid_config &= jitsuyo::assign_val(section, "const_pitch", const_pitch);
-      valid_config &= jitsuyo::assign_val(section, "const_yaw", const_yaw);
+    if (jitsuyo::assign_val(config, name, section)) {
+      nlohmann::json translation;
+      nlohmann::json const_rpy;
+
+      if (jitsuyo::assign_val(section, "translation", translation)) {
+        valid_config &= jitsuyo::assign_val(translation, "x", translation_x);
+        valid_config &= jitsuyo::assign_val(translation, "y", translation_y);
+        valid_config &= jitsuyo::assign_val(translation, "z", translation_z);
+      } else {
+        valid_config = false;
+      }
+
+      if (jitsuyo::assign_val(section, "const_rpy", const_rpy)) {
+        valid_config &= jitsuyo::assign_val(const_rpy, "roll", const_roll);
+        valid_config &= jitsuyo::assign_val(const_rpy, "pitch", const_pitch);
+        valid_config &= jitsuyo::assign_val(const_rpy, "yaw", const_yaw);
+      } else {
+        valid_config = false;
+      }
     } else {
       valid_config = false;
     }
