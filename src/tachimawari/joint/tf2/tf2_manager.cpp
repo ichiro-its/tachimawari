@@ -53,29 +53,45 @@ bool Tf2Manager::load_configuration(const std::string & path)
     double const_yaw;
 
     std::string name = item.key();
-
+    
+    bool valid_section = true;
     nlohmann::json section;
     if (jitsuyo::assign_val(config, name, section)) {
       nlohmann::json translation;
       nlohmann::json const_rpy;
 
       if (jitsuyo::assign_val(section, "translation", translation)) {
-        valid_config &= jitsuyo::assign_val(translation, "x", translation_x);
-        valid_config &= jitsuyo::assign_val(translation, "y", translation_y);
-        valid_config &= jitsuyo::assign_val(translation, "z", translation_z);
+        bool valid_translation = true;
+        valid_translation &= jitsuyo::assign_val(translation, "x", translation_x);
+        valid_translation &= jitsuyo::assign_val(translation, "y", translation_y);
+        valid_translation &= jitsuyo::assign_val(translation, "z", translation_z);
+        if (!valid_translation) {
+          std::cout << "Error found at section `translation`" << std::endl;
+          valid_section = false;
+        }
       } else {
-        valid_config = false;
+        valid_section = false;
       }
 
       if (jitsuyo::assign_val(section, "const_rpy", const_rpy)) {
-        valid_config &= jitsuyo::assign_val(const_rpy, "roll", const_roll);
-        valid_config &= jitsuyo::assign_val(const_rpy, "pitch", const_pitch);
-        valid_config &= jitsuyo::assign_val(const_rpy, "yaw", const_yaw);
+        bool valid_const_rpy = true;
+        valid_const_rpy &= jitsuyo::assign_val(const_rpy, "roll", const_roll);
+        valid_const_rpy &= jitsuyo::assign_val(const_rpy, "pitch", const_pitch);
+        valid_const_rpy &= jitsuyo::assign_val(const_rpy, "yaw", const_yaw);
+        if (!valid_const_rpy) {
+          std::cout << "Error found at section `const_rpy`" << std::endl;
+          valid_section = false;
+        }
       } else {
-        valid_config = false;
+        valid_section = false;
       }
     } else {
+      valid_section = false;
+    }
+
+    if (!valid_section) {
       valid_config = false;
+      continue;
     }
 
     auto map_string_id = FrameId::frame_string_id.find(name);
@@ -85,7 +101,11 @@ bool Tf2Manager::load_configuration(const std::string & path)
       Frame(id, translation_x, translation_y, translation_z, const_roll, const_pitch, const_yaw));
   }
 
-  return valid_config;
+  if (!valid_config) {
+    throw std::runtime_error("Failed to load config file `" + path + "frame_measurements.json`");
+  }
+
+  return true;
 }
 
 void Tf2Manager::update(const std::vector<Joint> & current_joints, const keisan::Angle<double> & imu_yaw)
