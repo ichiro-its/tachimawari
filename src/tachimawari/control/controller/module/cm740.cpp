@@ -129,7 +129,7 @@ protocol_1::StatusPacket CM740::send_packet(protocol_1::Packet packet)
     }
   } else {
     // TODO(maroqijalil): will be used for logging
-    std::cerr << "TX Corrupt!" << std::endl;
+    throw std::runtime_error("TX Corrupt!");
   }
 
   return status_packet;
