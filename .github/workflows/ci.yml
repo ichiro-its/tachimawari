@@ -39,6 +39,10 @@ jobs:
           path: jitsuyo
           token: ${{ secrets.GH_TOKEN }}
 
+       - name: Install nlohmann/json
+         run: |
+            sudo apt update && sudo apt install -y nlohmann-json3-dev
+
       - name: Setup workspace
         uses: ichiro-its/ros2-ws-action/setup@v1.0.1
 
