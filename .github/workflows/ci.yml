@@ -32,6 +32,12 @@ jobs:
           repository: ichiro-its/keisan
           path: keisan
 
+      - name: Checkout Keisan
+        uses: actions/checkout@v2.3.4
+        with:
+          repository: ichiro-its/jitsuyo
+          path: jitsuyo
+
       - name: Setup workspace
         uses: ichiro-its/ros2-ws-action/setup@v1.0.1
 
