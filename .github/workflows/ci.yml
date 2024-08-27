@@ -10,33 +10,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2.3.4
+        uses: actions/checkout@v4.1.1
         with:
           path: tachimawari
 
       - name: Checkout Tachimawari Interfaces
-        uses: actions/checkout@v2.3.4
+        uses: actions/checkout@v4.1.1
         with:
           repository: ichiro-its/tachimawari_interfaces
           path: tachimawari_interfaces
 
       - name: Checkout Kansei Interfaces
-        uses: actions/checkout@v2.3.4
+        uses: actions/checkout@v4.1.1
         with:
           repository: ichiro-its/kansei_interfaces
           path: kansei_interfaces
 
       - name: Checkout Keisan
-        uses: actions/checkout@v2.3.4
+        uses: actions/checkout@v4.1.1
         with:
           repository: ichiro-its/keisan
           path: keisan
 
-      - name: Checkout Keisan
-        uses: actions/checkout@v2.3.4
+      - name: Checkout Jitsuyo
+        uses: actions/checkout@v4.1.1
         with:
           repository: ichiro-its/jitsuyo
           path: jitsuyo
+          token: ${{ secrets.GH_TOKEN }}
 
       - name: Setup workspace
         uses: ichiro-its/ros2-ws-action/setup@v1.0.1
