@@ -21,6 +21,7 @@
 #ifndef TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__MODEL__PACKET_HPP_
 #define TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__MODEL__PACKET_HPP_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 

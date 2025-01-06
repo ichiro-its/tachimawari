@@ -25,6 +25,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 #include "dynamixel_sdk/dynamixel_sdk.h"
 #include "tachimawari/control/manager/control_manager.hpp"
