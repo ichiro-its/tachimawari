@@ -22,6 +22,7 @@
 #define TACHIMAWARI__JOINT__MODEL__JOINT_ID_HPP_
 
 #include <array>
+#include <cstdint>
 #include <map>
 #include <string>
 
