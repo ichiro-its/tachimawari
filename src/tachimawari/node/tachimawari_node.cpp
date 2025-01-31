@@ -18,6 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "tachimawari/node/tachimawari_node.hpp"
+
 #include <chrono>
 #include <memory>
 #include <string>
@@ -28,7 +30,6 @@
 #include "tachimawari/imu/node/imu_provider.hpp"
 #include "tachimawari/joint/node/joint_manager.hpp"
 #include "tachimawari/joint/node/joint_node.hpp"
-#include "tachimawari/node/tachimawari_node.hpp"
 
 using namespace std::chrono_literals;
 
@@ -43,34 +44,32 @@ TachimawariNode::TachimawariNode(
   imu_node(nullptr),
   control_node(nullptr)
 {
-  node_timer = node->create_wall_timer(
-    8ms, [this]() {
-      if (this->control_manager) {
-        this->control_manager->add_default_bulk_read_packet();
-        this->control_manager->send_bulk_read_packet();
+  node_timer = node->create_wall_timer(8ms, [this]() {
+    if (this->control_manager) {
+      this->control_manager->add_default_bulk_read_packet();
+      this->control_manager->send_bulk_read_packet();
 
-        if (this->imu_node) {
-          this->imu_node->update();
-        }
-
-        if (this->control_node) {
-          this->control_node->update();
-        }
-
-        if (this->joint_node) {
-          this->joint_node->update();
-
-          this->joint_node->publish_current_joints();
-          this->joint_node->publish_frame_tree();
-        }
+      if (this->imu_node) {
+        this->imu_node->update();
       }
+
+      if (this->control_node) {
+        this->control_node->update();
+      }
+
+      if (this->joint_node) {
+        this->joint_node->update();
+
+        this->joint_node->publish_current_joints();
+      }
+    }
   });
 }
 
-void TachimawariNode::run_joint_manager(const std::string & path)
+void TachimawariNode::run_joint_manager()
 {
   joint_node = std::make_shared<joint::JointNode>(
-    node, std::make_shared<joint::JointManager>(control_manager), path);
+    node, std::make_shared<joint::JointManager>(control_manager));
 
   control_node = std::make_shared<control::ControlNode>(node, control_manager);
 }

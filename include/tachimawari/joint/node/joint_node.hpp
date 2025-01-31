@@ -29,14 +29,11 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp/time.hpp"
 #include "tachimawari/joint/node/joint_manager.hpp"
-#include "tachimawari/joint/tf2/tf2_manager.hpp"
 #include "tachimawari/joint/utils/middleware.hpp"
 #include "tachimawari_interfaces/msg/control_joints.hpp"
 #include "tachimawari_interfaces/msg/current_joints.hpp"
 #include "tachimawari_interfaces/msg/set_joints.hpp"
 #include "tachimawari_interfaces/msg/set_torques.hpp"
-#include "tf2_ros/buffer.h"
-#include "tf2_ros/transform_broadcaster.h"
 
 namespace tachimawari::joint
 {
@@ -57,12 +54,10 @@ public:
   static std::string current_joints_topic();
   static std::string status_topic();
 
-  JointNode(
-    rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager, const std::string & path);
+  JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager);
   keisan::Angle<double> imu_yaw;
 
   void publish_current_joints();
-  void publish_frame_tree();
   void update();
 
 private:
@@ -78,9 +73,6 @@ private:
 
   Middleware middleware;
   rclcpp::Subscription<ControlJoints>::SharedPtr control_joints_subscriber;
-
-  std::shared_ptr<tf2_ros::TransformBroadcaster> tf2_broadcaster;
-  std::shared_ptr<Tf2Manager> tf2_manager;
 };
 
 }  // namespace tachimawari::joint
