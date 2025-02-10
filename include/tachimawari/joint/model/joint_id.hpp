@@ -32,8 +32,7 @@ namespace tachimawari::joint
 class JointId
 {
 public:
-  enum : uint8_t
-  {
+  enum : uint8_t {
     // head motors
     NECK_YAW = 19,
     NECK_PITCH = 20,
@@ -52,7 +51,8 @@ public:
     LEFT_HIP_YAW = 8,
     LEFT_HIP_ROLL = 10,
     LEFT_HIP_PITCH = 12,
-    LEFT_KNEE = 14,
+    LEFT_UPPER_KNEE = 14,
+    LEFT_LOWER_KNEE = 22,
     LEFT_ANKLE_PITCH = 16,
     LEFT_ANKLE_ROLL = 18,
 
@@ -60,17 +60,18 @@ public:
     RIGHT_HIP_YAW = 7,
     RIGHT_HIP_ROLL = 9,
     RIGHT_HIP_PITCH = 11,
-    RIGHT_KNEE = 13,
+    RIGHT_UPPER_KNEE = 13,
+    RIGHT_LOWER_KNEE = 21,
     RIGHT_ANKLE_PITCH = 15,
     RIGHT_ANKLE_ROLL = 17,
   };
 
-  static const std::array<uint8_t, 20> list;
+  static const std::array<uint8_t, 22> list;
 
   static const std::map<std::string, uint8_t> by_name;
 
   static const std::array<uint8_t, 2> head_ids;
-  static const std::array<uint8_t, 18> body_ids;
+  static const std::array<uint8_t, 20> body_ids;
 };
 
 }  // namespace tachimawari::joint

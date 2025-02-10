@@ -18,16 +18,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "tachimawari/joint/model/joint_id.hpp"
+
 #include <map>
 #include <string>
 #include <vector>
 
-#include "tachimawari/joint/model/joint_id.hpp"
-
 namespace tachimawari::joint
 {
 
-const std::array<uint8_t, 20> JointId::list = {
+const std::array<uint8_t, 22> JointId::list = {
   RIGHT_SHOULDER_PITCH,
   LEFT_SHOULDER_PITCH,
   RIGHT_SHOULDER_ROLL,
@@ -40,14 +40,16 @@ const std::array<uint8_t, 20> JointId::list = {
   LEFT_HIP_ROLL,
   RIGHT_HIP_PITCH,
   LEFT_HIP_PITCH,
-  RIGHT_KNEE,
-  LEFT_KNEE,
+  RIGHT_UPPER_KNEE,
+  LEFT_UPPER_KNEE,
   RIGHT_ANKLE_PITCH,
   LEFT_ANKLE_PITCH,
   RIGHT_ANKLE_ROLL,
   LEFT_ANKLE_ROLL,
   NECK_YAW,
   NECK_PITCH,
+  RIGHT_LOWER_KNEE,
+  LEFT_LOWER_KNEE,
 };
 
 const std::map<std::string, uint8_t> JointId::by_name = {
@@ -62,41 +64,29 @@ const std::map<std::string, uint8_t> JointId::by_name = {
   {"left_hip_yaw", LEFT_HIP_YAW},
   {"left_hip_roll", LEFT_HIP_ROLL},
   {"left_hip_pitch", LEFT_HIP_PITCH},
-  {"left_knee", LEFT_KNEE},
+  {"left_upper_knee", LEFT_UPPER_KNEE},
+  {"left_lower_Knee", LEFT_LOWER_KNEE},
   {"left_ankle_roll", LEFT_ANKLE_ROLL},
   {"left_ankle_pitch", LEFT_ANKLE_PITCH},
   {"right_hip_yaw", RIGHT_HIP_YAW},
   {"right_hip_roll", RIGHT_HIP_ROLL},
   {"right_hip_pitch", RIGHT_HIP_PITCH},
-  {"right_knee", RIGHT_KNEE},
+  {"right_upper_knee", RIGHT_UPPER_KNEE},
+  {"right_lower_knee", RIGHT_LOWER_KNEE},
   {"right_ankle_roll", RIGHT_ANKLE_ROLL},
-  {"right_ankle_pitch", RIGHT_ANKLE_PITCH}
-};
+  {"right_ankle_pitch", RIGHT_ANKLE_PITCH}};
 
 const std::array<uint8_t, 2> JointId::head_ids = {
   NECK_YAW,
   NECK_PITCH,
 };
 
-const std::array<uint8_t, 18> JointId::body_ids = {
-  RIGHT_SHOULDER_PITCH,
-  LEFT_SHOULDER_PITCH,
-  RIGHT_SHOULDER_ROLL,
-  LEFT_SHOULDER_ROLL,
-  RIGHT_ELBOW,
-  LEFT_ELBOW,
-  RIGHT_HIP_YAW,
-  LEFT_HIP_YAW,
-  RIGHT_HIP_ROLL,
-  LEFT_HIP_ROLL,
-  RIGHT_HIP_PITCH,
-  LEFT_HIP_PITCH,
-  RIGHT_KNEE,
-  LEFT_KNEE,
-  RIGHT_ANKLE_PITCH,
-  LEFT_ANKLE_PITCH,
-  RIGHT_ANKLE_ROLL,
-  LEFT_ANKLE_ROLL,
+const std::array<uint8_t, 20> JointId::body_ids = {
+  RIGHT_SHOULDER_PITCH, LEFT_SHOULDER_PITCH, RIGHT_SHOULDER_ROLL, LEFT_SHOULDER_ROLL,
+  RIGHT_ELBOW,          LEFT_ELBOW,          RIGHT_HIP_YAW,       LEFT_HIP_YAW,
+  RIGHT_HIP_ROLL,       LEFT_HIP_ROLL,       RIGHT_HIP_PITCH,     LEFT_HIP_PITCH,
+  RIGHT_UPPER_KNEE,     LEFT_UPPER_KNEE,     RIGHT_ANKLE_PITCH,   LEFT_ANKLE_PITCH,
+  RIGHT_ANKLE_ROLL,     LEFT_ANKLE_ROLL,     RIGHT_LOWER_KNEE,    LEFT_LOWER_KNEE,
 };
 
 }  // namespace tachimawari::joint
