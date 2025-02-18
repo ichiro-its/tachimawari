@@ -27,17 +27,17 @@
 
 int main(int argc, char * argv[])
 {
-  rclcpp::init(argc, argv);
+  auto args = rclcpp::init_and_remove_ros_arguments(argc, argv);
 
-  if (argc < 2) {
+  if (args.size() < 2) {
     std::cerr << "Please specify the mode! [sdk / cm740]" << std::endl;
     return 0;
-  } else if (argc < 3) {
+  } else if (args.size() < 3) {
     std::cerr << "Please specify the tf configuration path" << std::endl;
   }
 
-  std::string mode = argv[1];
-  std::string path = argv[2];
+  std::string mode = args[1];
+  std::string path = args[2];
   std::shared_ptr<tachimawari::control::ControlManager> controller;
 
   if (mode == "sdk") {

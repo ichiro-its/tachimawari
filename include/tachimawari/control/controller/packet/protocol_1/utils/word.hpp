@@ -21,6 +21,7 @@
 #ifndef TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__UTILS__WORD_HPP_
 #define TACHIMAWARI__CONTROL__CONTROLLER__PACKET__PROTOCOL_1__UTILS__WORD_HPP_
 
+#include <cstdint>
 #include <string>
 
 namespace tachimawari::control::protocol_1

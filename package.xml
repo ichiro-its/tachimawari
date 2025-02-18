@@ -8,6 +8,7 @@
   <license>MIT License</license>
   <buildtool_depend>ament_cmake</buildtool_depend>
   <depend>dynamixel_sdk</depend>
+  <depend>jitsuyo</depend>
   <depend>kansei_interfaces</depend>
   <depend>keisan</depend>
   <depend>rclcpp</depend>
