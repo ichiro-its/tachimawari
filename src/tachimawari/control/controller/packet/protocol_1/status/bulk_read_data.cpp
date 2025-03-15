@@ -129,6 +129,8 @@ int BulkReadData::update_all(
       break;
     }
   }
+
+  return -1;
 }
 
 BulkReadData::BulkReadData(uint8_t id, int data_length)
