@@ -32,12 +32,9 @@ int main(int argc, char * argv[])
   if (args.size() < 2) {
     std::cerr << "Please specify the mode! [sdk / cm740]" << std::endl;
     return 0;
-  } else if (args.size() < 3) {
-    std::cerr << "Please specify the tf configuration path" << std::endl;
   }
 
   std::string mode = args[1];
-  std::string path = args[2];
   std::shared_ptr<tachimawari::control::ControlManager> controller;
 
   if (mode == "sdk") {
@@ -61,7 +58,7 @@ int main(int argc, char * argv[])
   auto node = std::make_shared<rclcpp::Node>("tachimawari_node");
   auto tachimawari_node = std::make_shared<tachimawari::TachimawariNode>(node, controller);
 
-  tachimawari_node->run_joint_manager(path);
+  tachimawari_node->run_joint_manager();
   tachimawari_node->run_imu_provider();
 
   rclcpp::spin(node);
