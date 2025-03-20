@@ -66,6 +66,12 @@ bool DynamixelSDK::connect()
   }
 
   if (protocol_version == 1.0) {
+    if (!ControlManager::connect()) {
+      disconnect();
+
+      return false;
+    }
+
     write_packet(
       CONTROLLER, CM740Address::LED_HEAD_L, protocol_1::Word::make_color(255, 128, 0), 2);
   }

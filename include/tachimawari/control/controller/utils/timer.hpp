@@ -29,7 +29,7 @@ class Timer
 public:
   explicit Timer(double transfer_time);
 
-  void set_timeout(int length, double additional_time = 40.0);
+  void set_timeout(int length, double additional_time = 4.0);
 
   bool is_timeout();
 

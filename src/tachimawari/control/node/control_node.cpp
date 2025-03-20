@@ -54,8 +54,9 @@ void ControlNode::update()
 {
   auto status_msg = Status();
 
-  status_msg.button =
-    control_manager->get_bulk_data(ControlManager::CONTROLLER, CM740Address::BUTTON, 1);
+  // Button read is now from kansei
+  // status_msg.button =
+  //   control_manager->get_bulk_data(ControlManager::CONTROLLER, CM740Address::BUTTON, 1);
   status_msg.led_panel =
     control_manager->get_bulk_data(ControlManager::CONTROLLER, CM740Address::LED_PANNEL, 1);
 

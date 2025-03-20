@@ -32,6 +32,11 @@ ControlManager::ControlManager(
 {
 }
 
+bool ControlManager::connect()
+{
+  return write_packet(CONTROLLER, 64, 1);
+}
+
 float ControlManager::get_protocol_version() const
 {
   return protocol_version;
