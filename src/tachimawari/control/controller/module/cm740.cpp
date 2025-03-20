@@ -41,6 +41,7 @@
 #include "tachimawari/control/controller/packet/protocol_1/status/bulk_read_data.hpp"
 #include "tachimawari/control/controller/packet/protocol_1/status/status_packet.hpp"
 #include "tachimawari/control/controller/packet/protocol_1/utils/word.hpp"
+#include "tachimawari/control/manager/control_manager.hpp"
 #include "tachimawari/joint/model/joint.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
 #include "termios.h"  // NOLINT
@@ -59,12 +60,17 @@ CM740::CM740(const std::string & port_name, int baudrate, float protocol_version
 {
 }
 
-void CM740::set_port(const std::string & port_name) {this->port_name = port_name;}
+void CM740::set_port(const std::string & port_name) { this->port_name = port_name; }
 
 bool CM740::connect()
 {
+  // if (platform->open_port(port_name, baudrate) && dxl_power_on()) {
   if (platform->open_port(port_name, baudrate)) {
-    return dxl_power_on();
+    if (dxl_power_on()) {
+      return true;
+    }
+
+    disconnect();
   }
 
   return false;
@@ -72,16 +78,12 @@ bool CM740::connect()
 
 bool CM740::dxl_power_on()
 {
-  if (write_packet(CONTROLLER, CM740Address::DXL_POWER, 1)) {
-    if (protocol_version == 1.0) {
-      write_packet(
-        CONTROLLER, CM740Address::LED_HEAD_L, protocol_1::Word::make_color(255, 128, 0), 2);
-    }
-
-    return true;
+  if (protocol_version == 1.0) {
+    write_packet(
+      CONTROLLER, CM740Address::LED_HEAD_L, protocol_1::Word::make_color(255, 128, 0), 2);
   }
 
-  return false;
+  return true;
 }
 
 protocol_1::StatusPacket CM740::send_packet(protocol_1::Packet packet)
@@ -97,7 +99,7 @@ protocol_1::StatusPacket CM740::send_packet(protocol_1::Packet packet)
 
   if (platform->write_port(txpacket) == txpacket.size()) {
     packet_timer.set_timeout(expected_length);
-
+    int i = 0;
     while (true) {
       get_length += platform->read_port(rxpacket, expected_length - get_length, get_length);
 
@@ -110,7 +112,6 @@ protocol_1::StatusPacket CM740::send_packet(protocol_1::Packet packet)
           return status_packet;
         } else if (new_get_length != 0) {
           // TODO(maroqijalil): will be used for logging
-          // is packet timeout ? so RX_TIMEOUT
           get_length = new_get_length;
         } else {
           // TODO(maroqijalil): will be used for logging
@@ -119,7 +120,6 @@ protocol_1::StatusPacket CM740::send_packet(protocol_1::Packet packet)
         }
       } else {
         // TODO(maroqijalil): will be used for logging
-        // is packet timeout ? so RX_TIMEOUT
         if (packet_timer.is_timeout()) {
           break;
         } else if (get_length > expected_length) {
@@ -129,7 +129,7 @@ protocol_1::StatusPacket CM740::send_packet(protocol_1::Packet packet)
     }
   } else {
     // TODO(maroqijalil): will be used for logging
-    // so TX_FAIL
+    throw std::runtime_error("TX Corrupt!");
   }
 
   return status_packet;
@@ -187,8 +187,8 @@ bool CM740::sync_write_packet(const std::vector<joint::Joint> & joints, bool wit
     protocol_1::SyncWritePacket instruction_packet;
 
     instruction_packet.create(
-      joints, with_pid ? tachimawari::joint::protocol_1::MX28Address::D_GAIN :
-      tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
+      joints, with_pid ? tachimawari::joint::protocol_1::MX28Address::D_GAIN
+                       : tachimawari::joint::protocol_1::MX28Address::GOAL_POSITION_L);
 
     std::vector<uint8_t> txpacket = instruction_packet.get_packet();
 
@@ -298,6 +298,6 @@ void CM740::disconnect()
   platform->close_port();
 }
 
-CM740::~CM740() {disconnect();}
+CM740::~CM740() { disconnect(); }
 
 }  // namespace tachimawari::control

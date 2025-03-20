@@ -41,7 +41,7 @@ public:
 
   virtual void set_port(const std::string & port_name) {}
 
-  virtual bool connect() {}
+  virtual bool connect();
   virtual void disconnect() {}
 
   virtual bool ping(uint8_t id) {}
@@ -50,7 +50,7 @@ public:
 
   virtual int read_packet(uint8_t id, uint16_t address, int data_length = 1) {}
 
-  virtual bool sync_write_packet(const std::vector<joint::Joint> & joints, bool with_pid = false) {}
+  virtual bool sync_write_packet(const std::vector<joint::Joint> & joints, bool with_pid = true) {}
 
   virtual bool send_bulk_read_packet() {}
 
