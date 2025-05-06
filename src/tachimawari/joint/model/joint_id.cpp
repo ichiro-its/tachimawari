@@ -80,6 +80,32 @@ const std::map<std::string, uint8_t> JointId::by_name = {
   {"right_ankle_roll", RIGHT_ANKLE_ROLL},
   {"right_ankle_pitch", RIGHT_ANKLE_PITCH}};
 
+const std::map<uint8_t, std::string> JointId::by_id = {
+  {NECK_YAW, "neck_yaw"},
+  {NECK_PITCH, "neck_pitch"},
+  {LEFT_SHOULDER_PITCH, "left_shoulder_pitch"},
+  {LEFT_SHOULDER_ROLL, "left_shoulder_roll"},
+  {LEFT_SHOULDER_YAW, "left_shoulder_yaw"},
+  {LEFT_ELBOW, "left_elbow"},
+  {LEFT_GRIPPER, "left_gripper"},
+  {RIGHT_SHOULDER_PITCH, "right_shoulder_pitch"},
+  {RIGHT_SHOULDER_ROLL, "right_shoulder_roll"},
+  {RIGHT_SHOULDER_YAW, "right_shoulder_yaw"},
+  {RIGHT_ELBOW, "right_elbow"},
+  {RIGHT_GRIPPER, "right_gripper"},
+  {LEFT_HIP_YAW, "left_hip_yaw"},
+  {LEFT_HIP_ROLL, "left_hip_roll"},
+  {LEFT_HIP_PITCH, "left_hip_pitch"},
+  {LEFT_KNEE, "left_knee"},
+  {LEFT_ANKLE_ROLL, "left_ankle_roll"},
+  {LEFT_ANKLE_PITCH, "left_ankle_pitch"},
+  {RIGHT_HIP_YAW, "right_hip_yaw"},
+  {RIGHT_HIP_ROLL, "right_hip_roll"},
+  {RIGHT_HIP_PITCH, "right_hip_pitch"},
+  {RIGHT_KNEE, "right_knee"},
+  {RIGHT_ANKLE_ROLL, "right_ankle_roll"},
+  {RIGHT_ANKLE_PITCH, "right_ankle_pitch"}};
+
 const std::array<uint8_t, 2> JointId::head_ids = {
   NECK_YAW,
   NECK_PITCH,

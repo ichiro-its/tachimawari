@@ -71,6 +71,7 @@ public:
   static const std::array<uint8_t, 24> list;
 
   static const std::map<std::string, uint8_t> by_name;
+  static const std::map<uint8_t, std::string> by_id;
 
   static const std::array<uint8_t, 2> head_ids;
   static const std::array<uint8_t, 22> body_ids;
