@@ -92,10 +92,16 @@ bool JointManager::torque_enable(bool enable)
 
 bool JointManager::torque_enable(const std::vector<Joint> & joints, bool enable)
 {
-  if (std::any_of(joints.begin(), joints.end(), [&](Joint joint) {
-        return !control_manager->write_packet(
-          joint.get_id(), protocol_1::MX28Address::TORQUE_ENABLE, enable);
-      })) {
+  bool failed = false;
+  for (const auto & joint : joints) {
+    if (!control_manager->write_packet(
+        joint.get_id(), protocol_1::MX28Address::TORQUE_ENABLE, enable)) {
+      printf("Failed to set torque for joint id: %d\n", joint.get_id());
+      failed = true;
+    }
+  }
+
+  if (failed) {
     return false;
   }
 

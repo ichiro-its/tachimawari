@@ -59,9 +59,9 @@ int main(int argc, char * argv[])
     for (const auto & [key, value] : JointId::by_name) {
       std::cout << "ping " << key << ": ";
       if (controller->ping(value)) {
-        std::cout << "success\n";
+        std::cout << "\033[32m" << "success" << "\033[0m" << "\n";
       } else {
-        std::cout << "failed\n";
+        std::cout << "\033[31m" << "failed" << "\033[0m" << "\n";
       }
     }
   }
