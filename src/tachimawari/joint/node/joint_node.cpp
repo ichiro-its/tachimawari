@@ -46,6 +46,8 @@ std::string JointNode::status_topic() { return "measurement/status"; }
 
 std::string JointNode::current_joints_topic() { return get_node_prefix() + "/current_joints"; }
 
+std::string JointNode::telemetry_topic() { return get_node_prefix() + "/telemetry"; }
+
 JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager)
 : joint_manager(joint_manager), middleware(), imu_yaw(keisan::make_degree(0))
 {
@@ -78,9 +80,16 @@ JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager>
     });
 
   current_joints_publisher = node->create_publisher<CurrentJoints>(current_joints_topic(), 10);
+  telemetry_publisher = node->create_publisher<tachimawari_interfaces::msg::CurrentJointsTelemetry>(
+    telemetry_topic(), 10);
 }
 
 void JointNode::update() { middleware.update(); }
+
+void JointNode::publish_telemetry()
+{
+  telemetry_publisher->publish(this->joint_manager->get_telemetry());
+}
 
 void JointNode::publish_current_joints()
 {

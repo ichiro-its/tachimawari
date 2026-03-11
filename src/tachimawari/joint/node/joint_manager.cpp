@@ -26,6 +26,8 @@
 
 #include "tachimawari/joint/model/joint_id.hpp"
 #include "tachimawari/joint/protocol_1/mx28_address.hpp"
+#include "tachimawari/joint/protocol_2/mx28_address.hpp"
+#include "tachimawari_interfaces/msg/joint_telemetry.hpp"
 
 namespace tachimawari::joint
 {
@@ -115,6 +117,31 @@ bool JointManager::set_joints(const std::vector<Joint> & joints)
   }
 
   return false;
+}
+
+tachimawari_interfaces::msg::CurrentJointsTelemetry JointManager::get_telemetry()
+{
+  tachimawari_interfaces::msg::CurrentJointsTelemetry telemetry_msg;
+
+  for (const auto & joint : current_joints) {
+    tachimawari_interfaces::msg::JointTelemetry t;
+    t.id = joint.get_id();
+
+    int current_raw = control_manager->read_packet(
+      joint.get_id(), tachimawari::joint::protocol_2::MX28Address::PRESENT_CURRENT, 2);
+    int voltage_raw = control_manager->read_packet(
+      joint.get_id(), tachimawari::joint::protocol_2::MX28Address::PRESENT_INPUT_VOLTAGE, 2);
+    int temp_raw = control_manager->read_packet(
+      joint.get_id(), tachimawari::joint::protocol_2::MX28Address::PRESENT_TEMPERATURE, 1);
+
+    t.current = (current_raw == -1) ? 0.0 : (current_raw * 3.36 / 1000.0); // Converted to Amps
+    t.voltage = (voltage_raw == -1) ? 0.0 : (voltage_raw / 10.0);          // Converted to Volts
+    t.temperature = (temp_raw == -1) ? 0.0 : static_cast<double>(temp_raw);
+
+    telemetry_msg.telemetry.push_back(t);
+  }
+
+  return telemetry_msg;
 }
 
 }  // namespace tachimawari::joint

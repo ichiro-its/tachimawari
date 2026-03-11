@@ -32,6 +32,7 @@
 #include "tachimawari/joint/utils/middleware.hpp"
 #include "tachimawari_interfaces/msg/control_joints.hpp"
 #include "tachimawari_interfaces/msg/current_joints.hpp"
+#include "tachimawari_interfaces/msg/current_joints_telemetry.hpp"
 #include "tachimawari_interfaces/msg/set_joints.hpp"
 #include "tachimawari_interfaces/msg/set_torques.hpp"
 
@@ -52,18 +53,21 @@ public:
   static std::string set_joints_topic();
   static std::string set_torques_topic();
   static std::string current_joints_topic();
+  static std::string telemetry_topic();
   static std::string status_topic();
 
   JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager> joint_manager);
   keisan::Angle<double> imu_yaw;
 
   void publish_current_joints();
+  void publish_telemetry();
   void update();
 
 private:
   std::shared_ptr<JointManager> joint_manager;
 
   rclcpp::Publisher<CurrentJoints>::SharedPtr current_joints_publisher;
+  rclcpp::Publisher<tachimawari_interfaces::msg::CurrentJointsTelemetry>::SharedPtr telemetry_publisher;
 
   rclcpp::Subscription<SetJoints>::SharedPtr set_joints_subscriber;
 

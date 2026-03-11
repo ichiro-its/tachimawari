@@ -64,6 +64,12 @@ TachimawariNode::TachimawariNode(
       }
     }
   });
+
+  telemetry_timer = node->create_wall_timer(1s, [this]() {
+    if (this->joint_node) {
+      this->joint_node->publish_telemetry();
+    }
+  });
 }
 
 void TachimawariNode::run_joint_manager()

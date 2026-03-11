@@ -26,6 +26,7 @@
 
 #include "tachimawari/control/manager/control_manager.hpp"
 #include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari_interfaces/msg/current_joints_telemetry.hpp"
 
 namespace tachimawari::joint
 {
@@ -41,6 +42,8 @@ public:
   bool set_joints(const std::vector<Joint> & joints);
 
   const std::vector<Joint> & get_current_joints();
+
+  tachimawari_interfaces::msg::CurrentJointsTelemetry get_telemetry();
 
 private:
   void update_current_joints(const std::vector<Joint> & joints);
