@@ -41,6 +41,7 @@ add_library(${PROJECT_NAME} SHARED
   "src/${PROJECT_NAME}/control/controller/platform/linux.cpp"
   "src/${PROJECT_NAME}/control/controller/utils/timer.cpp"
   "src/${PROJECT_NAME}/control/manager/control_manager.cpp"
+  "src/${PROJECT_NAME}/control/manager/dummy_control_manager.cpp"
   "src/${PROJECT_NAME}/control/node/control_node.cpp"
   "src/${PROJECT_NAME}/control/sdk/module/dynamixel_sdk.cpp"
   "src/${PROJECT_NAME}/control/sdk/packet/model/group_bulk_read.cpp"

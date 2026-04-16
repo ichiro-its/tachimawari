@@ -18,60 +18,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef TACHIMAWARI__CONTROL__MANAGER__CONTROL_MANAGER_HPP_
-#define TACHIMAWARI__CONTROL__MANAGER__CONTROL_MANAGER_HPP_
+#ifndef TACHIMAWARI__CONTROL__MANAGER__DUMMY_CONTROL_MANAGER_HPP_
+#define TACHIMAWARI__CONTROL__MANAGER__DUMMY_CONTROL_MANAGER_HPP_
 
 #include <string>
 #include <vector>
 
-#include "tachimawari/joint/model/joint.hpp"
+#include "tachimawari/control/manager/control_manager.hpp"
 
 namespace tachimawari::control
 {
 
-class ControlManager
+class DummyControlManager : public ControlManager
 {
 public:
-  enum : uint8_t {MARIN_CORE = 190, CONTROLLER = 200, BROADCAST = 254};
+  explicit DummyControlManager(
+    const std::string & port_name = "dummy", int baudrate = 1000000, float protocol_version = 1.0);
 
-  explicit ControlManager(const std::string & port_name, float protocol_version, int baudrate);
-  virtual ~ControlManager() {}
+  void set_port(const std::string & port_name) override;
 
-  float get_protocol_version() const;
-
-  virtual void set_port(const std::string &) {}
-
-  virtual bool connect();
-  virtual void disconnect() {}
-
-  virtual bool ping(uint8_t) {return false;}
-
-  virtual bool write_packet(uint8_t, uint16_t, int, int = 1)
-  {
-    return false;
-  }
-
-  virtual int read_packet(uint8_t, uint16_t, int = 1) {return -1;}
-
-  virtual bool sync_write_packet(const std::vector<joint::Joint> &, bool = true)
-  {
-    return false;
-  }
-
-  virtual bool send_bulk_read_packet() {return false;}
-
-  virtual bool add_default_bulk_read_packet() {return false;}
-
-  virtual int get_data(uint8_t, uint16_t, int = 1) {return -1;}
-
-  virtual int get_bulk_data(uint8_t, uint16_t, int = 1) {return -1;}
-
-protected:
-  std::string port_name;
-  float protocol_version;
-  int baudrate;
+  bool connect() override;
+  bool ping(uint8_t id) override;
+  bool write_packet(uint8_t id, uint16_t address, int value, int data_length = 1) override;
+  int read_packet(uint8_t id, uint16_t address, int data_length = 1) override;
+  bool sync_write_packet(const std::vector<joint::Joint> & joints, bool with_pid = true) override;
+  bool send_bulk_read_packet() override;
+  bool add_default_bulk_read_packet() override;
+  int get_data(uint8_t id, uint16_t address, int data_lenghth = 1) override;
+  int get_bulk_data(uint8_t id, uint16_t address, int data_length = 1) override;
 };
 
 }  // namespace tachimawari::control
 
-#endif  // TACHIMAWARI__CONTROL__MANAGER__CONTROL_MANAGER_HPP_
+#endif  // TACHIMAWARI__CONTROL__MANAGER__DUMMY_CONTROL_MANAGER_HPP_

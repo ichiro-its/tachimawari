@@ -23,6 +23,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "tachimawari/control/control.hpp"
+#include "tachimawari/control/manager/dummy_control_manager.hpp"
 #include "tachimawari/node/tachimawari_node.hpp"
 
 int main(int argc, char * argv[])
@@ -30,29 +31,38 @@ int main(int argc, char * argv[])
   auto args = rclcpp::init_and_remove_ros_arguments(argc, argv);
 
   if (args.size() < 2) {
-    std::cerr << "Please specify the mode! [sdk / cm740]" << std::endl;
+    std::cerr << "Please specify the mode! [sdk / cm740 / dummy]" << std::endl;
     return 0;
   }
 
   std::string mode = args[1];
   std::shared_ptr<tachimawari::control::ControlManager> controller;
+  bool requires_driver_connection = true;
 
   if (mode == "sdk") {
     controller = std::make_shared<tachimawari::control::DynamixelSDK>("/dev/ttyUSB0");
   } else if (mode == "cm740") {
     controller = std::make_shared<tachimawari::control::CM740>("/dev/ttyUSB0");
+  } else if (mode == "dummy") {
+    controller = std::make_shared<tachimawari::control::DummyControlManager>();
+    requires_driver_connection = false;
   } else {
-    std::cerr << "Mode doesn't exist, select the correct mode! [sdk / cm740]" << std::endl;
+    std::cerr << "Mode doesn't exist, select the correct mode! [sdk / cm740 / dummy]"
+              << std::endl;
     return 0;
   }
 
-  if (!controller->connect()) {
-    controller->set_port("/dev/ttyUSB1");
-
+  if (requires_driver_connection) {
     if (!controller->connect()) {
-      std::cout << "failed to connect controller\n";
-      return 1;
+      controller->set_port("/dev/ttyUSB1");
+
+      if (!controller->connect()) {
+        std::cout << "failed to connect controller\n";
+        return 1;
+      }
     }
+  } else {
+    controller->connect();
   }
 
   auto node = std::make_shared<rclcpp::Node>("tachimawari_node");
