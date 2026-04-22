@@ -66,6 +66,8 @@ public:
 
   bool send_bulk_read_packet() override;
   bool add_default_bulk_read_packet() override;
+
+  bool add_bulk_read_param(uint8_t id, uint16_t address, int data_length) override;
   int get_bulk_data(uint8_t id, uint16_t address, int data_length = 1) override;
 
 private:

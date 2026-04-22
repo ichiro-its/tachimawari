@@ -237,6 +237,15 @@ bool DynamixelSDK::add_default_bulk_read_packet()
   return false;
 }
 
+bool DynamixelSDK::add_bulk_read_param(uint8_t id, uint16_t address, int data_length)
+{
+  if (sdk_group_bulk_read == nullptr) {
+    sdk_group_bulk_read = std::make_shared<sdk::GroupBulkRead>(port_handler, packet_handler);
+  }
+
+  return sdk_group_bulk_read->add(id, address, data_length);
+}
+
 bool DynamixelSDK::send_bulk_read_packet()
 {
   int result = TX_FAIL;

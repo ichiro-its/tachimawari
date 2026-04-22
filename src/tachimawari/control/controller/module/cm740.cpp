@@ -224,6 +224,18 @@ bool CM740::add_default_bulk_read_packet()
   return false;
 }
 
+bool CM740::add_bulk_read_param(uint8_t id, uint16_t address, int data_length)
+{
+  std::lock_guard<std::mutex> lock(serial_mutex);
+  if (bulk_read_packet == nullptr) {
+    bulk_read_packet = std::make_shared<protocol_1::BulkReadPacket>();
+  }
+
+  bulk_read_packet->add(id, static_cast<uint8_t>(address), static_cast<uint8_t>(data_length));
+
+  return true;
+}
+
 bool CM740::send_bulk_read_packet()
 {
   std::lock_guard<std::mutex> lock(serial_mutex);

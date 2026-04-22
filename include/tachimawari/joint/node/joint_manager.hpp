@@ -47,13 +47,15 @@ public:
 
   bool set_joints(const std::vector<Joint> & joints);
 
+  void add_to_bulk_read_packet();
+  void update_current_joints_from_bulk_read();
+
   std::vector<Joint> get_current_joints();
 
 private:
   void update_current_joints(const std::vector<Joint> & joints);
   void update_current_joints_from_control_manager(const std::vector<Joint> & joints);
   float compute_velocity_from_differential(uint8_t id, int new_position);
-  void read_loop();
 
   std::shared_ptr<tachimawari::control::ControlManager> control_manager;
 
@@ -67,9 +69,6 @@ private:
   };
 
   std::unordered_map<uint8_t, JointReadState> joint_read_state;
-
-  std::thread read_thread;
-  std::atomic<bool> running;
 };
 
 }  // namespace tachimawari::joint

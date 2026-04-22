@@ -32,7 +32,7 @@ namespace tachimawari::joint
 {
 
 JointManager::JointManager(std::shared_ptr<tachimawari::control::ControlManager> control_manager)
-: control_manager(control_manager), running(true)
+: control_manager(control_manager)
 {
   torque_enable(true);
 
@@ -40,16 +40,10 @@ JointManager::JointManager(std::shared_ptr<tachimawari::control::ControlManager>
     control_manager->write_packet(id, protocol_1::MX28Address::RETURN_DELAY_TIME, 0);
     current_joints.push_back(Joint(id, 0.0));
   }
-
-  read_thread = std::thread(&JointManager::read_loop, this);
 }
 
 JointManager::~JointManager()
 {
-  running = false;
-  if (read_thread.joinable()) {
-    read_thread.join();
-  }
 }
 
 void JointManager::update_current_joints(const std::vector<Joint> & joints)
@@ -114,42 +108,43 @@ float JointManager::compute_velocity_from_differential(uint8_t id, int new_posit
     }
     state.position = new_position;
     state.time = now;
+    return state.velocity;
   }
-  // If raw_delta == 0: position unchanged, keep the last computed velocity and don't update time
 
-  return state.velocity;
+  // If raw_delta == 0: position unchanged, return 0.0 to avoid duplicated sticky velocities
+  return 0.0f;
 }
 
-void JointManager::read_loop()
+void JointManager::add_to_bulk_read_packet()
 {
-  while (running) {
-    std::vector<Joint> snapshot;
-    {
-      std::lock_guard<std::mutex> lock(joints_mutex);
-      snapshot = current_joints;
-    }
+  std::lock_guard<std::mutex> lock(joints_mutex);
+  for (const auto & joint : current_joints) {
+    control_manager->add_bulk_read_param(
+      joint.get_id(), protocol_1::MX28Address::PRESENT_POSITION_L, 2);
+  }
+}
 
-    std::vector<Joint> updated_joints;
-    for (auto & joint : snapshot) {
+void JointManager::update_current_joints_from_bulk_read()
+{
+  std::vector<Joint> updated_joints;
+
+  {
+    std::lock_guard<std::mutex> lock(joints_mutex);
+    for (auto joint : current_joints) {
       int current_value =
-        control_manager->read_packet(joint.get_id(), protocol_1::MX28Address::PRESENT_POSITION_L, 2);
+        control_manager->get_bulk_data(joint.get_id(), protocol_1::MX28Address::PRESENT_POSITION_L, 2);
 
-      // Skip this joint entirely if the read failed
-      if (current_value == -1) {
-        continue;
+      if (current_value != -1) {
+        joint.set_position_value(current_value);
+        joint.set_velocity(compute_velocity_from_differential(joint.get_id(), current_value));
+        updated_joints.push_back(joint);
       }
-
-      joint.set_position_value(current_value);
-      joint.set_velocity(compute_velocity_from_differential(joint.get_id(), current_value));
-      updated_joints.push_back(joint);
     }
+  }
 
-    if (!updated_joints.empty()) {
-      std::lock_guard<std::mutex> lock(joints_mutex);
-      update_current_joints(updated_joints);
-    }
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+  if (!updated_joints.empty()) {
+    std::lock_guard<std::mutex> lock(joints_mutex);
+    update_current_joints(updated_joints);
   }
 }
 
