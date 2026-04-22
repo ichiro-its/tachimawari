@@ -44,7 +44,7 @@ TachimawariNode::TachimawariNode(
   imu_node(nullptr),
   control_node(nullptr)
 {
-  node_timer = node->create_wall_timer(8ms, [this]() {
+  node_timer = node->create_wall_timer(20ms, [this]() {
     if (this->control_manager) {
       this->control_manager->add_default_bulk_read_packet();
       this->control_manager->send_bulk_read_packet();

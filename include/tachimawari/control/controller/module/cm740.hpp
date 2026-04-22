@@ -23,6 +23,7 @@
 
 #include <map>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -75,6 +76,8 @@ private:
   std::shared_ptr<Linux> platform;
 
   Timer packet_timer;
+
+  std::mutex serial_mutex;
 
   std::shared_ptr<std::map<uint8_t, protocol_1::BulkReadData>> bulk_data;
   std::shared_ptr<protocol_1::BulkReadPacket> bulk_read_packet;

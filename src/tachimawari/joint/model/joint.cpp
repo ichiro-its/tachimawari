@@ -38,7 +38,7 @@ keisan::Angle<double> Joint::value_to_angle(int value)
 }
 
 Joint::Joint(uint8_t joint_id, float position)
-: id(joint_id), position(keisan::make_degree(position))
+: id(joint_id), position(keisan::make_degree(position)), velocity(0.0)
 {
   if (joint_id < 7) {
     set_pid_gain(32.0, 0.0, 0.0);
@@ -79,6 +79,16 @@ uint8_t Joint::get_id() const
 float Joint::get_position() const
 {
   return position.normalize().degree();
+}
+
+void Joint::set_velocity(float velocity)
+{
+  this->velocity = velocity;
+}
+
+float Joint::get_velocity() const
+{
+  return velocity;
 }
 
 std::vector<float> Joint::get_pid_gain() const

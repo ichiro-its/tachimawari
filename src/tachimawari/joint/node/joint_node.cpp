@@ -92,6 +92,7 @@ void JointNode::publish_current_joints()
   for (size_t i = 0; i < joints.size() && i < current_joints.size(); ++i) {
     joints[i].id = current_joints[i].get_id();
     joints[i].position = current_joints[i].get_position();
+    joints[i].velocity = current_joints[i].get_velocity();
   }
 
   current_joints_publisher->publish(msg_joints);

@@ -22,6 +22,7 @@
 
 #include <map>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -137,6 +138,7 @@ protocol_1::StatusPacket CM740::send_packet(protocol_1::Packet packet)
 
 bool CM740::ping(uint8_t id)
 {
+  std::lock_guard<std::mutex> lock(serial_mutex);
   if (protocol_version == 1.0) {
     protocol_1::Packet instruction_packet(id, protocol_1::Instruction::PING);
 
@@ -148,6 +150,7 @@ bool CM740::ping(uint8_t id)
 
 bool CM740::write_packet(uint8_t id, uint16_t address, int value, int data_length)
 {
+  std::lock_guard<std::mutex> lock(serial_mutex);
   if (protocol_version == 1.0) {
     protocol_1::WritePacket instruction_packet;
 
@@ -165,6 +168,7 @@ bool CM740::write_packet(uint8_t id, uint16_t address, int value, int data_lengt
 
 int CM740::read_packet(uint8_t id, uint16_t address, int data_length)
 {
+  std::lock_guard<std::mutex> lock(serial_mutex);
   using ReadPacket = protocol_1::ReadPacket;
 
   if (protocol_version == 1.0) {
@@ -183,6 +187,7 @@ int CM740::read_packet(uint8_t id, uint16_t address, int data_length)
 
 bool CM740::sync_write_packet(const std::vector<joint::Joint> & joints, bool with_pid)
 {
+  std::lock_guard<std::mutex> lock(serial_mutex);
   if (protocol_version == 1.0) {
     protocol_1::SyncWritePacket instruction_packet;
 
@@ -200,12 +205,16 @@ bool CM740::sync_write_packet(const std::vector<joint::Joint> & joints, bool wit
 
 bool CM740::add_default_bulk_read_packet()
 {
+  std::lock_guard<std::mutex> lock(serial_mutex);
   if (bulk_read_packet == nullptr) {
     bulk_read_packet = std::make_shared<protocol_1::BulkReadPacket>();
   }
 
   if (protocol_version == 1.0) {
-    if (ping(CONTROLLER)) {
+    // ping() is called without the mutex since we already hold it;
+    // call send_packet directly instead.
+    protocol_1::Packet instruction_packet(CONTROLLER, protocol_1::Instruction::PING);
+    if (send_packet(instruction_packet).is_success()) {
       bulk_read_packet->add(CONTROLLER, CM740Address::DXL_POWER, 30u);
 
       return true;
@@ -217,71 +226,72 @@ bool CM740::add_default_bulk_read_packet()
 
 bool CM740::send_bulk_read_packet()
 {
-  {
-    using protocol_1::BulkReadData;
+  std::lock_guard<std::mutex> lock(serial_mutex);
 
-    if (!bulk_read_packet->is_parameters_filled()) {
-      return false;
-    }
+  if (bulk_read_packet == nullptr || !bulk_read_packet->is_parameters_filled()) {
+    return false;
+  }
 
-    std::vector<uint8_t> txpacket(bulk_read_packet->get_packet());
+  using protocol_1::BulkReadData;
 
-    if (platform->write_port(txpacket) == txpacket.size()) {
-      int data_number = bulk_read_packet->get_data_number();
-      BulkReadData::insert_all(bulk_data, *bulk_read_packet);
+  std::vector<uint8_t> txpacket(bulk_read_packet->get_packet());
 
-      int get_length = 0;
-      int expected_length = bulk_read_packet->get_expected_length();
-      auto rxpacket = std::make_shared<std::vector<uint8_t>>(expected_length * 2, 0x00);
+  if (platform->write_port(txpacket) == txpacket.size()) {
+    int data_number = bulk_read_packet->get_data_number();
+    BulkReadData::insert_all(bulk_data, *bulk_read_packet);
 
-      bulk_read_packet = nullptr;
-
-      packet_timer.set_timeout(expected_length);
-
-      while (true) {
-        get_length += platform->read_port(rxpacket, expected_length - get_length, get_length);
-
-        if (get_length == expected_length) {
-          int new_get_length = BulkReadData::validate(rxpacket, get_length);
-
-          if (new_get_length == get_length) {
-            break;
-          } else {
-            // TODO(maroqijalil): will be used for logging
-            // is packet timeout ? so RX_TIMEOUT
-            get_length = new_get_length;
-          }
-        } else {
-          // TODO(maroqijalil): will be used for logging
-          // is packet timeout ? so RX_TIMEOUT
-          if (packet_timer.is_timeout()) {
-            break;
-          } else if (get_length > expected_length) {
-            break;
-          }
-        }
-      }
-
-      if (BulkReadData::update_all(bulk_data, *rxpacket, get_length, data_number) == 0) {
-        return true;
-      } else {
-        // TODO(maroqijalil): will be used for logging
-        // is packet timeout ? so RX_TIMEOUT
-        // or RX_CORRUPT / data is inclompete if data number more than 0
-      }
-    } else {
-      // TODO(maroqijalil): will be used for logging
-      // so TX_FAIL
-    }
+    int get_length = 0;
+    int expected_length = bulk_read_packet->get_expected_length();
+    auto rxpacket = std::make_shared<std::vector<uint8_t>>(expected_length * 2, 0x00);
 
     bulk_read_packet = nullptr;
 
-    return false;
+    packet_timer.set_timeout(expected_length);
+
+    while (true) {
+      get_length += platform->read_port(rxpacket, expected_length - get_length, get_length);
+
+      if (get_length == expected_length) {
+        int new_get_length = BulkReadData::validate(rxpacket, get_length);
+
+        if (new_get_length == get_length) {
+          break;
+        } else {
+          // TODO(maroqijalil): will be used for logging
+          // is packet timeout ? so RX_TIMEOUT
+          get_length = new_get_length;
+        }
+      } else {
+        // TODO(maroqijalil): will be used for logging
+        // is packet timeout ? so RX_TIMEOUT
+        if (packet_timer.is_timeout()) {
+          break;
+        } else if (get_length > expected_length) {
+          break;
+        }
+      }
+    }
+
+    if (BulkReadData::update_all(bulk_data, *rxpacket, get_length, data_number) == 0) {
+      return true;
+    } else {
+      // TODO(maroqijalil): will be used for logging
+      // is packet timeout ? so RX_TIMEOUT
+      // or RX_CORRUPT / data is inclompete if data number more than 0
+    }
+  } else {
+    // TODO(maroqijalil): will be used for logging
+    // so TX_FAIL
   }
+
+  bulk_read_packet = nullptr;
+
+  return false;
 }
 
 int CM740::get_bulk_data(uint8_t id, uint16_t address, int data_length)
 {
+  std::lock_guard<std::mutex> lock(serial_mutex);
   if (bulk_data->find(id) != bulk_data->end()) {
     return bulk_data->at(id).get(address, data_length);
   }
@@ -291,8 +301,14 @@ int CM740::get_bulk_data(uint8_t id, uint16_t address, int data_length)
 
 void CM740::disconnect()
 {
+  std::lock_guard<std::mutex> lock(serial_mutex);
   if (protocol_version == 1.0) {
-    write_packet(CONTROLLER, CM740Address::LED_HEAD_L, protocol_1::Word::make_color(0, 255, 0), 2);
+    // Inline the write logic here since write_packet also acquires serial_mutex
+    protocol_1::WritePacket instruction_packet;
+    instruction_packet.create(
+      CONTROLLER, CM740Address::LED_HEAD_L,
+      static_cast<uint16_t>(protocol_1::Word::make_color(0, 255, 0)));
+    send_packet(instruction_packet);
   }
 
   platform->close_port();

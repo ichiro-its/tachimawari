@@ -53,6 +53,9 @@ public:
   void set_position(keisan::Angle<float> position);
   float get_position() const;
 
+  void set_velocity(float velocity);
+  float get_velocity() const;
+
   void set_pid_gain(float p, float i, float d);
   std::vector<float> get_pid_gain() const;
 
@@ -64,6 +67,8 @@ private:
   float d_gain;
 
   keisan::Angle<float> position;
+
+  float velocity;
 };
 
 }  // namespace tachimawari::joint
