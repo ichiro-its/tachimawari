@@ -49,7 +49,7 @@ RvizServerNode::RvizServerNode(const rclcpp::Node::SharedPtr node, const int por
       }
       joint_manager = std::make_shared<tachimawari::joint::JointManager>(control_manager);
       node_timer = node->create_wall_timer(
-        8ms, [this]() {
+        20ms, [this]() {
           auto new_session = server.accept();
           if (new_session != nullptr) {
             this->sessions.push_back(new_session);
@@ -71,7 +71,7 @@ RvizServerNode::RvizServerNode(const rclcpp::Node::SharedPtr node, const int por
       }
       joint_manager = std::make_shared<tachimawari::joint::JointManager>(control_manager);
       node_timer = node->create_wall_timer(
-        8ms, [this]() {
+        20ms, [this]() {
           auto new_session = server.accept();
           if (new_session != nullptr) {
             this->sessions.push_back(new_session);
@@ -103,7 +103,7 @@ RvizServerNode::RvizServerNode(const rclcpp::Node::SharedPtr node, const int por
       dummy[0].data[2].position = 2098;
 
       node_timer = node->create_wall_timer(
-        8ms, [this, dummy]() {
+        20ms, [this, dummy]() {
           auto new_session = server.accept();
           if (new_session != nullptr) {
             this->sessions.push_back(new_session);

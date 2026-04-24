@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
   double max = std::numeric_limits<double>::min();
   double min = std::numeric_limits<double>::max();
 
-  rclcpp::Rate rcl_rate(8ms);
+  rclcpp::Rate rcl_rate(20ms);
   while (rclcpp::ok()) {
     rcl_rate.sleep();
     rclcpp::spin_some(node);

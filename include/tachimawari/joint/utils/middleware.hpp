@@ -46,7 +46,7 @@ public:
     FORCE
   };
 
-  explicit Middleware(double time_limit = 0.5, std::chrono::milliseconds time_unit = 8ms);
+  explicit Middleware(double time_limit = 0.5, std::chrono::milliseconds time_unit = 20ms);
 
   void set_rules(int control_type, const std::vector<uint8_t> & ids = {});
 
