@@ -28,29 +28,32 @@
 int main(int argc, char * argv[])
 {
   if (argc < 2) {
-    std::cerr << "Please specify the mode! [sdk / cm740]" << std::endl;
-    return 0;
+    std::cerr << "Usage: " << argv[0] << " [sdk / cm740] [port(optional)]" << std::endl;
+    return 1;
   }
 
   std::string mode = argv[1];
+  std::string port = "/dev/ttyUSB0";
+  if (argc >= 3) {
+    port = argv[2];
+  }
+
   std::shared_ptr<tachimawari::control::ControlManager> controller;
 
   if (mode == "sdk") {
-    controller = std::make_shared<tachimawari::control::DynamixelSDK>("/dev/ttyUSB0");
+    controller = std::make_shared<tachimawari::control::DynamixelSDK>(port);
   } else if (mode == "cm740") {
-    controller = std::make_shared<tachimawari::control::CM740>("/dev/ttyUSB0");
+    controller = std::make_shared<tachimawari::control::CM740>(port);
   } else {
     std::cerr << "Mode doesn't exist, select the correct mode! [sdk / cm740]" << std::endl;
-    return 0;
+    return 1;
   }
 
-  if (!controller->connect()) {
-    controller->set_port("/dev/ttyUSB1");
+  std::cout << "Using port: " << port << std::endl;
 
-    if (!controller->connect()) {
-      std::cout << "failed to connect controller\n";
-      return 1;
-    }
+  if (!controller->connect()) {
+    std::cout << "Failed to connect on " << port << std::endl;
+    return 1;
   }
 
   {
@@ -59,9 +62,9 @@ int main(int argc, char * argv[])
     for (const auto & [key, value] : JointId::by_name) {
       std::cout << "ping " << key << ": ";
       if (controller->ping(value)) {
-        std::cout << "success\n";
+        std::cout << "\033[32m" << "success" << "\033[0m" << "\n";
       } else {
-        std::cout << "failed\n";
+        std::cout << "\033[31m" << "failed" << "\033[0m" << "\n";
       }
     }
   }
