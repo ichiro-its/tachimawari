@@ -1,15 +1,15 @@
 # Copyright (c) 2024 ICHIRO ITS
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -21,20 +21,29 @@
 import os
 import socket
 from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
 def generate_launch_description():
-  hostname = socket.gethostname()
-  config_path = os.path.expanduser(f'~/ros2-ws/configuration/{hostname}/ipm/')
+    hostname = socket.gethostname()
 
-  return LaunchDescription([
-    Node(
-      package='tachimawari',
-      executable='main',
-      name='main',
-      output='screen',
-      arguments=['cm740', config_path],
-      respawn=True,
-      respawn_delay=1
-    )
-  ])
+    port = LaunchConfiguration('port')
+
+    return LaunchDescription([
+        DeclareLaunchArgument(
+            'port',
+            default_value='/dev/ttyUSB0',
+            description='Serial port'
+        ),
+
+        Node(
+            package='tachimawari',
+            executable='main',
+            name='main',
+            output='screen',
+            arguments=['cm740', port],
+            respawn=True,
+            respawn_delay=1
+        )
+    ])

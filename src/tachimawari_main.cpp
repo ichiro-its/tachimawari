@@ -29,24 +29,32 @@ int main(int argc, char * argv[])
 {
   auto args = rclcpp::init_and_remove_ros_arguments(argc, argv);
 
-  if (args.size() < 2) {
-    std::cerr << "Please specify the mode! [sdk / cm740]" << std::endl;
-    return 0;
-  }
+if (args.size() < 2) {
+  std::cerr << "Usage: " << args[0] << " [sdk / cm740] [port(optional)]" << std::endl;
+  return 1;
+}
 
-  std::string mode = args[1];
+std::string mode = args[1];
+std::string port = "/dev/ttyUSB0";
+if (args.size() >= 3) {
+  port = args[2];
+}
+
   std::shared_ptr<tachimawari::control::ControlManager> controller;
 
   if (mode == "sdk") {
-    controller = std::make_shared<tachimawari::control::DynamixelSDK>("/dev/ttyUSB0");
+    controller = std::make_shared<tachimawari::control::DynamixelSDK>(port);
   } else if (mode == "cm740") {
-    controller = std::make_shared<tachimawari::control::CM740>("/dev/ttyUSB0");
+    controller = std::make_shared<tachimawari::control::CM740>(port);
   } else {
     std::cerr << "Mode doesn't exist, select the correct mode! [sdk / cm740]" << std::endl;
-    return 0;
+    return 1;
   }
 
+  std::cout << "Using port: " << port << std::endl;
+
   if (!controller->connect()) {
+    std::cerr << "Failed on " << port << ", trying fallback /dev/ttyUSB1\n";
     controller->set_port("/dev/ttyUSB1");
 
     if (!controller->connect()) {
