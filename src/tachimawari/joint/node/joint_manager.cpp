@@ -119,8 +119,9 @@ void JointManager::add_to_bulk_read_packet()
 {
   std::lock_guard<std::mutex> lock(joints_mutex);
   for (const auto & joint : current_joints) {
+    // 4 bytes: PRESENT_POSITION_L(36-37) + PRESENT_SPEED_L(38-39) in one read
     control_manager->add_bulk_read_param(
-      joint.get_id(), protocol_1::MX28Address::PRESENT_POSITION_L, 2);
+      joint.get_id(), protocol_1::MX28Address::PRESENT_POSITION_L, 4);
   }
 }
 
@@ -136,7 +137,18 @@ void JointManager::update_current_joints_from_bulk_read()
 
       if (current_value != -1) {
         joint.set_position_value(current_value);
-        joint.set_velocity(compute_velocity_from_differential(joint.get_id(), current_value));
+        // Bit 10 = direction (0=CCW=positive, 1=CW=negative); bits 0-9 = magnitude.
+        // 0.114 RPM/unit * 360 deg/rev / 60 s/min = 0.684 deg/s per unit.
+        int speed_raw = control_manager->get_bulk_data(
+          joint.get_id(), protocol_1::MX28Address::PRESENT_SPEED_L, 2);
+        if (speed_raw != -1) {
+          float speed_degs = static_cast<float>(speed_raw & 0x3FF) * 0.684f;
+          if (speed_raw & 0x400) {speed_degs = -speed_degs;}
+          joint.set_velocity(speed_degs);
+        } else {
+          joint.set_velocity(0.0f);
+        }
+
         updated_joints.push_back(joint);
       }
     }
