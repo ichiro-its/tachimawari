@@ -22,7 +22,6 @@
 
 #include <map>
 #include <memory>
-#include <mutex>
 #include <string>
 #include <vector>
 
@@ -138,7 +137,6 @@ protocol_1::StatusPacket CM740::send_packet(protocol_1::Packet packet)
 
 bool CM740::ping(uint8_t id)
 {
-  std::lock_guard<std::mutex> lock(serial_mutex);
   if (protocol_version == 1.0) {
     protocol_1::Packet instruction_packet(id, protocol_1::Instruction::PING);
 
@@ -150,7 +148,6 @@ bool CM740::ping(uint8_t id)
 
 bool CM740::write_packet(uint8_t id, uint16_t address, int value, int data_length)
 {
-  std::lock_guard<std::mutex> lock(serial_mutex);
   if (protocol_version == 1.0) {
     protocol_1::WritePacket instruction_packet;
 
@@ -168,7 +165,6 @@ bool CM740::write_packet(uint8_t id, uint16_t address, int value, int data_lengt
 
 int CM740::read_packet(uint8_t id, uint16_t address, int data_length)
 {
-  std::lock_guard<std::mutex> lock(serial_mutex);
   using ReadPacket = protocol_1::ReadPacket;
 
   if (protocol_version == 1.0) {
@@ -187,7 +183,6 @@ int CM740::read_packet(uint8_t id, uint16_t address, int data_length)
 
 bool CM740::sync_write_packet(const std::vector<joint::Joint> & joints, bool with_pid)
 {
-  std::lock_guard<std::mutex> lock(serial_mutex);
   if (protocol_version == 1.0) {
     protocol_1::SyncWritePacket instruction_packet;
 
@@ -205,7 +200,6 @@ bool CM740::sync_write_packet(const std::vector<joint::Joint> & joints, bool wit
 
 bool CM740::add_default_bulk_read_packet()
 {
-  std::lock_guard<std::mutex> lock(serial_mutex);
   if (bulk_read_packet == nullptr) {
     bulk_read_packet = std::make_shared<protocol_1::BulkReadPacket>();
   }
@@ -224,7 +218,6 @@ bool CM740::add_default_bulk_read_packet()
 
 bool CM740::add_bulk_read_param(uint8_t id, uint16_t address, int data_length)
 {
-  std::lock_guard<std::mutex> lock(serial_mutex);
   if (bulk_read_packet == nullptr) {
     bulk_read_packet = std::make_shared<protocol_1::BulkReadPacket>();
   }
@@ -236,7 +229,6 @@ bool CM740::add_bulk_read_param(uint8_t id, uint16_t address, int data_length)
 
 bool CM740::send_bulk_read_packet()
 {
-  std::lock_guard<std::mutex> lock(serial_mutex);
 
   if (bulk_read_packet == nullptr || !bulk_read_packet->is_parameters_filled()) {
     return false;
@@ -301,7 +293,6 @@ bool CM740::send_bulk_read_packet()
 
 int CM740::get_bulk_data(uint8_t id, uint16_t address, int data_length)
 {
-  std::lock_guard<std::mutex> lock(serial_mutex);
   if (bulk_data->find(id) != bulk_data->end()) {
     return bulk_data->at(id).get(address, data_length);
   }
@@ -311,7 +302,6 @@ int CM740::get_bulk_data(uint8_t id, uint16_t address, int data_length)
 
 void CM740::disconnect()
 {
-  std::lock_guard<std::mutex> lock(serial_mutex);
   if (protocol_version == 1.0) {
     // Inline the write logic here since write_packet also acquires serial_mutex
     protocol_1::WritePacket instruction_packet;
