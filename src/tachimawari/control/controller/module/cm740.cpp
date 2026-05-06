@@ -211,8 +211,6 @@ bool CM740::add_default_bulk_read_packet()
   }
 
   if (protocol_version == 1.0) {
-    // ping() is called without the mutex since we already hold it;
-    // call send_packet directly instead.
     protocol_1::Packet instruction_packet(CONTROLLER, protocol_1::Instruction::PING);
     if (send_packet(instruction_packet).is_success()) {
       bulk_read_packet->add(CONTROLLER, CM740Address::DXL_POWER, 30u);
