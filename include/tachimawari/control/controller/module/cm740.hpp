@@ -23,6 +23,7 @@
 
 #include <map>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -65,6 +66,8 @@ public:
 
   bool send_bulk_read_packet() override;
   bool add_default_bulk_read_packet() override;
+
+  bool add_bulk_read_param(uint8_t id, uint16_t address, int data_length) override;
   int get_bulk_data(uint8_t id, uint16_t address, int data_length = 1) override;
 
 private:
@@ -75,6 +78,8 @@ private:
   std::shared_ptr<Linux> platform;
 
   Timer packet_timer;
+
+  std::mutex serial_mutex;
 
   std::shared_ptr<std::map<uint8_t, protocol_1::BulkReadData>> bulk_data;
   std::shared_ptr<protocol_1::BulkReadPacket> bulk_read_packet;

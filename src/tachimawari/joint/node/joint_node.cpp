@@ -80,7 +80,16 @@ JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager>
   current_joints_publisher = node->create_publisher<CurrentJoints>(current_joints_topic(), 10);
 }
 
-void JointNode::update() { middleware.update(); }
+void JointNode::add_to_bulk_read_packet()
+{
+  joint_manager->add_to_bulk_read_packet();
+}
+
+void JointNode::update()
+{
+  middleware.update();
+  joint_manager->update_current_joints_from_bulk_read();
+}
 
 void JointNode::publish_current_joints()
 {
@@ -92,6 +101,7 @@ void JointNode::publish_current_joints()
   for (size_t i = 0; i < joints.size() && i < current_joints.size(); ++i) {
     joints[i].id = current_joints[i].get_id();
     joints[i].position = current_joints[i].get_position();
+    joints[i].velocity = current_joints[i].get_velocity();
   }
 
   current_joints_publisher->publish(msg_joints);

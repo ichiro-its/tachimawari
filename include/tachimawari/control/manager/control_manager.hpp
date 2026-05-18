@@ -44,21 +44,23 @@ public:
   virtual bool connect();
   virtual void disconnect() {}
 
-  virtual bool ping(uint8_t id) {}
+  virtual bool ping(uint8_t id) { return false; }
 
-  virtual bool write_packet(uint8_t id, uint16_t address, int value, int data_length = 1) {}
+  virtual bool write_packet(uint8_t id, uint16_t address, int value, int data_length = 1) { return false; }
 
-  virtual int read_packet(uint8_t id, uint16_t address, int data_length = 1) {}
+  virtual int read_packet(uint8_t id, uint16_t address, int data_length = 1) { return -1; }
 
-  virtual bool sync_write_packet(const std::vector<joint::Joint> & joints, bool with_pid = true) {}
+  virtual bool sync_write_packet(const std::vector<joint::Joint> & joints, bool with_pid = true) { return false; }
 
-  virtual bool send_bulk_read_packet() {}
+  virtual bool send_bulk_read_packet() { return false; }
 
-  virtual bool add_default_bulk_read_packet() {}
+  virtual bool add_default_bulk_read_packet() { return false; }
 
-  virtual int get_data(uint8_t id, uint16_t address, int data_lenghth = 1) {}
+  virtual bool add_bulk_read_param(uint8_t id, uint16_t address, int data_length) { return false; }
 
-  virtual int get_bulk_data(uint8_t id, uint16_t address, int data_length = 1) {}
+  virtual int get_data(uint8_t id, uint16_t address, int data_length = 1) { return -1; }
+
+  virtual int get_bulk_data(uint8_t id, uint16_t address, int data_length = 1) { return -1; }
 
 protected:
   std::string port_name;

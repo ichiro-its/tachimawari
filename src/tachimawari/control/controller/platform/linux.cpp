@@ -97,17 +97,22 @@ int Linux::write_port(const std::vector<uint8_t> & packet)
 int Linux::read_port(
   std::shared_ptr<std::vector<uint8_t>> & packet, int packet_length, int packet_index)
 {
-  unsigned char rxpacket[(packet_index + packet_length) * 2] = {0x00};
+  size_t buf_size = static_cast<size_t>(packet_index + packet_length);
+  std::vector<uint8_t> rxpacket(buf_size, 0x00);
 
   int result_length = read(socket_fd, &rxpacket[packet_index], packet_length);
 
-  if (result_length != 0) {
-    for (size_t i = packet_index; i < (packet_index + packet_length) * 2; ++i) {
-      packet->at(i) = rxpacket[i];
+  if (result_length > 0) {
+    size_t end = static_cast<size_t>(packet_index + result_length);
+    if (end > packet->size()) {
+      end = packet->size();
+    }
+    for (size_t i = static_cast<size_t>(packet_index); i < end; ++i) {
+      (*packet)[i] = rxpacket[i];
     }
   }
 
-  return result_length;
+  return (result_length > 0) ? result_length : 0;
 }
 
 }  // namespace tachimawari::control

@@ -58,6 +58,7 @@ public:
   keisan::Angle<double> imu_yaw;
 
   void publish_current_joints();
+  void add_to_bulk_read_packet();
   void update();
 
 private:

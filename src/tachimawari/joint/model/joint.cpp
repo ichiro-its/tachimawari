@@ -81,6 +81,16 @@ float Joint::get_position() const
   return position.normalize().degree();
 }
 
+void Joint::set_velocity(float velocity)
+{
+  this->velocity = velocity;
+}
+
+float Joint::get_velocity() const
+{
+  return velocity;
+}
+
 std::vector<float> Joint::get_pid_gain() const
 {
   return {p_gain, i_gain, d_gain};

@@ -21,7 +21,13 @@
 #ifndef TACHIMAWARI__JOINT__NODE__JOINT_MANAGER_HPP_
 #define TACHIMAWARI__JOINT__NODE__JOINT_MANAGER_HPP_
 
+#include <atomic>
+#include <chrono>
 #include <memory>
+#include <mutex>
+#include <thread>
+#include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "tachimawari/control/manager/control_manager.hpp"
@@ -34,22 +40,35 @@ class JointManager
 {
 public:
   explicit JointManager(std::shared_ptr<tachimawari::control::ControlManager> control_manager);
+  ~JointManager();
 
   bool torque_enable(bool enable);
   bool torque_enable(const std::vector<Joint> & joints, bool enable);
 
   bool set_joints(const std::vector<Joint> & joints);
 
-  const std::vector<Joint> & get_current_joints();
+  void add_to_bulk_read_packet();
+  void update_current_joints_from_bulk_read();
+
+  std::vector<Joint> get_current_joints();
 
 private:
   void update_current_joints(const std::vector<Joint> & joints);
   void update_current_joints_from_control_manager(const std::vector<Joint> & joints);
+  float compute_velocity_from_differential(uint8_t id, int new_position);
 
   std::shared_ptr<tachimawari::control::ControlManager> control_manager;
 
   std::vector<Joint> current_joints;
-  bool is_each_joint_updated;
+  mutable std::mutex joints_mutex;
+
+  struct JointReadState {
+    int position;
+    std::chrono::steady_clock::time_point time;
+    float velocity;
+  };
+
+  std::unordered_map<uint8_t, JointReadState> joint_read_state;
 };
 
 }  // namespace tachimawari::joint
