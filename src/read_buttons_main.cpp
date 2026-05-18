@@ -55,7 +55,7 @@ int main(int argc, char * argv[])
       return 1;
     }
   }
-  rclcpp::Rate rcl_rate(20ms);
+  rclcpp::Rate rcl_rate(8ms);
   while (rclcpp::ok()) {
     rcl_rate.sleep();
 
