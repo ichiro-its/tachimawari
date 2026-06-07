@@ -32,11 +32,14 @@
 namespace tachimawari::joint
 {
 
+using namespace std::chrono;
+using namespace std::chrono_literals;
+
 class JointManager
 {
 public:
-  static constexpr std::chrono::milliseconds TORQUE_WARM_UP_DURATION{500};
-  static constexpr std::chrono::milliseconds RESUME_RAMP_DURATION{1000};
+  static constexpr auto TORQUE_WARM_UP_DURATION = 500ms;
+  static constexpr auto RESUME_RAMP_DURATION = 1000ms;
 
   static constexpr int CONNECTIVITY_DEBOUNCE_COUNT = 3;
 
@@ -69,7 +72,7 @@ private:
 
   struct WarmUpState
   {
-    std::chrono::steady_clock::time_point started_at;
+    steady_clock::time_point started_at;
     float start_position;
   };
 

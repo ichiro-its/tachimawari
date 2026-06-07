@@ -90,12 +90,12 @@ bool JointManager::is_warming_up(uint8_t id) const
     return false;
   }
 
-  return (std::chrono::steady_clock::now() - entry->second.started_at) < TORQUE_WARM_UP_DURATION;
+  return (steady_clock::now() - entry->second.started_at) < TORQUE_WARM_UP_DURATION;
 }
 
 void JointManager::mark_torque_enabled(const std::vector<uint8_t> & ids)
 {
-  auto now = std::chrono::steady_clock::now();
+  auto now = steady_clock::now();
 
   for (auto id : ids) {
     int value = control_manager->read_packet(id, protocol_1::MX28Address::PRESENT_POSITION_L, 2);
@@ -115,14 +115,13 @@ Joint JointManager::apply_resume_ramp(const Joint & joint) const
   }
 
   auto ramp_elapsed =
-    (std::chrono::steady_clock::now() - entry->second.started_at) - TORQUE_WARM_UP_DURATION;
+    (steady_clock::now() - entry->second.started_at) - TORQUE_WARM_UP_DURATION;
 
   if (ramp_elapsed >= RESUME_RAMP_DURATION) {
     return joint;
   }
 
-  float blend = std::chrono::duration<float, std::milli>(ramp_elapsed).count() /
-    std::chrono::duration<float, std::milli>(RESUME_RAMP_DURATION).count();
+  float blend = duration<float>(ramp_elapsed) / duration<float>(RESUME_RAMP_DURATION);
 
   float start_position = entry->second.start_position;
 
