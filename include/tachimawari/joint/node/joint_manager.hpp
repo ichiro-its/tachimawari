@@ -36,6 +36,8 @@ class JointManager
 {
 public:
   static constexpr std::chrono::milliseconds TORQUE_WARM_UP_DURATION{1000};
+  static constexpr std::chrono::milliseconds RESUME_RAMP_DURATION{1000};
+
   static constexpr int CONNECTIVITY_DEBOUNCE_COUNT = 3;
 
   explicit JointManager(std::shared_ptr<tachimawari::control::ControlManager> control_manager);
@@ -56,6 +58,8 @@ private:
   bool is_warming_up(uint8_t id) const;
   void mark_torque_enabled(const std::vector<uint8_t> & ids);
 
+  Joint apply_resume_ramp(const Joint & joint) const;
+
   bool is_connected(uint8_t id) const;
 
   std::shared_ptr<tachimawari::control::ControlManager> control_manager;
@@ -63,7 +67,13 @@ private:
   std::vector<Joint> current_joints;
   bool is_each_joint_updated;
 
-  std::map<uint8_t, std::chrono::steady_clock::time_point> torque_enabled_at;
+  struct WarmUpState
+  {
+    std::chrono::steady_clock::time_point started_at;
+    float start_position;
+  };
+
+  std::map<uint8_t, WarmUpState> warm_up_state;
 
   struct ConnectivityState
   {

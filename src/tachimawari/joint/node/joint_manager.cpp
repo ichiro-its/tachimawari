@@ -85,12 +85,12 @@ const std::vector<Joint> & JointManager::get_current_joints()
 
 bool JointManager::is_warming_up(uint8_t id) const
 {
-  auto entry = torque_enabled_at.find(id);
-  if (entry == torque_enabled_at.end()) {
+  auto entry = warm_up_state.find(id);
+  if (entry == warm_up_state.end()) {
     return false;
   }
 
-  return (std::chrono::steady_clock::now() - entry->second) < TORQUE_WARM_UP_DURATION;
+  return (std::chrono::steady_clock::now() - entry->second.started_at) < TORQUE_WARM_UP_DURATION;
 }
 
 void JointManager::mark_torque_enabled(const std::vector<uint8_t> & ids)
@@ -98,8 +98,38 @@ void JointManager::mark_torque_enabled(const std::vector<uint8_t> & ids)
   auto now = std::chrono::steady_clock::now();
 
   for (auto id : ids) {
-    torque_enabled_at[id] = now;
+    int value = control_manager->read_packet(id, protocol_1::MX28Address::PRESENT_POSITION_L, 2);
+
+    Joint snapshot(id);
+    snapshot.set_position_value(value == -1 ? Joint::CENTER_VALUE : value);
+
+    warm_up_state[id] = WarmUpState{now, snapshot.get_position()};
   }
+}
+
+Joint JointManager::apply_resume_ramp(const Joint & joint) const
+{
+  auto entry = warm_up_state.find(joint.get_id());
+  if (entry == warm_up_state.end()) {
+    return joint;
+  }
+
+  auto ramp_elapsed =
+    (std::chrono::steady_clock::now() - entry->second.started_at) - TORQUE_WARM_UP_DURATION;
+
+  if (ramp_elapsed >= RESUME_RAMP_DURATION) {
+    return joint;
+  }
+
+  float blend = std::chrono::duration<float, std::milli>(ramp_elapsed).count() /
+    std::chrono::duration<float, std::milli>(RESUME_RAMP_DURATION).count();
+
+  float start_position = entry->second.start_position;
+
+  Joint ramped = joint;
+  ramped.set_position(start_position + (joint.get_position() - start_position) * blend);
+
+  return ramped;
 }
 
 bool JointManager::torque_enable(bool enable)
@@ -154,7 +184,7 @@ bool JointManager::set_joints(const std::vector<Joint> & joints)
   std::vector<Joint> ready_joints;
   for (const auto & joint : joints) {
     if (is_connected(joint.get_id()) && !is_warming_up(joint.get_id())) {
-      ready_joints.push_back(joint);
+      ready_joints.push_back(apply_resume_ramp(joint));
     }
   }
 
