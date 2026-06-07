@@ -115,6 +115,16 @@ bool JointManager::torque_enable(bool enable)
 
 bool JointManager::torque_enable(const std::vector<Joint> & joints, bool enable)
 {
+  if (enable) {
+    std::vector<uint8_t> ids;
+    ids.reserve(joints.size());
+    for (const auto & joint : joints) {
+      ids.push_back(joint.get_id());
+    }
+    
+    mark_torque_enabled(ids);
+  }
+
   if (std::any_of(joints.begin(), joints.end(), [&](Joint joint) {
         return !control_manager->write_packet(
           joint.get_id(), protocol_1::MX28Address::TORQUE_ENABLE, enable);
@@ -123,25 +133,27 @@ bool JointManager::torque_enable(const std::vector<Joint> & joints, bool enable)
   }
 
   if (enable) {
-    std::vector<uint8_t> ids;
-    ids.reserve(joints.size());
-    for (const auto & joint : joints) {
-      ids.push_back(joint.get_id());
-    }
-
-    mark_torque_enabled(ids);
-
     update_current_joints_from_control_manager(joints);
   }
 
   return true;
 }
 
+bool JointManager::is_connected(uint8_t id) const
+{
+  auto entry = connectivity.find(id);
+  if (entry == connectivity.end()) {
+    return true;
+  }
+
+  return entry->second.connected;
+}
+
 bool JointManager::set_joints(const std::vector<Joint> & joints)
 {
   std::vector<Joint> ready_joints;
   for (const auto & joint : joints) {
-    if (!is_warming_up(joint.get_id())) {
+    if (is_connected(joint.get_id()) && !is_warming_up(joint.get_id())) {
       ready_joints.push_back(joint);
     }
   }

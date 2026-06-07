@@ -56,6 +56,8 @@ private:
   bool is_warming_up(uint8_t id) const;
   void mark_torque_enabled(const std::vector<uint8_t> & ids);
 
+  bool is_connected(uint8_t id) const;
+
   std::shared_ptr<tachimawari::control::ControlManager> control_manager;
 
   std::vector<Joint> current_joints;
