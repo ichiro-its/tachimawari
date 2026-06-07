@@ -36,6 +36,7 @@ class JointManager
 {
 public:
   static constexpr std::chrono::milliseconds TORQUE_WARM_UP_DURATION{1000};
+  static constexpr int CONNECTIVITY_DEBOUNCE_COUNT = 3;
 
   explicit JointManager(std::shared_ptr<tachimawari::control::ControlManager> control_manager);
 
@@ -45,6 +46,8 @@ public:
   bool set_joints(const std::vector<Joint> & joints);
 
   const std::vector<Joint> & get_current_joints();
+
+  void update_connectivity();
 
 private:
   void update_current_joints(const std::vector<Joint> & joints);
@@ -59,6 +62,15 @@ private:
   bool is_each_joint_updated;
 
   std::map<uint8_t, std::chrono::steady_clock::time_point> torque_enabled_at;
+
+  struct ConnectivityState
+  {
+    bool connected = true;
+    int mismatch_count = 0;
+  };
+
+  std::map<uint8_t, ConnectivityState> connectivity;
+  size_t connectivity_poll_index;
 };
 
 }  // namespace tachimawari::joint

@@ -31,7 +31,7 @@ namespace tachimawari::joint
 {
 
 JointManager::JointManager(std::shared_ptr<tachimawari::control::ControlManager> control_manager)
-: control_manager(control_manager), is_each_joint_updated(false)
+: control_manager(control_manager), is_each_joint_updated(false), connectivity_poll_index(0)
 {
   torque_enable(true);
 
@@ -153,6 +153,42 @@ bool JointManager::set_joints(const std::vector<Joint> & joints)
   }
 
   return false;
+}
+
+void JointManager::update_connectivity()
+{
+  if (JointId::list.empty()) {
+    return;
+  }
+
+  uint8_t id = JointId::list[connectivity_poll_index];
+  connectivity_poll_index = (connectivity_poll_index + 1) % JointId::list.size();
+
+  bool read_ok =
+    control_manager->read_packet(id, protocol_1::MX28Address::PRESENT_POSITION_L, 2) != -1;
+
+  auto & state = connectivity[id];
+
+  if (read_ok == state.connected) {
+    state.mismatch_count = 0;
+    return;
+  }
+
+  if (++state.mismatch_count < CONNECTIVITY_DEBOUNCE_COUNT) {
+    return;
+  }
+
+  state.connected = read_ok;
+  state.mismatch_count = 0;
+
+  if (state.connected) {
+    for (const auto & joint : current_joints) {
+      if (joint.get_id() == id) {
+        torque_enable(std::vector<Joint>{joint}, true);
+        break;
+      }
+    }
+  }
 }
 
 }  // namespace tachimawari::joint
