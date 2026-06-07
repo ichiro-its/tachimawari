@@ -35,7 +35,7 @@ namespace tachimawari::joint
 class JointManager
 {
 public:
-  static constexpr std::chrono::milliseconds TORQUE_WARM_UP_DURATION{1000};
+  static constexpr std::chrono::milliseconds TORQUE_WARM_UP_DURATION{500};
   static constexpr std::chrono::milliseconds RESUME_RAMP_DURATION{1000};
 
   static constexpr int CONNECTIVITY_DEBOUNCE_COUNT = 3;
