@@ -21,6 +21,8 @@
 #ifndef TACHIMAWARI__JOINT__NODE__JOINT_MANAGER_HPP_
 #define TACHIMAWARI__JOINT__NODE__JOINT_MANAGER_HPP_
 
+#include <chrono>
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -33,6 +35,8 @@ namespace tachimawari::joint
 class JointManager
 {
 public:
+  static constexpr std::chrono::milliseconds TORQUE_WARM_UP_DURATION{1000};
+
   explicit JointManager(std::shared_ptr<tachimawari::control::ControlManager> control_manager);
 
   bool torque_enable(bool enable);
@@ -46,10 +50,15 @@ private:
   void update_current_joints(const std::vector<Joint> & joints);
   void update_current_joints_from_control_manager(const std::vector<Joint> & joints);
 
+  bool is_warming_up(uint8_t id) const;
+  void mark_torque_enabled(const std::vector<uint8_t> & ids);
+
   std::shared_ptr<tachimawari::control::ControlManager> control_manager;
 
   std::vector<Joint> current_joints;
   bool is_each_joint_updated;
+
+  std::map<uint8_t, std::chrono::steady_clock::time_point> torque_enabled_at;
 };
 
 }  // namespace tachimawari::joint

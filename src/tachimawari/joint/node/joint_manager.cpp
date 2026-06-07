@@ -83,8 +83,31 @@ const std::vector<Joint> & JointManager::get_current_joints()
   return current_joints;
 }
 
+bool JointManager::is_warming_up(uint8_t id) const
+{
+  auto entry = torque_enabled_at.find(id);
+  if (entry == torque_enabled_at.end()) {
+    return false;
+  }
+
+  return (std::chrono::steady_clock::now() - entry->second) < TORQUE_WARM_UP_DURATION;
+}
+
+void JointManager::mark_torque_enabled(const std::vector<uint8_t> & ids)
+{
+  auto now = std::chrono::steady_clock::now();
+
+  for (auto id : ids) {
+    torque_enabled_at[id] = now;
+  }
+}
+
 bool JointManager::torque_enable(bool enable)
 {
+  if (enable) {
+    mark_torque_enabled(std::vector<uint8_t>(JointId::list.begin(), JointId::list.end()));
+  }
+
   return control_manager->write_packet(
     tachimawari::control::ControlManager::BROADCAST, protocol_1::MX28Address::TORQUE_ENABLE,
     enable);
@@ -100,6 +123,14 @@ bool JointManager::torque_enable(const std::vector<Joint> & joints, bool enable)
   }
 
   if (enable) {
+    std::vector<uint8_t> ids;
+    ids.reserve(joints.size());
+    for (const auto & joint : joints) {
+      ids.push_back(joint.get_id());
+    }
+
+    mark_torque_enabled(ids);
+
     update_current_joints_from_control_manager(joints);
   }
 
@@ -108,10 +139,17 @@ bool JointManager::torque_enable(const std::vector<Joint> & joints, bool enable)
 
 bool JointManager::set_joints(const std::vector<Joint> & joints)
 {
-  if (joints.size()) {
-    update_current_joints(joints);
+  std::vector<Joint> ready_joints;
+  for (const auto & joint : joints) {
+    if (!is_warming_up(joint.get_id())) {
+      ready_joints.push_back(joint);
+    }
+  }
 
-    return control_manager->sync_write_packet(joints);
+  if (ready_joints.size()) {
+    update_current_joints(ready_joints);
+
+    return control_manager->sync_write_packet(ready_joints);
   }
 
   return false;
