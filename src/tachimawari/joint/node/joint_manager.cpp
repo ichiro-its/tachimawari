@@ -144,16 +144,6 @@ bool JointManager::torque_enable(bool enable)
 
 bool JointManager::torque_enable(const std::vector<Joint> & joints, bool enable)
 {
-  if (enable) {
-    std::vector<uint8_t> ids;
-    ids.reserve(joints.size());
-    for (const auto & joint : joints) {
-      ids.push_back(joint.get_id());
-    }
-    
-    mark_torque_enabled(ids);
-  }
-
   if (std::any_of(joints.begin(), joints.end(), [&](Joint joint) {
         return !control_manager->write_packet(
           joint.get_id(), protocol_1::MX28Address::TORQUE_ENABLE, enable);
@@ -225,6 +215,7 @@ void JointManager::update_connectivity()
   if (state.connected) {
     for (const auto & joint : current_joints) {
       if (joint.get_id() == id) {
+        mark_torque_enabled({id});
         torque_enable(std::vector<Joint>{joint}, true);
         break;
       }
