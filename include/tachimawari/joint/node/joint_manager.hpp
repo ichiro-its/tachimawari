@@ -21,6 +21,8 @@
 #ifndef TACHIMAWARI__JOINT__NODE__JOINT_MANAGER_HPP_
 #define TACHIMAWARI__JOINT__NODE__JOINT_MANAGER_HPP_
 
+#include <chrono>
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -30,9 +32,17 @@
 namespace tachimawari::joint
 {
 
+using namespace std::chrono;
+using namespace std::chrono_literals;
+
 class JointManager
 {
 public:
+  static constexpr auto TORQUE_WARM_UP_DURATION = 500ms;
+  static constexpr auto RESUME_RAMP_DURATION = 1000ms;
+
+  static constexpr int CONNECTIVITY_DEBOUNCE_COUNT = 3;
+
   explicit JointManager(std::shared_ptr<tachimawari::control::ControlManager> control_manager);
 
   bool torque_enable(bool enable);
@@ -42,14 +52,40 @@ public:
 
   const std::vector<Joint> & get_current_joints();
 
+  void update_connectivity();
+
 private:
   void update_current_joints(const std::vector<Joint> & joints);
   void update_current_joints_from_control_manager(const std::vector<Joint> & joints);
+
+  bool is_warming_up(uint8_t id) const;
+  void mark_torque_enabled(const std::vector<uint8_t> & ids);
+
+  Joint apply_resume_ramp(const Joint & joint) const;
+
+  bool is_connected(uint8_t id) const;
 
   std::shared_ptr<tachimawari::control::ControlManager> control_manager;
 
   std::vector<Joint> current_joints;
   bool is_each_joint_updated;
+
+  struct WarmUpState
+  {
+    steady_clock::time_point started_at;
+    float start_position;
+  };
+
+  std::map<uint8_t, WarmUpState> warm_up_state;
+
+  struct ConnectivityState
+  {
+    bool connected = true;
+    int mismatch_count = 0;
+  };
+
+  std::map<uint8_t, ConnectivityState> connectivity;
+  size_t connectivity_poll_index;
 };
 
 }  // namespace tachimawari::joint

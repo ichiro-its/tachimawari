@@ -80,7 +80,11 @@ JointNode::JointNode(rclcpp::Node::SharedPtr node, std::shared_ptr<JointManager>
   current_joints_publisher = node->create_publisher<CurrentJoints>(current_joints_topic(), 10);
 }
 
-void JointNode::update() { middleware.update(); }
+void JointNode::update()
+{
+  joint_manager->update_connectivity();
+  middleware.update();
+}
 
 void JointNode::publish_current_joints()
 {

@@ -31,7 +31,7 @@ namespace tachimawari::joint
 {
 
 JointManager::JointManager(std::shared_ptr<tachimawari::control::ControlManager> control_manager)
-: control_manager(control_manager), is_each_joint_updated(false)
+: control_manager(control_manager), is_each_joint_updated(false), connectivity_poll_index(0)
 {
   torque_enable(true);
 
@@ -83,8 +83,60 @@ const std::vector<Joint> & JointManager::get_current_joints()
   return current_joints;
 }
 
+bool JointManager::is_warming_up(uint8_t id) const
+{
+  auto entry = warm_up_state.find(id);
+  if (entry == warm_up_state.end()) {
+    return false;
+  }
+
+  return (steady_clock::now() - entry->second.started_at) < TORQUE_WARM_UP_DURATION;
+}
+
+void JointManager::mark_torque_enabled(const std::vector<uint8_t> & ids)
+{
+  auto now = steady_clock::now();
+
+  for (auto id : ids) {
+    int value = control_manager->read_packet(id, protocol_1::MX28Address::PRESENT_POSITION_L, 2);
+
+    Joint snapshot(id);
+    snapshot.set_position_value(value == -1 ? Joint::CENTER_VALUE : value);
+
+    warm_up_state[id] = WarmUpState{now, snapshot.get_position()};
+  }
+}
+
+Joint JointManager::apply_resume_ramp(const Joint & joint) const
+{
+  auto entry = warm_up_state.find(joint.get_id());
+  if (entry == warm_up_state.end()) {
+    return joint;
+  }
+
+  auto ramp_elapsed =
+    (steady_clock::now() - entry->second.started_at) - TORQUE_WARM_UP_DURATION;
+
+  if (ramp_elapsed >= RESUME_RAMP_DURATION) {
+    return joint;
+  }
+
+  float blend = duration<float>(ramp_elapsed) / duration<float>(RESUME_RAMP_DURATION);
+
+  float start_position = entry->second.start_position;
+
+  Joint ramped = joint;
+  ramped.set_position(start_position + (joint.get_position() - start_position) * blend);
+
+  return ramped;
+}
+
 bool JointManager::torque_enable(bool enable)
 {
+  if (enable) {
+    mark_torque_enabled(std::vector<uint8_t>(JointId::list.begin(), JointId::list.end()));
+  }
+
   return control_manager->write_packet(
     tachimawari::control::ControlManager::BROADCAST, protocol_1::MX28Address::TORQUE_ENABLE,
     enable);
@@ -106,15 +158,69 @@ bool JointManager::torque_enable(const std::vector<Joint> & joints, bool enable)
   return true;
 }
 
+bool JointManager::is_connected(uint8_t id) const
+{
+  auto entry = connectivity.find(id);
+  if (entry == connectivity.end()) {
+    return true;
+  }
+
+  return entry->second.connected;
+}
+
 bool JointManager::set_joints(const std::vector<Joint> & joints)
 {
-  if (joints.size()) {
-    update_current_joints(joints);
+  std::vector<Joint> ready_joints;
+  for (const auto & joint : joints) {
+    if (is_connected(joint.get_id()) && !is_warming_up(joint.get_id())) {
+      ready_joints.push_back(apply_resume_ramp(joint));
+    }
+  }
 
-    return control_manager->sync_write_packet(joints);
+  if (ready_joints.size()) {
+    update_current_joints(ready_joints);
+
+    return control_manager->sync_write_packet(ready_joints);
   }
 
   return false;
+}
+
+void JointManager::update_connectivity()
+{
+  if (JointId::list.empty()) {
+    return;
+  }
+
+  uint8_t id = JointId::list[connectivity_poll_index];
+  connectivity_poll_index = (connectivity_poll_index + 1) % JointId::list.size();
+
+  bool read_ok =
+    control_manager->read_packet(id, protocol_1::MX28Address::PRESENT_POSITION_L, 2) != -1;
+
+  auto & state = connectivity[id];
+
+  if (read_ok == state.connected) {
+    state.mismatch_count = 0;
+    return;
+  }
+
+  if (++state.mismatch_count < CONNECTIVITY_DEBOUNCE_COUNT) {
+    return;
+  }
+
+  state.connected = read_ok;
+  state.mismatch_count = 0;
+
+  if (state.connected) {
+    for (const auto & joint : current_joints) {
+      if (joint.get_id() == id) {
+        mark_torque_enabled({id});
+        torque_enable(std::vector<Joint>{joint}, true);
+        break;
+      }
+    }
+  }
 }
 
 }  // namespace tachimawari::joint
